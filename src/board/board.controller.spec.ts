@@ -45,6 +45,8 @@ describe('BoardController', () => {
       backgroundColor: '#FFFF',
       userId: 1,
       createdAt: new Date('2022-01-01T00:00:00Z'),
+      updatedAt: new Date('2022-01-01T00:00:00Z'),
+      lists: [],
     };
 
     (boardService.create as jest.Mock).mockResolvedValue(expectedResult);
@@ -98,6 +100,8 @@ describe('BoardController', () => {
       backgroundColor: '#FFFF',
       userId: 1,
       createdAt: new Date('2022-01-01T00:00:00Z'),
+      updatedAt: new Date('2022-01-01T00:00:00Z'),
+      lists: [], // 관계 형성하면서 추가됨 오류시 이부분 수정
     };
 
     (boardService.update as jest.Mock).mockResolvedValue(expectedResult);
