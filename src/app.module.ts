@@ -12,10 +12,32 @@ import { ChecklistModule } from './checklist/checklist.module';
 import { ItemModule } from './item/item.module';
 import { FileModule } from './file/file.module';
 import { WorkspaceController } from './workspace/workspace.controller';
+import Joi from 'joi';
+import { MailerModule } from '@nestjs-modules/mailer';
 
 @Module({
-  imports: [AuthModule, CardModule, ListModule, CommentModule, BoardModule, UserModule, WorkspaceModule, ChecklistModule, ItemModule, FileModule],
+  imports: [
+  // MailerModule.forRootAsync({
+  //   useFactory: () => ({
+  //     transport: {
+  //       host : 'localhost',
+  //       port : 1025,
+  //       ignoreTLS : true,
+  //       secure: false,
+  //       auth : {
+  //
+  //       }
+  //     },
+  //     defaults: {
+  //       from: '"최강현" <hee687299@gmail.com>',
+  //     },
+  //   }),
+  //
+  // }),
+    AuthModule, CardModule, ListModule, CommentModule, BoardModule, UserModule, WorkspaceModule, ChecklistModule, ItemModule, FileModule,
+  ],
   controllers: [AppController, WorkspaceController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule {
+}

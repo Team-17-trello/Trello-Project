@@ -1,10 +1,10 @@
 import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, DeleteDateColumn, OneToMany } from 'typeorm';
-import { MemberEntity } from '../../member/member.entity';
+import { Member } from '../../member/entity/member.entity';
 
 @Entity({
-  name: 'user',
+  name: 'users',
 })
-export class UserEntity {
+export class User {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -23,7 +23,7 @@ export class UserEntity {
   @DeleteDateColumn({ type: 'timestamp', nullable: true, name: 'deleted_at' })
   deletedAt: Date | null;
 
-  @OneToMany(() => MemberEntity, (member: MemberEntity) => member.user)
-  member: MemberEntity[];
+  @OneToMany(() => Member, (member: Member) => member.user)
+  member: Member[];
 
 }
