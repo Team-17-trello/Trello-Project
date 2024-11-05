@@ -14,7 +14,7 @@ describe('BoardController', () => {
       controllers: [BoardController],
       providers: [
         {
-          provide: BoardController,
+          provide: BoardService,
           useValue: {
             create: jest.fn(),
             findAll: jest.fn(),
@@ -32,6 +32,7 @@ describe('BoardController', () => {
 
   it('보드 생성 검증', async () => {
     const createBoardDto: CreateBoardDto = {
+      workspaceId: 1,
       name: 'board',
       description: 'description',
       backgroundColor: '#FFFF',
@@ -67,7 +68,7 @@ describe('BoardController', () => {
   });
 
   it('보드 상세 조회 검증', async () => {
-    const id = '1';
+    const boardId = 1;
     const expectedResult = {
       id: 1,
       name: 'board',
@@ -79,13 +80,13 @@ describe('BoardController', () => {
 
     (boardService.findOne as jest.Mock).mockResolvedValue(expectedResult);
 
-    const result = await boardController.findOne(id);
+    const result = await boardController.findOne(boardId);
     expect(result).toEqual(expectedResult);
-    expect(boardService.findOne).toHaveBeenCalledWith(id);
+    expect(boardService.findOne).toHaveBeenCalledWith(boardId);
   });
 
   it('보드 수정 검증', async () => {
-    const id = '1';
+    const boardId = 1;
     const updateBoardDto: UpdateBoardDto = {
       name: 'new Board',
     };
@@ -101,20 +102,20 @@ describe('BoardController', () => {
 
     (boardService.update as jest.Mock).mockResolvedValue(expectedResult);
 
-    const result = await boardController.update(id, updateBoardDto);
+    const result = await boardController.update(boardId, updateBoardDto);
 
     expect(result).toEqual(expectedResult);
-    expect(boardService.update).toHaveBeenCalledWith(id, updateBoardDto);
+    expect(boardService.update).toHaveBeenCalledWith(boardId, updateBoardDto);
   });
 
   it('보드 삭제 검증', async () => {
-    const id = '1';
-    const expectedResult = { message: '보드가 삭제 되었습니다.' };
+    const boardId = 1;
+    const expectedResult = { message: '보드가 성공적으로 삭제 되었습니다.' };
 
     (boardService.remove as jest.Mock).mockResolvedValue(expectedResult);
 
-    const result = await boardController.remove(id);
+    const result = await boardController.remove(boardId);
     expect(result).toEqual(expectedResult);
-    expect(boardService.remove).toHaveBeenCalledWith(id);
+    expect(boardService.remove).toHaveBeenCalledWith(1);
   });
 });
