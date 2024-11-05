@@ -1,16 +1,34 @@
-import { Column, Entity, PrimaryGeneratedColumn, Timestamp } from 'typeorm';
+import { number } from 'joi';
+import {
+  BaseEntity,
+  Column,
+  CreateDateColumn,
+  Entity,
+  JoinTable,
+  ManyToMany,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+  Timestamp,
+} from 'typeorm';
 
 @Entity({ name: 'workspace' })
-export class WorkspaceEntity {
+export class WorkspaceEntity extends BaseEntity {
   @PrimaryGeneratedColumn()
-  workspaceId: number;
+  id: number;
 
   @Column({ type: 'varchar', nullable: false, name: 'workspaceName' })
   workspaceName: string;
 
-  @Column({ type: 'timestamp', nullable: false, name: 'createdAt' })
+  @CreateDateColumn({ type: 'timestamp', nullable: true, name: 'createdAt' })
   createdAt: Timestamp;
 
-  @Column({ type: 'int', nullable: false, name: 'userId' })
+  @Column({ type: 'int', nullable: false })
   userId: number;
+
+  @Column('simple-array')
+  members: string[];
+
+  // @ManyToOne(() => User, user => user.workspaces) //TODO:User and workspace 관계설정
+  // @JoinColumn({ name: 'userId' })
+  // user: User;
 }
