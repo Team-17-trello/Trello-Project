@@ -45,6 +45,7 @@ export class BoardService {
     return { ...existingBoard, ...updateBoardDto };
   }
 
+  //TODO: 생성한 사용자만 삭제 가능 추가
   async remove(id: number): Promise<{ message: string }> {
     const result = await this.boardRepository.delete(id);
     if (result.affected === 0) {
