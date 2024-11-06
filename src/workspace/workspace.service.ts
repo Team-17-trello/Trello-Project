@@ -86,13 +86,13 @@ export class WorkspaceService {
   //   return foundWorkspace;
   // }
 
-  async inviteMembers(
-    workspaceId: number,
-    inviteMemberDto: InviteMemberDto,
-  ): Promise<WorkspaceEntity> {
-    const { userId } = inviteMemberDto;
-    return;
-  }
+  // async inviteMembers(
+  //   workspaceId: number,
+  //   inviteMemberDto: InviteMemberDto,
+  // ): Promise<WorkspaceEntity> {
+  //   const { userId } = inviteMemberDto;
+  //   return;
+  // }
 
   private async verifyWorkspaceById(workspaceId: number) {
     const workspace = await this.workspaceRepository.findOneBy({ id: workspaceId });

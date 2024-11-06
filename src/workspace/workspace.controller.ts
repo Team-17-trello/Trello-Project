@@ -22,11 +22,11 @@ export class WorkspaceController {
     return await this.workspaceService.workspaceCreate(createWorkspaceDto);
   }
 
-  @Put(':workspaceId/members')
-  async inviteMembers(
-    @Param('workspaceId') workspaceId: number,
-    @Body() inviteMemberDto: InviteMemberDto,
-  ) {
-    return await this.workspaceService.inviteMembers(workspaceId, inviteMemberDto);
-  }
+  // @Put(':workspaceId/members')
+  // async inviteMembers(
+  //   @Param('workspaceId') workspaceId: number,
+  //   @Body() inviteMemberDto: InviteMemberDto,
+  // ) {
+  //   return await this.workspaceService.inviteMembers(workspaceId, inviteMemberDto);
+  // }
 }

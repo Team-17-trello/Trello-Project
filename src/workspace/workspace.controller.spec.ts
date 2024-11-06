@@ -72,15 +72,15 @@ describe('워크스페이스 컨트롤러 유닛 테스트', () => {
     expect(workspaceService.workspaceCreate).toHaveBeenCalledWith(createDto);
   });
 
-  it('워크스페이스 컨트롤러 멤버 초대 테스트', async () => {
-    const workspaceId = 1;
-    const inviteMemberDto = { userId: [1] };
-    const inviteMember = {
-      message: '멤버를 초대하였습니다.',
-    };
-    (workspaceService.inviteMembers as jest.Mock).mockResolvedValue(inviteMember);
-    const result = await workspaceController.inviteMembers(workspaceId, inviteMemberDto);
-    expect(workspaceService.inviteMembers).toHaveBeenCalledWith(workspaceId, inviteMemberDto);
-    expect(result).toEqual(inviteMember);
-  });
+  // it('워크스페이스 컨트롤러 멤버 초대 테스트', async () => {
+  //   const workspaceId = 1;
+  //   const inviteMemberDto = { userId: [1] };
+  //   const inviteMember = {
+  //     message: '멤버를 초대하였습니다.',
+  //   };
+  //   (workspaceService.inviteMembers as jest.Mock).mockResolvedValue(inviteMember);
+  //   const result = await workspaceController.inviteMembers(workspaceId, inviteMemberDto);
+  //   expect(workspaceService.inviteMembers).toHaveBeenCalledWith(workspaceId, inviteMemberDto);
+  //   expect(result).toEqual(inviteMember);
+  // });
 });
