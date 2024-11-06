@@ -3,11 +3,19 @@ import { BoardController } from './board.controller';
 import { BoardService } from './board.service';
 import { CreateBoardDto } from './dto/create-board.dto';
 import { UpdateBoardDto } from './dto/update-board.dto';
-import { BoardEntity } from './entities/board.entity';
+import { BoardEntity } from 'src/board/entities/board.entity';
+import { User } from 'src/user/entities/user.entity';
 
 describe('BoardController', () => {
   let boardController: BoardController;
   let boardService: BoardService;
+
+  const mockUser: User = {
+    id: 1,
+    email: 'email@test.com',
+    password: 'password',
+    nickname: 'nickname',
+  } as User;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -45,24 +53,27 @@ describe('BoardController', () => {
       backgroundColor: '#FFFF',
       userId: 1,
       createdAt: new Date('2022-01-01T00:00:00Z'),
+      updatedAt: new Date('2022-01-01T00:00:00Z'),
+      lists: [],
     };
 
     (boardService.create as jest.Mock).mockResolvedValue(expectedResult);
 
-    const result = await boardController.create(createBoardDto);
+    const result = await boardController.create(createBoardDto, mockUser);
 
     expect(result).toEqual(expectedResult);
-    expect(boardService.create).toHaveBeenCalledWith(createBoardDto);
+    expect(boardService.create).toHaveBeenCalledWith(createBoardDto, mockUser);
   });
 
   it('보드 전체 조회 검증', async () => {
+    const workspaceId = 1;
     const expectedResult = [
       { id: 1, name: 'board', userId: 1 },
       { id: 2, name: 'board2', userId: 2 },
     ];
 
     (boardService.findAll as jest.Mock).mockResolvedValue(expectedResult);
-    const result = await boardController.findAll();
+    const result = await boardController.findAll(workspaceId);
     expect(result).toEqual(expectedResult);
     expect(boardService.findAll).toHaveBeenCalled();
   });
@@ -98,14 +109,16 @@ describe('BoardController', () => {
       backgroundColor: '#FFFF',
       userId: 1,
       createdAt: new Date('2022-01-01T00:00:00Z'),
+      updatedAt: new Date('2022-01-01T00:00:00Z'),
+      lists: [], // 관계 형성하면서 추가됨 오류시 이부분 수정
     };
 
     (boardService.update as jest.Mock).mockResolvedValue(expectedResult);
 
-    const result = await boardController.update(boardId, updateBoardDto);
+    const result = await boardController.update(boardId, updateBoardDto, mockUser);
 
     expect(result).toEqual(expectedResult);
-    expect(boardService.update).toHaveBeenCalledWith(boardId, updateBoardDto);
+    expect(boardService.update).toHaveBeenCalledWith(boardId, updateBoardDto, mockUser);
   });
 
   it('보드 삭제 검증', async () => {
@@ -114,8 +127,8 @@ describe('BoardController', () => {
 
     (boardService.remove as jest.Mock).mockResolvedValue(expectedResult);
 
-    const result = await boardController.remove(boardId);
+    const result = await boardController.remove(boardId, mockUser);
     expect(result).toEqual(expectedResult);
-    expect(boardService.remove).toHaveBeenCalledWith(1);
+    expect(boardService.remove).toHaveBeenCalledWith(boardId, mockUser);
   });
 });

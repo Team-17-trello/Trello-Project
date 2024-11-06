@@ -1,34 +1,60 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Query,
+  HttpCode,
+  HttpStatus,
+  UseGuards,
+  ParseIntPipe,
+} from '@nestjs/common';
 import { BoardService } from './board.service';
 import { CreateBoardDto } from './dto/create-board.dto';
 import { UpdateBoardDto } from './dto/update-board.dto';
+import { AuthGuard } from '@nestjs/passport';
+import { UserInfo } from 'src/utils/userInfo-decolator';
+import { User } from 'src/user/entities/user.entity';
 
 @Controller('boards')
+@UseGuards(AuthGuard('jwt'))
 export class BoardController {
   constructor(private readonly boardService: BoardService) {}
 
   @Post()
-  async create(@Body() createBoardDto: CreateBoardDto) {
-    return await this.boardService.create(createBoardDto);
+  @HttpCode(HttpStatus.CREATED)
+  async create(@Body() createBoardDto: CreateBoardDto, @UserInfo() user: User) {
+    return await this.boardService.create(createBoardDto, user);
   }
 
-  @Get()
-  async findAll() {
-    return await this.boardService.findAll();
+  @Get(':workspaceId')
+  @HttpCode(HttpStatus.OK)
+  async findAll(@Param('workspaceId', ParseIntPipe) workspaceId: number) {
+    return await this.boardService.findAll(workspaceId);
   }
 
   @Get(':boardId')
-  async findOne(@Query('boardId') boardId: number) {
+  @HttpCode(HttpStatus.OK)
+  async findOne(@Param('boardId', ParseIntPipe) boardId: number) {
     return await this.boardService.findOne(boardId);
   }
 
   @Patch(':boardId')
-  async update(@Param('boardId') boardId: number, @Body() updateBoardDto: UpdateBoardDto) {
-    return await this.boardService.update(boardId, updateBoardDto);
+  @HttpCode(HttpStatus.OK)
+  async update(
+    @Param('boardId', ParseIntPipe) boardId: number,
+    @Body() updateBoardDto: UpdateBoardDto,
+    @UserInfo() user: User,
+  ) {
+    return await this.boardService.update(boardId, updateBoardDto, user);
   }
 
   @Delete(':boardId')
-  async remove(@Param('boardId') boardId: number) {
-    return await this.boardService.remove(boardId);
+  @HttpCode(HttpStatus.OK)
+  async remove(@Param('boardId', ParseIntPipe) boardId: number, @UserInfo() user: User) {
+    return await this.boardService.remove(boardId, user);
   }
 }

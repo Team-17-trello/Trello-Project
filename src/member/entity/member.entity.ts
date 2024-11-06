@@ -1,5 +1,5 @@
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, DeleteDateColumn, ManyToOne } from 'typeorm';
-import { User} from '../../user/entities/user.entity';
+import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { User } from '../../user/entities/user.entity';
 
 @Entity({
   name: 'member',
@@ -14,7 +14,8 @@ export class Member {
   @Column({ type: 'boolean', nullable: false, name: 'is_admin' })
   isAdmin: boolean;
 
-  @ManyToOne(() => User, (user: User) => user.member)
+  @ManyToOne(() => User, (user: User) => user.members)
   user: User;
-
 }
+
+
