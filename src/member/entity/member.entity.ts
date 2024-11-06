@@ -1,4 +1,12 @@
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, ManyToOne } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  CreateDateColumn,
+  ManyToOne,
+  JoinColumn,
+  JoinTable,
+} from 'typeorm';
 import { User } from '../../user/entities/user.entity';
 import { WorkspaceEntity } from 'src/workspace/entities/workspace.entity';
 
@@ -19,5 +27,6 @@ export class Member {
   user: User;
 
   @ManyToOne(() => WorkspaceEntity, (workspace) => workspace.members)
+  @JoinColumn()
   workspace: WorkspaceEntity;
 }

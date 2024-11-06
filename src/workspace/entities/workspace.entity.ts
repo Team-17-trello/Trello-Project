@@ -21,6 +21,5 @@ export class WorkspaceEntity extends BaseEntity {
   createdAt: Date;
 
   @OneToMany(() => Member, (member) => member.workspace)
-  @JoinTable()
   members: Member[];
 }

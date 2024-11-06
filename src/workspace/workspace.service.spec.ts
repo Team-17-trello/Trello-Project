@@ -4,19 +4,31 @@ import { WorkspaceEntity } from './entities/workspace.entity';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { BadRequestException } from '@nestjs/common';
+import { User } from 'src/user/entities/user.entity';
+import { Member } from 'src/member/entity/member.entity';
 
 describe('WorkspaceService', () => {
+  const mockRepository = {
+    create: jest.fn(),
+    save: jest.fn(),
+    find: jest.fn(),
+    findOne: jest.fn(),
+    findOneBy: jest.fn(),
+  };
+
   let workspaceService: WorkspaceService;
   let workspaceRepository: Repository<WorkspaceEntity>; // 모킹된 리포지토리
-
+  let userRepository: Repository<User>;
+  let memberRepository: Repository<Member>;
   beforeEach(async () => {
+    jest.clearAllMocks();
+
     // 모킹된 리포지토리 생성
-    const mockRepository = {
-      create: jest.fn(),
-      save: jest.fn(),
-      find: jest.fn(),
-      findOne: jest.fn(),
-    };
+
+    const mockworkspace: WorkspaceEntity = {
+      id: 1,
+      workspaceName: 'Test workspace',
+    } as WorkspaceEntity;
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -25,6 +37,20 @@ describe('WorkspaceService', () => {
           provide: getRepositoryToken(WorkspaceEntity),
           useValue: mockRepository, // 모킹된 리포지토리 사용
         },
+        {
+          provide: getRepositoryToken(User),
+          useValue: {
+            findOne: jest.fn(),
+            save: jest.fn(),
+          },
+        },
+        {
+          provide: getRepositoryToken(Member),
+          useValue: {
+            create: jest.fn(),
+            save: jest.fn(),
+          },
+        },
       ],
     }).compile();
 
@@ -32,25 +58,49 @@ describe('WorkspaceService', () => {
     workspaceService = module.get<WorkspaceService>(WorkspaceService);
     workspaceRepository = module.get<Repository<WorkspaceEntity>>(
       getRepositoryToken(WorkspaceEntity),
-    ); // 모킹된 리포지토리 가져오기
+    );
+    memberRepository = module.get<Repository<Member>>(getRepositoryToken(Member));
+    userRepository = module.get<Repository<User>>(getRepositoryToken(User)); // 모킹된 리포지토리 가져오기
   });
 
-  // it('워크스페이스 생성 테스트', async () => {
-  //   const createWorkspaceDto = { workspaceName: 'test workspace' };
-  //   const newWorkspace = { id: 1, workspaceName: 'test workspace', createdAt: new Date() };
+  it('워크스페이스 생성 테스트', async () => {
+    const user: User = {
+      id: 1,
+      email: 'test@test',
+      password: 'password',
+      nickname: 'nickname',
+      createdAt: new Date(),
+      deletedAt: null,
+      members: [],
+    };
+    const createWorkspaceDto = { workspaceName: 'test workspace' };
+    const newWorkspace = { id: 1, workspaceName: 'test workspace', createdAt: new Date() };
+    const createMember = {
+      isAdmin: true,
+      user,
+      workspace: newWorkspace,
+    };
+    workspaceRepository.create = jest.fn().mockReturnValue(newWorkspace);
+    workspaceRepository.save = jest.fn().mockResolvedValue(newWorkspace);
+    memberRepository.create = jest.fn().mockReturnValue(createMember);
+    memberRepository.save = jest.fn().mockResolvedValue(createMember);
 
-  //   workspaceRepository.create = jest.fn().mockReturnValue(newWorkspace);
-  //   workspaceRepository.save = jest.fn().mockResolvedValue(newWorkspace);
+    const result = await workspaceService.workspaceCreate(user, createWorkspaceDto);
 
-  //   const result = await workspaceService.workspaceCreate(createWorkspaceDto);
-  //   expect(workspaceRepository.create).toHaveBeenCalledWith(createWorkspaceDto);
-  //   expect(workspaceRepository.save).toHaveBeenCalledWith(newWorkspace);
-  //   expect(result).toEqual(newWorkspace);
-  // });
+    expect(workspaceRepository.create).toHaveBeenCalledWith(createWorkspaceDto);
+    expect(workspaceRepository.save).toHaveBeenCalledWith(newWorkspace);
+    expect(memberRepository.create).toHaveBeenCalledWith({
+      isAdmin: true,
+      user,
+      workspace: newWorkspace,
+    });
+    expect(memberRepository.save).toHaveBeenCalledWith(createMember);
+    expect(result).toEqual(newWorkspace);
+  });
 
   it('워크스페이스 조회 테스트', async () => {
     const workspace = [{ id: 1, workspaceName: 'test', craetedAt: new Date() }];
-    workspaceRepository.find = jest.fn().mockReturnValue(workspace);
+    mockRepository.find.mockResolvedValue(workspace);
 
     const result = await workspaceService.getAllWorkspace();
     console.log(result);
@@ -59,15 +109,21 @@ describe('WorkspaceService', () => {
   });
 
   it('워크스페이스 조회 실패 테스트', async () => {
+    mockRepository.find.mockResolvedValue([]);
+
     await expect(workspaceService.getAllWorkspace()).rejects.toThrow(BadRequestException);
   });
 
   it('워크스페이스 상세 조회 테스트', async () => {
-    const workspace = { id: 1, workspaceName: 'test', createdAt: new Date() };
-    workspaceRepository.findOne = jest.fn().mockReturnValue(workspace);
+    const workspace = { id: 1, workspaceName: 'test', createdAt: new Date(), members: [] };
+    mockRepository.findOne.mockResolvedValue(workspace);
 
     const result = await workspaceService.getWorkspaceById(1);
-    expect(workspaceRepository.findOne).toHaveBeenCalledWith({ where: { id: 1 } });
+    expect(workspaceRepository.findOne).toHaveBeenCalledWith({
+      where: { id: 1 },
+      relations: { members: true },
+    });
     expect(result).toEqual(workspace);
   });
+  it('워크스페이스 멤버 초대 테스트', async () => {});
 });

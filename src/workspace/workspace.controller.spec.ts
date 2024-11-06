@@ -5,6 +5,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { User } from 'src/user/entities/user.entity';
 import { CreateWorkspaceDto } from './dto/create-workspace.dto';
 import { pull } from 'lodash';
+import { AddWorkspaceMemberDto } from './dto/add-workspace-member.dto';
 
 describe('워크스페이스 컨트롤러 유닛 테스트', () => {
   let workspaceController: WorkspaceController;
@@ -19,7 +20,7 @@ describe('워크스페이스 컨트롤러 유닛 테스트', () => {
             getAllWorkspace: jest.fn(),
             getWorkspaceById: jest.fn(),
             workspaceCreate: jest.fn(),
-            inviteMembers: jest.fn(),
+            addWorkspaceMember: jest.fn(),
           },
         },
       ],
@@ -55,42 +56,58 @@ describe('워크스페이스 컨트롤러 유닛 테스트', () => {
   });
 
   it('워크스페이스 컨트롤러 생성 테스트 ', async () => {
-    //   const user: User = { id: 1, nickname: 'test'};
-    //   const createDto = { workspaceName: 'string' };
-    //   const createWorkspace = {
-    //     id: 1,
-    //     workspaceName: 'string',
-    //     createdAt: new Date(),
-    //   };
-    //   (workspaceService.workspaceCreate as jest.Mock).mockResolvedValue(createWorkspace);
-    //   const result = await workspaceController.workspaceCreate(user, createDto);
-    //   expect(result).toEqual({
-    //     workspaceId: 1,
-    //     workspaceName: 'string',
-    //     createdAt: new Date('2024-12-24'),
-    //   });
-    //   expect(workspaceService.workspaceCreate).toHaveBeenCalledWith(createDto);
-    // });
-    //   const user = { id: 1, email: 'qwer@qwer' }; // 기본 user 객체
-    //   const createWorkspaceDto: CreateWorkspaceDto = { workspaceName: 'Test Workspace' };
-    //   const expectedResult = { id: 1, workspaceName: 'Test Workspace', createdAt: new Date() };
-    //   // 서비스의 메서드 모킹
-    //   (workspaceService.workspaceCreate as jest.Mock).mockResolvedValue(expectedResult);
-    //   // 메서드 호출 및 결과 검증
-    //   const result = await workspaceController.workspaceCreate(user, createWorkspaceDto);
-    //   expect(workspaceService.workspaceCreate).toHaveBeenCalledWith(user, createWorkspaceDto);
-    //   expect(result).toEqual(expectedResult);
-    // });
-    // it('워크스페이스 컨트롤러 멤버 초대 테스트', async () => {
-    //   const workspaceId = 1;
-    //   const inviteMemberDto = { userId: [1] };
-    //   const inviteMember = {
-    //     message: '멤버를 초대하였습니다.',
-    //   };
-    //   (workspaceService.inviteMembers as jest.Mock).mockResolvedValue(inviteMember);
-    //   const result = await workspaceController.inviteMembers(workspaceId, inviteMemberDto);
-    //   expect(workspaceService.inviteMembers).toHaveBeenCalledWith(workspaceId, inviteMemberDto);
-    //   expect(result).toEqual(inviteMember);
-    // });
+    const user: User = {
+      id: 1,
+      nickname: 'test',
+      email: 'test@test.com',
+      password: 'password',
+      createdAt: new Date(),
+      deletedAt: null,
+      members: [],
+    };
+    const createDto = { workspaceName: 'string' };
+    const createWorkspace = {
+      id: 1,
+      workspaceName: 'string',
+      createdAt: new Date(),
+    };
+    (workspaceService.workspaceCreate as jest.Mock).mockResolvedValue(createWorkspace);
+    const result = await workspaceController.workspaceCreate(user, createDto);
+    expect(result).toEqual({
+      id: 1,
+      workspaceName: 'string',
+      createdAt: createWorkspace.createdAt,
+    });
+    expect(workspaceService.workspaceCreate).toHaveBeenCalledWith(user, createDto);
+  });
+  it('워크스페이스 컨트롤러 멤버 초대 테스트', async () => {
+    const user: User = {
+      id: 1,
+      nickname: 'test',
+      email: 'test@test.com',
+      password: 'password',
+      createdAt: new Date(),
+      deletedAt: null,
+      members: [],
+    };
+    const workspaceId = 1;
+    const addWorkspaceMemberDto: AddWorkspaceMemberDto = { userId: [1] };
+    const returnValue = { status: 201, message: '멤버를 성공적으로 초대했습니다.' };
+    (workspaceService.addWorkspaceMember as jest.Mock).mockReturnValue(returnValue);
+    // 서비스 에서 addworkspaceMember호출될때 값 모킹
+
+    const result = await workspaceController.addWorkspaceMember(
+      //컨트롤러에서 서비스 addworkspaceMember호출
+      user,
+      workspaceId,
+      addWorkspaceMemberDto,
+    );
+    console.log(result);
+    expect(result).toEqual(returnValue);
+    expect(workspaceService.addWorkspaceMember).toHaveBeenCalledWith(
+      user,
+      workspaceId,
+      addWorkspaceMemberDto.userId,
+    );
   });
 });

@@ -51,7 +51,7 @@ export class WorkspaceService {
 
   /**워크스페이스 전체 조회 */
   async getAllWorkspace(): Promise<WorkspaceEntity[]> {
-    const getWorkspace = await this.workspaceRepository.find();
+    const getWorkspace = await this.workspaceRepository.find()|| [];;
 
     if (getWorkspace.length === 0) {
       throw new BadRequestException('등록된 워크스페이스가 없습니다.');
@@ -66,7 +66,7 @@ export class WorkspaceService {
     const getOneWorkspace = await this.workspaceRepository.findOne({
       where: { id: workspaceId },
       relations: { members: true },
-      select: {},
+      // select: {},
     });
     return getOneWorkspace;
   }
@@ -117,11 +117,14 @@ export class WorkspaceService {
     //   throw new ConflictException(`해당 유저(${userId})는 이미 워크스페이스에 속해 있습니다.`);
     // }
 
-    return { status: 200, message: '멤버를 성공적으로 초대했습니다.' };
+    return { status: 201, message: '멤버를 성공적으로 초대했습니다.' };
   }
 
-  private async verifyWorkspaceById(workspaceId: number) {
-    const workspace = await this.workspaceRepository.findOneBy({ id: workspaceId });
+    async verifyWorkspaceById(workspaceId: number) {
+    const workspace = await this.workspaceRepository.findOne({ 
+      where:{id:workspaceId},
+      relations:{members:true},
+     });
     if (_.isNil(workspace)) {
       throw new BadRequestException('존재하지 않는 워크스페이스 입니다.');
     }
