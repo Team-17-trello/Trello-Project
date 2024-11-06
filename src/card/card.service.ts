@@ -1,25 +1,31 @@
-import { BadRequestException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { CreateCardDto } from './dto/create-card.dto';
 import { UpdateCardDto } from './dto/update-card.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CardEntity } from './entities/card.entity';
 import { Column, Repository } from 'typeorm';
-import { DueDateDto } from './dto/deadline.dto';
+import { DueDateDto } from './dto/duedate.dto';
 import { ResponsibleDto } from './dto/responsible.dto';
 import { UserEntity } from '../user/entities/user.entity';
 import { ResponsibleEntity } from './entities/responsible.entity';
 import { ListEntity } from '../list/entities/list.entity';
+import { MoveCardDto } from './dto/move-card.dto';
 
 @Injectable()
 export class CardService {
-  constructor(@InjectRepository(CardEntity)
-              private readonly cardRepository: Repository<CardEntity>,
-              @InjectRepository(ListEntity)
-              private readonly listRepository: Repository<ListEntity>,
-              @InjectRepository(ResponsibleEntity)
-              private readonly responsibleRepository: Repository<ResponsibleEntity>,
-  ) {
-  }
+  constructor(
+    @InjectRepository(CardEntity)
+    private readonly cardRepository: Repository<CardEntity>,
+    @InjectRepository(ListEntity)
+    private readonly listRepository: Repository<ListEntity>,
+    @InjectRepository(ResponsibleEntity)
+    private readonly responsibleRepository: Repository<ResponsibleEntity>,
+  ) {}
 
   async create(user: UserEntity, createCardDto: CreateCardDto) {
     const list = await this.listRepository.findOne({
@@ -40,7 +46,7 @@ export class CardService {
       title: createCardDto.title,
       description: createCardDto.description,
       color: createCardDto.color,
-      order: (cards.length + 1),
+      order: cards.length + 1,
       author: user.id,
       list: list,
     });
@@ -50,7 +56,7 @@ export class CardService {
       card: card,
     };
   }
-
+  // TODO : orderBy로 정렬하기
   async findAll(listId: number) {
     const list = await this.listRepository.findOne({
       where: { id: listId },
@@ -74,17 +80,16 @@ export class CardService {
 
   async findOne(cardId: number) {
     const card = await this.cardRepository.findOne({
-        where: {
-          id: cardId,
-        },
-        relations: {
-          responsible: true,
-          // comment : true,
-          // checkList : true,
-          // file : true,
-        },
+      where: {
+        id: cardId,
       },
-    );
+      relations: {
+        responsible: true,
+        // comment : true,
+        // checkList : true,
+        // file : true,
+      },
+    });
 
     if (!card) {
       throw new NotFoundException('해당하는 카드가 없습니다 확인해주세요');
@@ -94,8 +99,6 @@ export class CardService {
       status: 200,
       card: card,
     };
-
-
   }
 
   async checkResponsible(user) {
@@ -148,14 +151,12 @@ export class CardService {
     } catch (error) {
       throw error;
       console.error(error);
-
     }
   }
 
   //마감 기한 설정 메소드
   async setDueDate(id: number, dueDateDto: DueDateDto) {
     try {
-
       await this.cardRepository.update(id, { dueDate: dueDateDto.dueDate });
 
       return {
@@ -163,26 +164,21 @@ export class CardService {
         message: `마감 기한이 설정 됐습니다. ${dueDateDto.dueDate}`,
         dueDate: dueDateDto.dueDate,
       };
-
     } catch (error) {
       throw error;
       console.error(error);
-
     }
   }
-
 
   //책임자
   async inviteResponsible(cardId: number, responsibleDto: ResponsibleDto) {
     try {
-
       const card = await this.cardRepository.findOne({
         where: { id: cardId },
       });
       if (!card) {
         throw new NotFoundException('해당하는 카드가 없습니다 확인해주세요');
       }
-
 
       responsibleDto.responsibles.map(async (responsible) => {
         await this.responsibleRepository.save({
@@ -196,15 +192,11 @@ export class CardService {
         message: '초대가 완료되었습니다.',
         responsible: responsibleDto.responsibles,
       };
-
     } catch (error) {
       throw error;
       console.error(error);
-
     }
-
   }
-
 
   async removeResponsible(cardId: number, id: number) {
     try {
@@ -224,20 +216,16 @@ export class CardService {
       // @ts-ignore
       await this.responsibleRepository.delete({
         card: { id },
-
       });
 
       return {
         statusCode: 200,
         message: '담당자가 삭제되었습니다.',
       };
-
     } catch (error) {
       throw error;
       console.error(error);
-
     }
-
   }
 
   async remove(id: number) {
@@ -259,10 +247,43 @@ export class CardService {
     };
   }
 
+  async moveCard(id: number, moveCardDto: MoveCardDto) {
+    let newOrder = 0;
+    //이동할 카드 조회
+    const card = await this.cardRepository.findOne({
+      where: { id: id },
+    });
+
+    // 이동할 리스트에 해당하는 카드들 찾기
+    const cards = await this.cardRepository.find({
+      where: { list: { id: moveCardDto.listId } },
+      order: { order: 'ASC' },
+    });
+
+    // 첫번째로 옮기는 경우 (앞 값이 없을 떄)
+    if (moveCardDto.order === 1) {
+      newOrder = cards[0].order / 2;
+    }
+
+    // 마지막에 삽입하는 경우 [1,2,3,4,5]
+    else if (moveCardDto.order === cards.length + 1) {
+      newOrder = cards[cards.length - 1].order + 1;
+    } else {
+      // 이동할 위치에 있는 카드의 순서값
+      const targetOrder = cards[moveCardDto.order - 1].order;
+
+      // 이동할 위치 앞에 있는 카드의 순서 값
+      const preTargetOrder = cards[moveCardDto.order - 2].order;
+
+      newOrder = (targetOrder + preTargetOrder) / 2;
+    }
+    const list = await this.listRepository.findOne({
+      where: { id: moveCardDto.listId },
+    });
+
+    card.order = newOrder;
+    card.list = list;
+
+    await this.cardRepository.save(card);
+  }
 }
-
-
-
-
-
-

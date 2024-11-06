@@ -1,11 +1,11 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import _ from 'lodash';
 import { UserEntity } from 'src/user/entities/user.entity';
 import { Repository } from 'typeorm';
 import { CreateBoardDto } from './dto/create-board.dto';
 import { UpdateBoardDto } from './dto/update-board.dto';
 import { BoardEntity } from './entities/board.entity';
+import { number } from 'joi';
 
 @Injectable()
 export class BoardService {
@@ -14,10 +14,9 @@ export class BoardService {
     private readonly boardRepository: Repository<BoardEntity>,
   ) {}
 
-  async create(createBoardDto: CreateBoardDto, user: UserEntity): Promise<BoardEntity> {
+  async create(createBoardDto: CreateBoardDto): Promise<BoardEntity> {
     const board = this.boardRepository.create({
       ...createBoardDto,
-      userId: user.id,
     });
     return await this.boardRepository.save(board);
   }
@@ -47,29 +46,19 @@ export class BoardService {
     return board;
   }
 
-  async update(id: number, updateBoardDto: UpdateBoardDto, user: UserEntity): Promise<BoardEntity> {
-    await this.verifyBoardByUserId(user.id, id);
-
+  async update(id: number, updateBoardDto: UpdateBoardDto): Promise<BoardEntity> {
     const existingBoard = await this.findOne(id);
     await this.boardRepository.update(id, updateBoardDto);
     return { ...existingBoard, ...updateBoardDto };
   }
 
-  async remove(id: number, user: UserEntity): Promise<{ message: string }> {
-    await this.verifyBoardByUserId(user.id, id);
+  async remove(id: number): Promise<{ message: string }> {
+    const result = await this.boardRepository.delete(id);
 
-    await this.boardRepository.delete(id);
-
-    return { message: '보드가 성공적으로 삭제되었습니다.' };
-  }
-
-  async verifyBoardByUserId(userId: number, boardId: number) {
-    const board = await this.boardRepository.findOneBy({ userId: userId, id: boardId });
-
-    if (_.isNil(board)) {
-      throw new BadRequestException('해당 유저가 생성한 보드가 아닙니다.');
+    if (result.affected === 0) {
+      throw new BadRequestException(`ID ${id}를 가진 보드를 찾을수 없습니다.`);
     }
 
-    return board;
+    return { message: '보드가 성공적으로 삭제되었습니다.' };
   }
 }

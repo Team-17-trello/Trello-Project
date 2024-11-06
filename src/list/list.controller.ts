@@ -26,8 +26,8 @@ export class ListController {
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  create(@Body() createListDto: CreateListDto, @UserInfo() user: UserEntity) {
-    return this.listService.create(createListDto, user);
+  create(@Body() createListDto: CreateListDto) {
+    return this.listService.create(createListDto);
   }
 
   @Get('/inventory/:boardId')
@@ -44,17 +44,19 @@ export class ListController {
 
   @Put(':listId')
   @HttpCode(HttpStatus.OK)
-  update(
-    @Param('listId', ParseIntPipe) listId: number,
-    @Body() updateListDto: UpdateListDto,
-    @UserInfo() user: UserEntity,
-  ) {
-    return this.listService.update(listId, updateListDto, user);
+  update(@Param('listId', ParseIntPipe) listId: number, @Body() updateListDto: UpdateListDto) {
+    return this.listService.update(listId, updateListDto);
+  }
+
+  @Put('orders/:listId')
+  @HttpCode(HttpStatus.OK)
+  updateOrder(@Param('listId', ParseIntPipe) listId: number, @Body() updateListDto: UpdateListDto) {
+    return this.listService.update(listId, updateListDto);
   }
 
   @Delete(':listId')
   @HttpCode(HttpStatus.OK)
-  remove(@Param('listId', ParseIntPipe) listId: number, @UserInfo() user: UserEntity) {
-    return this.listService.remove(listId, user);
+  remove(@Param('listId', ParseIntPipe) listId: number) {
+    return this.listService.remove(listId);
   }
 }

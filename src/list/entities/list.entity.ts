@@ -34,5 +34,5 @@ export class ListEntity {
   board: BoardEntity;
 
   @OneToMany(() => CardEntity, (card) => card.list)
-  card: CardEntity;
+  card: CardEntity[];
 }

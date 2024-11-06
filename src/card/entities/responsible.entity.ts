@@ -1,22 +1,26 @@
-import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
-import {CardEntity} from './card.entity';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
+import { CardEntity } from './card.entity';
 
 @Entity({
-  name: 'responsibles'
+  name: 'responsibles',
 })
 export class ResponsibleEntity {
-
   @PrimaryGeneratedColumn()
-  id:number
+  id: number;
 
+  @CreateDateColumn({ type: 'timestamp', nullable: false, name: 'created_at' })
+  createdAt: Date;
 
-  @CreateDateColumn({type:'timestamp', nullable:false, name: 'created_at'})
-  createdAt: Date
+  @Column({ type: 'int', nullable: false, name: 'user_id' })
+  userId: number;
 
-  @Column({type:'number',nullable:false, name: 'user_id'})
-  userId: number
-
-  @ManyToOne(()=> CardEntity, (card)=> card.responsible)
-  card:CardEntity
-
+  @ManyToOne(() => CardEntity, (card) => card.responsible)
+  card: CardEntity;
 }

@@ -7,6 +7,7 @@ import { UpdateListDto } from './dto/update-list.dto';
 import { BoardEntity } from '../../src/board/entities/board.entity';
 import { UserEntity } from 'src/user/entities/user.entity';
 import { CardEntity } from '../card/entities/card.entity';
+import { ResponsibleEntity } from 'src/card/entities/responsible.entity';
 
 describe('ListController', () => {
   let listController: ListController;
@@ -46,13 +47,6 @@ describe('ListController', () => {
     };
   });
 
-  const mockUser: UserEntity = {
-    id: 1,
-    email: 'email@test.com',
-    password: 'password',
-    nickname: 'nickname',
-  } as UserEntity;
-
   it('리스트 생성 검증', async () => {
     const createListDto: CreateListDto = {
       boardId: 1,
@@ -67,15 +61,15 @@ describe('ListController', () => {
       board: expectedBoard,
       createdAt: new Date('2022-01-01T00:00:00Z'),
       updatedAt: new Date('2022-01-01T00:00:00Z'),
-      card: new CardEntity(),
+      card: [],
     };
 
     (listService.create as jest.Mock).mockResolvedValue(expectedResult);
 
-    const result = await listController.create(createListDto, user);
+    const result = await listController.create(createListDto);
 
     expect(result).toEqual(expectedResult);
-    expect(listService.create).toHaveBeenCalledWith(createListDto, user);
+    expect(listService.create).toHaveBeenCalledWith(createListDto);
   });
   it('리스트 전체 조회 검증', async () => {
     const expectedResult = [
@@ -112,6 +106,20 @@ describe('ListController', () => {
       name: 'Done',
     };
 
+    const expectedCard = {
+      id: 1,
+      title: 'Test Card',
+      description: 'This is a test card',
+      color: '#FFFFFF',
+      order: 1,
+      createdAt: new Date('2022-01-01T00:00:00Z'),
+      updatedAt: new Date('2022-01-01T00:00:00Z'),
+      dueDate: new Date('2022-12-31T00:00:00Z'),
+      list: {} as ListEntity,
+      responsible: [],
+      author: 1,
+    } as CardEntity;
+
     const expectedResult: ListEntity = {
       id: 1,
       name: 'Done',
@@ -120,15 +128,15 @@ describe('ListController', () => {
       board: expectedBoard,
       createdAt: new Date('2022-01-01T00:00:00Z'),
       updatedAt: new Date('2022-01-01T00:00:00Z'),
-      card: new CardEntity(),
+      card: [expectedCard],
     };
 
     (listService.update as jest.Mock).mockResolvedValue(expectedResult);
 
-    const result = await listController.update(listId, updateListDto, mockUser);
+    const result = await listController.update(listId, updateListDto);
 
     expect(result).toEqual(expectedResult);
-    expect(listService.update).toHaveBeenCalledWith(listId, updateListDto, mockUser);
+    expect(listService.update).toHaveBeenCalledWith(listId, updateListDto);
   });
 
   it('리스트 삭제 검증', async () => {
@@ -137,8 +145,48 @@ describe('ListController', () => {
 
     (listService.remove as jest.Mock).mockResolvedValue(expectedResult);
 
-    const result = await listController.remove(listId, mockUser);
+    const result = await listController.remove(listId);
     expect(result).toEqual(expectedResult);
-    expect(listService.remove).toHaveBeenCalledWith(listId, mockUser);
+    expect(listService.remove).toHaveBeenCalledWith(listId);
+  });
+
+  it('리스트 순서 업데이트 검증', async () => {
+    const listId = 1;
+    const updateListDto: UpdateListDto = {
+      name: '리스트 이름이 업데이트 되었습니다.',
+    };
+
+    const expectedBoard = new BoardEntity();
+    const expectedCard = {
+      id: 1,
+      title: 'Test Card',
+      description: 'This is a test card',
+      color: '#FFFFFF',
+      order: 1,
+      createdAt: new Date('2022-01-01T00:00:00Z'),
+      updatedAt: new Date('2022-01-01T00:00:00Z'),
+      dueDate: new Date('2022-12-31T00:00:00Z'),
+      list: {} as ListEntity,
+      responsible: [],
+      author: 1,
+    } as CardEntity;
+
+    const expectedResult: ListEntity = {
+      id: listId,
+      name: updateListDto.name,
+      order: 1,
+      userId: 1,
+      board: expectedBoard,
+      createdAt: new Date('2022-01-01T00:00:00Z'),
+      updatedAt: new Date('2022-01-01T00:00:00Z'),
+      card: [expectedCard],
+    };
+
+    (listService.updateOrder as jest.Mock).mockResolvedValue(expectedResult);
+
+    const result = await listController.updateOrder(listId, updateListDto);
+
+    expect(result).toEqual(expectedResult);
+    expect(listService.updateOrder).toHaveBeenCalledWith(listId, updateListDto);
   });
 });

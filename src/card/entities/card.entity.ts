@@ -45,7 +45,6 @@ export class CardEntity {
   @OneToMany(() => ResponsibleEntity, (responsible) => responsible.card)
   responsible: ResponsibleEntity[];
 
-  @Column({ type: 'number', nullable: false })
+  @Column({ type: 'int', nullable: false })
   author: number;
-
 }

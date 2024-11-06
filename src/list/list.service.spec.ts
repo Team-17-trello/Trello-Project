@@ -16,13 +16,6 @@ describe('ListService', () => {
   let listRepository: Repository<ListEntity>;
   let boardRepository: Repository<BoardEntity>;
 
-  const mockUser: UserEntity = {
-    id: 1,
-    email: 'email@test.com',
-    password: 'password',
-    nickname: 'nickname',
-  } as UserEntity;
-
   const mockListRepository = {
     create: jest.fn(),
     save: jest.fn(),
@@ -75,7 +68,7 @@ describe('ListService', () => {
     mockListRepository.create.mockReturnValue(mockList);
     mockListRepository.save.mockResolvedValue(mockList);
 
-    const result = await listService.create(createListDto, mockUser);
+    const result = await listService.create(createListDto);
 
     expect(result).toEqual(mockList);
     expect(boardRepository.findOne).toHaveBeenCalledWith({ where: { id: createListDto.boardId } });
@@ -139,12 +132,10 @@ describe('ListService', () => {
     const updateListDto = { name: 'Done' };
     const updatedList = { id: listId, name: 'Done', order: 1, board: null } as ListEntity;
 
-    jest.spyOn(listService, 'verifyListByBoardId').mockResolvedValue(undefined);
-
     mockListRepository.update.mockResolvedValue(updatedList);
     mockListRepository.findOne.mockResolvedValue(updatedList);
 
-    const result = await listService.update(listId, updateListDto, mockUser);
+    const result = await listService.update(listId, updateListDto);
 
     expect(result).toEqual(updatedList);
     expect(listRepository.update).toHaveBeenCalledWith({ id: listId }, updateListDto);
@@ -159,13 +150,10 @@ describe('ListService', () => {
     const listId = 1;
     const expectedResult = { message: '리스트가 성공적으로 삭제되었습니다.' };
 
-    jest.spyOn(listService, 'verifyListByBoardId').mockResolvedValue(undefined);
-
     mockListRepository.delete.mockResolvedValue(expectedResult);
 
-    const result = await listService.remove(listId, mockUser);
+    const result = await listService.remove(listId);
 
-    expect(listService.verifyListByBoardId).toHaveBeenCalledWith(mockUser.id, listId);
     expect(listRepository.delete).toHaveBeenCalledWith({ id: listId });
     expect(result).toEqual({ message: '리스트가 성공적으로 삭제되었습니다.' });
   });
@@ -174,7 +162,7 @@ describe('ListService', () => {
     const listId = 1;
 
     mockListRepository.delete.mockResolvedValue({ affected: 0 });
-    await expect(listService.remove(listId, mockUser)).rejects.toThrow(NotFoundException);
-    expect(mockListRepository.delete).not.toHaveBeenCalledWith({ id: listId });
+    await expect(listService.remove(listId)).rejects.toThrow(NotFoundException);
+    expect(mockListRepository.delete).toHaveBeenCalledWith({ id: listId });
   });
 });
