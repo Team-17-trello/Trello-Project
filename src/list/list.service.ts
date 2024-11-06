@@ -71,7 +71,7 @@ export class ListService {
       },
     });
 
-    let getOrder;
+    let getOrder = 0;
 
     if (updateListDto.order === 1) {
       getOrder = allOrderList[0].order / 2;
