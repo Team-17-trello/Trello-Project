@@ -21,6 +21,9 @@ export class ListEntity {
   @Column({ type: 'int' })
   order: number;
 
+  @Column({ type: 'int' })
+  userId: number;
+
   @CreateDateColumn({ type: 'timestamp' })
   createdAt: Date;
 
@@ -31,5 +34,5 @@ export class ListEntity {
   board: BoardEntity;
 
   @OneToMany(() => CardEntity, (card) => card.list)
-  card: CardEntity;
+  card: CardEntity[];
 }

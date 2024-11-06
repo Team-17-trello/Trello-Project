@@ -9,22 +9,26 @@ import { mock } from 'node:test';
 import { BoardEntity } from 'src/board/entities/board.entity';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import exp from 'constants';
-
-const mockListRepository = {
-  create: jest.fn(),
-  save: jest.fn(),
-  find: jest.fn(),
-  findOne: jest.fn(),
-  update: jest.fn(),
-  delete: jest.fn(),
-};
-const mockBoardRepository = {
-  findOne: jest.fn(),
-};
+import { UserEntity } from 'src/user/entities/user.entity';
 
 describe('ListService', () => {
   let listService: ListService;
   let listRepository: Repository<ListEntity>;
+  let boardRepository: Repository<BoardEntity>;
+
+  const mockListRepository = {
+    create: jest.fn(),
+    save: jest.fn(),
+    find: jest.fn(),
+    findOne: jest.fn(),
+    findOneBy: jest.fn(),
+    update: jest.fn(),
+    delete: jest.fn(),
+    count: jest.fn(),
+  };
+  const mockBoardRepository = {
+    findOne: jest.fn(),
+  };
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -36,13 +40,14 @@ describe('ListService', () => {
         },
         {
           provide: getRepositoryToken(BoardEntity),
-          useValue: mockListRepository,
+          useValue: mockBoardRepository,
         },
       ],
     }).compile();
 
     listService = module.get<ListService>(ListService);
     listRepository = module.get<Repository<ListEntity>>(getRepositoryToken(ListEntity));
+    boardRepository = module.get<Repository<BoardEntity>>(getRepositoryToken(BoardEntity));
   });
 
   it('should be defined', () => {
@@ -53,87 +58,67 @@ describe('ListService', () => {
     jest.clearAllMocks();
   });
 
-  it('리스트 생성 성공 검증', async () => {
-    const createListDto = {
-      id: 1,
-      name: 'list',
-      boardId: 1,
-    };
+  it('리스트 생성 검증', async () => {
+    const createListDto = { boardId: 1, name: 'To Do' };
+    const mockBoard = { id: 1, name: 'Sample Board' } as BoardEntity;
+    const mockList = { id: 1, name: 'To Do', order: 1, userId: 1, board: mockBoard } as ListEntity;
 
-    mockListRepository.create.mockResolvedValue(createListDto);
-    mockListRepository.save.mockResolvedValue({
-      id: 1,
-      ...createListDto,
-    });
+    mockBoardRepository.findOne.mockResolvedValue(mockBoard);
+    mockListRepository.count.mockResolvedValue(0);
+    mockListRepository.create.mockReturnValue(mockList);
+    mockListRepository.save.mockResolvedValue(mockList);
 
     const result = await listService.create(createListDto);
 
-    expect(mockListRepository.create).toHaveBeenCalledWith(createListDto);
-    expect(mockListRepository.save).toHaveBeenCalledWith(createListDto);
-    expect(result).toEqual({
-      id: 1,
+    expect(result).toEqual(mockList);
+    expect(boardRepository.findOne).toHaveBeenCalledWith({ where: { id: createListDto.boardId } });
+    expect(listRepository.create).toHaveBeenCalledWith({
       ...createListDto,
+      order: 1,
+      userId: 1,
+      board: mockBoard,
     });
+    expect(listRepository.save).toHaveBeenCalledWith(mockList);
   });
 
   it('리스트 생성시 해당하는 보드 아이디가 있는지 확인 검증', async () => {
+    const createListDto = { boardId: 1, name: 'Sample List' };
     mockBoardRepository.findOne.mockResolvedValue(null);
 
     await expect(listService.findOne(1)).rejects.toThrow(NotFoundException);
   });
 
   it('리스트 목록 조회 검증', async () => {
-    const lists = [
-      {
-        id: 1,
-        name: 'name',
-        order: 1,
-        createdAt: new Date('2022-01-01T00:00:00Z'),
-      },
-      {
-        id: 2,
-        name: 'name2',
-        order: 2,
-        createdAt: new Date('2022-01-01T00:00:00Z'),
-      },
+    const boardId = 1;
+    const expectedResult = [
+      { id: 1, name: 'To Do', order: 1, board: { id: boardId } } as ListEntity,
     ];
 
-    mockListRepository.find.mockResolvedValue(lists);
+    mockListRepository.find.mockResolvedValue(expectedResult);
 
-    const result = await listService.findAll();
-
-    expect(mockListRepository.find).toHaveBeenCalledTimes(1);
-    expect(result).toEqual({ result });
+    const result = await listService.findAll(boardId);
+    expect(result).toEqual(expectedResult);
+    expect(listRepository.find).toHaveBeenCalledWith({ where: { board: { id: boardId } } });
   });
 
   it('리스트 목록이 하나도 없을 경우 검증', async () => {
+    const boardId = 1;
     const list = [];
 
     mockListRepository.find.mockResolvedValue(list);
 
-    await expect(listService.findAll()).rejects.toThrow(BadRequestException);
+    await expect(listService.findAll(boardId)).rejects.toThrow(BadRequestException);
   });
 
   it('리스트 상세 목록 조회 검증', async () => {
-    const list = {
-      id: 1,
-      name: 'name',
-      order: 1,
-      createdAt: new Date('2022-01-01T00:00:00Z'),
-      board: {
-        id: 1,
-        name: 'board',
-        description: 'description',
-      },
-    };
+    const listId = 1;
+    const expectedResult = { id: listId, name: 'To Do', order: 1, board: null } as ListEntity;
 
-    mockListRepository.findOne.mockResolvedValue(list);
-    const result = await listService.findOne(1);
+    mockListRepository.findOne.mockResolvedValue(expectedResult);
 
-    expect(mockListRepository.findOne).toHaveBeenCalledWith({
-      where: { id: 1 },
-    });
-    expect(result).toEqual(list);
+    const result = await listService.findOne(listId);
+    expect(result).toEqual(expectedResult);
+    expect(listRepository.findOne).toHaveBeenCalledWith({ where: { id: listId } });
   });
 
   it('리스트 목록이 없는 경우 검증', async () => {
@@ -143,27 +128,18 @@ describe('ListService', () => {
   });
 
   it('리스트 이름 수정 검증', async () => {
-    const updateListDto = {
-      name: 'name2',
-    };
+    const listId = 1;
+    const updateListDto = { name: 'Done' };
+    const updatedList = { id: listId, name: 'Done', order: 1, board: null } as ListEntity;
 
-    const list = {
-      id: 1,
-      name: 'name',
-      order: 1,
-      createdAt: new Date('2022-01-01T00:00:00Z'),
-      updatedAt: new Date('2022-01-01T00:00:00Z'),
-    };
-
-    const updatedList = { ...list, name: updateListDto.name, updatedAt: new Date() };
-
-    mockListRepository.findOne.mockResolvedValue(list);
     mockListRepository.update.mockResolvedValue(updatedList);
+    mockListRepository.findOne.mockResolvedValue(updatedList);
 
-    const result = await listService.update(list.id, updateListDto);
+    const result = await listService.update(listId, updateListDto);
 
-    expect(mockListRepository.findOne).toHaveBeenCalledWith(list.id);
-    expect(mockListRepository.update).toHaveBeenCalledWith(list.id, { name: updateListDto.name });
+    expect(result).toEqual(updatedList);
+    expect(listRepository.update).toHaveBeenCalledWith({ id: listId }, updateListDto);
+    expect(listRepository.findOne).toHaveBeenCalledWith({ where: { id: listId } });
     // expect(result.name).toBe(updateListDto.name);
     // expect(result.updatedAt).toBeDefined();
   });
@@ -171,15 +147,22 @@ describe('ListService', () => {
   it('리스트 순서 수정 검증', async () => {});
 
   it('리스트 삭제 검증', async () => {
-    mockListRepository.delete.mockResolvedValue({ affected: 1 });
-    const result = await listService.remove(1);
+    const listId = 1;
+    const expectedResult = { message: '리스트가 성공적으로 삭제되었습니다.' };
 
-    expect(mockListRepository.delete).toHaveBeenCalledWith(1);
+    mockListRepository.delete.mockResolvedValue(expectedResult);
+
+    const result = await listService.remove(listId);
+
+    expect(listRepository.delete).toHaveBeenCalledWith({ id: listId });
     expect(result).toEqual({ message: '리스트가 성공적으로 삭제되었습니다.' });
   });
 
   it('삭제할 리스트가 없을 경우 검증', async () => {
+    const listId = 1;
+
     mockListRepository.delete.mockResolvedValue({ affected: 0 });
-    await expect(listService.remove(1)).rejects.toThrow(NotFoundException);
+    await expect(listService.remove(listId)).rejects.toThrow(NotFoundException);
+    expect(mockListRepository.delete).toHaveBeenCalledWith({ id: listId });
   });
 });
