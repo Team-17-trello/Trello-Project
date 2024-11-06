@@ -19,7 +19,6 @@ export class ListEntity {
   name: string;
 
   @Column({ type: 'int' })
-  @Generated('increment')
   order: number;
 
   @CreateDateColumn({ type: 'timestamp' })

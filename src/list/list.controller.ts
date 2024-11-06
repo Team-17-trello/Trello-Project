@@ -1,18 +1,17 @@
 import {
-  Controller,
-  Get,
-  Post,
   Body,
-  Patch,
-  Param,
+  Controller,
   Delete,
+  Get,
   HttpCode,
   HttpStatus,
+  Patch,
+  Post,
   Query,
 } from '@nestjs/common';
-import { ListService } from './list.service';
 import { CreateListDto } from './dto/create-list.dto';
 import { UpdateListDto } from './dto/update-list.dto';
+import { ListService } from './list.service';
 
 @Controller('lists')
 export class ListController {
@@ -32,19 +31,19 @@ export class ListController {
 
   @Get(':listId')
   @HttpCode(HttpStatus.OK)
-  findOne(@Param('listId') listId: number) {
+  findOne(@Query('listId') listId: number) {
     return this.listService.findOne(listId);
   }
 
   @Patch(':listId')
   @HttpCode(HttpStatus.OK)
-  update(@Param('listId') listId: number, @Body() updateListDto: UpdateListDto) {
+  update(@Query('listId') listId: number, @Body() updateListDto: UpdateListDto) {
     return this.listService.update(listId, updateListDto);
   }
 
   @Delete(':listId')
   @HttpCode(HttpStatus.OK)
-  remove(@Param('listId') listId: number) {
+  remove(@Query('listId') listId: number) {
     return this.listService.remove(listId);
   }
 }
