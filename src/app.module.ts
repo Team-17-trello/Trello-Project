@@ -17,6 +17,8 @@ import { WorkspaceModule } from './workspace/workspace.module';
 import Joi from 'joi';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
+import { User } from './user/entities/user.entity';
+import { Member } from './member/entity/member.entity';
 
 const typeOrmModuleOptions = {
   useFactory: async (configService: ConfigService): Promise<TypeOrmModuleOptions> => ({
@@ -27,7 +29,7 @@ const typeOrmModuleOptions = {
     host: configService.get('DB_HOST'),
     port: configService.get('DB_PORT'),
     database: configService.get('DB_NAME'),
-    entities: [WorkspaceEntity, BoardEntity],
+    entities: [WorkspaceEntity, BoardEntity, User, Member],
     synchronize: configService.get('DB_SYNC'),
     logging: true,
   }),

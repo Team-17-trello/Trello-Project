@@ -1,7 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { WorkspaceController } from './workspace.controller';
 import { WorkspaceService } from './workspace.service';
-import { InviteMemberDto } from './dto/invite-member.dto';
 
 describe('워크스페이스 컨트롤러 유닛 테스트', () => {
   let workspaceController: WorkspaceController;
@@ -25,6 +24,18 @@ describe('워크스페이스 컨트롤러 유닛 테스트', () => {
     workspaceService = module.get<WorkspaceService>(WorkspaceService);
   });
 
+  it('워크스페이스 컨트롤러 상세 조회 테스트', async () => {
+    const workspaceId = 1;
+    const workspace = {
+      workspaceId: 1,
+      workspaceName: 'string',
+    };
+    (workspaceService.getWorkspaceById as jest.Mock).mockResolvedValue(workspace);
+    const result = await workspaceController.findOne(workspaceId);
+    expect(workspaceService.getWorkspaceById).toHaveBeenCalledWith(workspaceId);
+    expect(result).toEqual(workspace);
+  });
+
   it('워크스페이스 컨트롤러 조회 테스트', async () => {
     const workspace = [
       { workspaceId: 1, workspaceName: 'string', createAt: new Date() },
@@ -34,25 +45,6 @@ describe('워크스페이스 컨트롤러 유닛 테스트', () => {
     const workspace1 = await workspaceController.findAll();
     expect(workspace1).toEqual(workspace);
     expect(workspaceService.getAllWorkspace).toHaveBeenCalledWith();
-  });
-  it('워크스페이스 컨트롤러 상세 조회 테스트', async () => {
-    const workspaceId = 1;
-    const workspace = [
-      {
-        workspaceId: 1,
-        workspaceName: 'string',
-        createdAt: new Date(),
-      },
-      {
-        workspaceId: 2,
-        workspaceName: 'string',
-        createdAt: new Date(),
-      },
-    ];
-    (workspaceService.getWorkspaceById as jest.Mock).mockResolvedValue(workspace);
-    const workspace1 = await workspaceController.findOne(workspaceId);
-    expect(workspace1).toEqual(workspace);
-    expect(workspaceService.getWorkspaceById).toHaveBeenCalled();
   });
 
   it('워크스페이스 컨트롤러 생성 테스트 ', async () => {

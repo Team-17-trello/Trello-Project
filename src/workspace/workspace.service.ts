@@ -1,18 +1,29 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { WorkspaceEntity } from './entities/workspace.entity';
 import { Repository } from 'typeorm';
 import { CreateWorkspaceDto } from './dto/create-workspace.dto';
 import _ from 'lodash';
-import { InviteMemberDto } from './dto/invite-member.dto';
+import { User } from 'src/user/entities/user.entity';
+import { Member } from 'src/member/entity/member.entity';
 
 @Injectable()
 export class WorkspaceService {
   constructor(
     @InjectRepository(WorkspaceEntity)
     private workspaceRepository: Repository<WorkspaceEntity>,
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
+    @InjectRepository(Member)
+    private readonly memberRepository: Repository<Member>,
   ) {}
-
+aaaaaaaa
   /**워크스페이스 생성 */
   async workspaceCreate(createWorkspaceDto: CreateWorkspaceDto): Promise<WorkspaceEntity> {
     const { workspaceName } = createWorkspaceDto;
@@ -48,51 +59,54 @@ export class WorkspaceService {
     return getOneWorkspace;
   }
 
-  /**워크스페이스 멤버 초대 */
-  // async addWorkspaceMember(id: number, memberId: number): Promise<WorkspaceEntity> {
-  //   /**
-  //    * 초대할 유저의 id가 User테이블에 실제로 존재하는 user인지 검사
-  //    *
-  //    * 초대할 유저 id를 워크스페이스의 members[]에 추가
-  //    * 멤버가 추가된 워크스페이스의 정보 리던
-  //    */
+  /** 워크스페이스 멤버 초대 */
+  async addWorkspaceMember(
+    user: User,
+    workspaceId: number,
+    userId: number,
+  ): Promise<{ status: number; message: string }> {
+    // 1. 멤버로 추가하려는 유저가 User 테이블에 존재하는가?
+    const foundUser = await this.userRepository.findOne({ where: { id: userId } });
+    if (!foundUser) {
+      throw new NotFoundException(`해당 ID(${userId})의 사용자가 존재하지 않습니다.`);
+    }
 
-  //   const 임시유저db = {
-  //     userId: 2,
-  //     name: 'kim',
-  //     isAdmin: 'false',
-  //   };
+    // 2. 멤버를 추가하려는 워크스페이스가 DB에 존재하는가?
+    const foundWorkspace = await this.workspaceRepository.findOne({
+      where: { id: workspaceId },
+      relations: ['members'],
+    });
+    if (!foundWorkspace) {
+      throw new NotFoundException(`해당 ID(${workspaceId})의 워크스페이스가 존재하지 않습니다.`);
+    }
 
-  //   // const foundUser = await this.userRepository.findOne({ where: { id } })//나중에 유저디비랑 연결해서 사용
-  //   const { userId, name, isAdmin } = 임시유저db;
+    // 3. 해당 워크스페이스에 멤버를 추가할 권한이 있는가? (isAdmin 확인)
+    const foundAdminMember = await this.memberRepository.findOne({
+      where: { workspace: { id: workspaceId }, user: { id: user.id }, isAdmin: true },
+    });
+    if (!foundAdminMember) {
+      throw new ForbiddenException(`해당 워크스페이스에 멤버를 추가할 권한이 없습니다.`);
+    }
 
-  //   if (!foundUser) {
-  //     throw new NotFoundException(`해당 ID(${userId})의 사용자가 존재하지 않습니다.`);
-  //   }
+    // 이미 멤버로 추가되어 있는지 확인
+    if (foundWorkspace.members.some((member) => member.user.id === userId)) {
+      throw new ConflictException(`해당 유저(${userId})는 이미 워크스페이스에 속해 있습니다.`);
+    }
 
-  //   const foundWorkspace = await this.workspaceRepository.findOne({
-  //     where: { id },
-  //     relations: ['members'],
-  //   });
+    // 4. 새로운 멤버 추가
+    const newMember = new Member();
+    newMember.user = foundUser; // foundUser는 User 엔티티 객체
+    newMember.isAdmin = false; // 새로운 멤버는 기본적으로 isAdmin = false
+    newMember.workspace = foundWorkspace; // foundWorkspace는 Workspace 엔티티 객체
 
-  //   if (!foundWorkspace) {
-  //     throw new NotFoundException(`해당 ID(${id})의 워크스페이스가 존재하지 않습니다.`);
-  //   }
+    // 5. 워크스페이스의 멤버 배열에 새 멤버 추가
+    foundWorkspace.members.push(newMember);
 
-  //   foundWorkspace.members.push();
-  //   console.log(foundUser);
+    // 6. 워크스페이스 저장
+    await this.workspaceRepository.save(foundWorkspace);
 
-  //   await this.workspaceRepository.save(foundWorkspace);
-  //   return foundWorkspace;
-  // }
-
-  // async inviteMembers(
-  //   workspaceId: number,
-  //   inviteMemberDto: InviteMemberDto,
-  // ): Promise<WorkspaceEntity> {
-  //   const { userId } = inviteMemberDto;
-  //   return;
-  // }
+    return { status: 200, message: '멤버를 성공적으로 초대했습니다.' };
+  }
 
   private async verifyWorkspaceById(workspaceId: number) {
     const workspace = await this.workspaceRepository.findOneBy({ id: workspaceId });
