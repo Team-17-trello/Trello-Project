@@ -1,21 +1,19 @@
-import eslintPluginPrettier from 'eslint-plugin-prettier';
-import prettierConfig from 'eslint-config-prettier';
+const eslintPluginPrettier = require('eslint-plugin-prettier');
+const prettierConfig = require('eslint-config-prettier');
 
-export default [
+module.exports = [
   {
     files: ['**/*.js'],
     languageOptions: {
       ecmaVersion: 2021,
       sourceType: 'module',
       globals: {
-        // Node.js 전역 변수 설정
         process: 'readonly',
         __dirname: 'readonly',
         module: 'readonly',
         require: 'readonly',
         exports: 'readonly',
         Buffer: 'readonly',
-        // ES6 전역 변수 설정
         console: 'readonly',
         setTimeout: 'readonly',
         clearTimeout: 'readonly',
