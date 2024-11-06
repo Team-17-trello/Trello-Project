@@ -9,19 +9,19 @@ import { mock } from 'node:test';
 import { BoardEntity } from 'src/board/entities/board.entity';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import exp from 'constants';
-import { User } from 'src/user/entities/user.entity';
+import { UserEntity } from 'src/user/entities/user.entity';
 
 describe('ListService', () => {
   let listService: ListService;
   let listRepository: Repository<ListEntity>;
   let boardRepository: Repository<BoardEntity>;
 
-  const mockUser: User = {
+  const mockUser: UserEntity = {
     id: 1,
     email: 'email@test.com',
     password: 'password',
     nickname: 'nickname',
-  } as User;
+  } as UserEntity;
 
   const mockListRepository = {
     create: jest.fn(),
