@@ -16,4 +16,5 @@ export class Member {
 
   @ManyToOne(() => User, (user: User) => user.member)
   user: User;
+
 }

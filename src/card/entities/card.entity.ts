@@ -1,9 +1,19 @@
-import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
+
+import { Responsible } from './responsible.entity';
 
 @Entity({
   name: 'cards',
 })
-export class CardEntity {
+export class Card {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -25,8 +35,16 @@ export class CardEntity {
   @UpdateDateColumn({ type: 'timestamp', nullable: false, name: 'updated_at' })
   updatedAt: Date;
 
-  @Column({ type: 'timestamp', nullable: false, name: 'due_date' })
+  @Column({ type: 'timestamp', nullable: true, name: 'due_date', default: null })
   dueDate: Date;
 
+  @ManyToOne(() => List, (list) => list.card)
+  list: List;
+
+  @OneToMany(() => Responsible, (responsible) => responsible.card)
+  responsible: Responsible[];
+
+  @Column({ type: 'number', nullable: false })
+  author: number;
 
 }

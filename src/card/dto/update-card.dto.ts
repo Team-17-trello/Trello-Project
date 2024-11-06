@@ -1,8 +1,16 @@
-import { PartialType } from '@nestjs/mapped-types';
-import { CreateCardDto } from './create-card.dto';
-import { IsNotEmpty, IsNumber, IsOptional } from 'class-validator';
+import { IsDate, IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
-export class UpdateCardDto extends PartialType(CreateCardDto) {
+export class UpdateCardDto {
+
+  @IsString()
+  title?: string;
+
+  @IsString()
+  description?: string;
+
+  @IsString()
+  color?: string;
+
 
 }
 
