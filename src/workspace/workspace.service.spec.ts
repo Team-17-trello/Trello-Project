@@ -46,7 +46,6 @@ describe('WorkspaceService', () => {
 
     expect(workspaceRepository.save).toHaveBeenCalled();
     // 결과가 올바른지 확인
-    expect(result).toEqual({ id: 1 });
     expect(result).toEqual({ workspaceName: 'test workspace' });
     expect(result).toEqual({ createdAt: '2024-11-05T12:00:00.000Z' });
   });

@@ -1,21 +1,22 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { AuthModule } from './auth/auth.module';
-import { UserModule } from './user/user.module';
-import { CardModule } from './card/card.module';
-import { ListModule } from './list/list.module';
-import { CommentModule } from './comment/comment.module';
-import { BoardModule } from './board/board.module';
-import { WorkspaceModule } from './workspace/workspace.module';
-import { ChecklistModule } from './checklist/checklist.module';
-import { ItemModule } from './item/item.module';
-import { FileModule } from './file/file.module';
-import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
-import Joi from 'joi';
-import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
+import { AuthModule } from './auth/auth.module';
+import { BoardModule } from './board/board.module';
+import { BoardEntity } from './board/entities/board.entity';
+import { CardModule } from './card/card.module';
+import { ChecklistModule } from './checklist/checklist.module';
+import { CommentModule } from './comment/comment.module';
+import { FileModule } from './file/file.module';
 import { WorkspaceEntity } from './workspace/entities/workspace.entity';
+import { WorkspaceController } from './workspace/workspace.controller';
+import { MailerModule } from '@nestjs-modules/mailer';
+import { ItemModule } from './item/item.module';
+import { ListModule } from './list/list.module';
+import { UserModule } from './user/user.module';
+import { WorkspaceModule } from './workspace/workspace.module';
+import Joi from 'joi';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
 
 const typeOrmModuleOptions = {
   useFactory: async (configService: ConfigService): Promise<TypeOrmModuleOptions> => ({
@@ -26,7 +27,7 @@ const typeOrmModuleOptions = {
     host: configService.get('DB_HOST'),
     port: configService.get('DB_PORT'),
     database: configService.get('DB_NAME'),
-    entities: [WorkspaceEntity],
+    entities: [WorkspaceEntity, BoardEntity],
     synchronize: configService.get('DB_SYNC'),
     logging: true,
   }),
