@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { UserService } from './user.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository, UpdateResult } from 'typeorm';
-import { User } from './entities/user.entity';
+import { UserEntity } from './entities/user.entity';
 import * as bcrypt from 'bcrypt';
 import { ConflictException, UnauthorizedException } from '@nestjs/common';
 import mock = jest.mock;
@@ -11,13 +11,13 @@ jest.mock('bcrypt');
 
 describe('UserService', () => {
   let userService: UserService;
-  let userRepository: Repository<User>;
+  let userRepository: Repository<UserEntity>;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [UserService,
         {
-          provide: getRepositoryToken(User),
+          provide: getRepositoryToken(UserEntity),
           useValue: {
             findOne: jest.fn(),
             update: jest.fn(),
@@ -26,7 +26,7 @@ describe('UserService', () => {
     }).compile();
 
     userService = module.get<UserService>(UserService);
-    userRepository = module.get<Repository<User>>(getRepositoryToken(User));
+    userRepository = module.get<Repository<UserEntity>>(getRepositoryToken(UserEntity));
   });
 
 
@@ -38,7 +38,7 @@ describe('UserService', () => {
         email: 'test@test.com',
         password: 'test1234',
         nickname: 'tester',
-      } as User);
+      } as UserEntity);
 
       const mockUpdateDto = {
         nickname: 'newNickname',
@@ -49,14 +49,14 @@ describe('UserService', () => {
         email: 'test1@test1.com',
         password: 'test1234',
         nickname: mockUpdateDto.nickname,
-      } as User);
+      } as UserEntity);
 
       await expect(userService.update({
           id: 1,
           email: 'test@test.com',
           password: 'test1234',
           nickname: 'tester',
-        } as User, mockUpdateDto,
+        } as UserEntity, mockUpdateDto,
       )).rejects.toThrow(ConflictException);
     });
 
@@ -66,7 +66,7 @@ describe('UserService', () => {
         email: 'test@test.com',
         password: 'test1234',
         nickname: 'tester',
-      } as User);
+      } as UserEntity);
 
       const mockUpdateDto = {
         nickname: 'newNickname',
@@ -86,7 +86,7 @@ describe('UserService', () => {
         email: 'test@test.com',
         password: 'test1234',
         nickname: 'tester',
-      } as User, mockUpdateDto);
+      } as UserEntity, mockUpdateDto);
 
       // 반환된 결과가 예상과 일치하는지 확인
       expect(result).toEqual({
@@ -111,14 +111,14 @@ describe('UserService', () => {
           id: 1,
           email: 'test@test.com',
           password: await bcrypt.hash('wrongPassword', 10),
-        } as User);
+        } as UserEntity);
 
         await expect(userService.remove({
           id: 1,
           email: 'test@test.com',
           password: await bcrypt.hash('wrongPassword', 10),
           nickname: 'tester',
-        } as User, {
+        } as UserEntity, {
           password: 'test1234',
         })).rejects.toThrow(UnauthorizedException);
 
@@ -130,7 +130,7 @@ describe('UserService', () => {
           id: 1,
           email: 'test@test.com',
           password: await bcrypt.hash('wrongPassword', 10),
-        } as User);
+        } as UserEntity);
         (bcrypt.compare as jest.Mock).mockResolvedValue(true);
 
         const updateSpy = jest.spyOn(userRepository, 'update').mockResolvedValueOnce(undefined);
@@ -139,7 +139,7 @@ describe('UserService', () => {
           id: 1,
           email: 'test@test.com',
           password: 'test1234',
-        } as User, { password: await bcrypt.hash('wrongPassword', 10) });
+        } as UserEntity, { password: await bcrypt.hash('wrongPassword', 10) });
 
         expect(result).toEqual({
           statusCode: 200,

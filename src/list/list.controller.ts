@@ -17,7 +17,7 @@ import { UpdateListDto } from './dto/update-list.dto';
 import { ListService } from './list.service';
 import { AuthGuard } from '@nestjs/passport';
 import { UserInfo } from 'src/utils/userInfo-decolator';
-import { User } from 'src/user/entities/user.entity';
+import { UserEntity } from 'src/user/entities/user.entity';
 
 @Controller('lists')
 @UseGuards(AuthGuard('jwt'))
@@ -26,7 +26,7 @@ export class ListController {
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  create(@Body() createListDto: CreateListDto, @UserInfo() user: User) {
+  create(@Body() createListDto: CreateListDto, @UserInfo() user: UserEntity) {
     return this.listService.create(createListDto, user);
   }
 
@@ -47,14 +47,14 @@ export class ListController {
   update(
     @Param('listId', ParseIntPipe) listId: number,
     @Body() updateListDto: UpdateListDto,
-    @UserInfo() user: User,
+    @UserInfo() user: UserEntity,
   ) {
     return this.listService.update(listId, updateListDto, user);
   }
 
   @Delete(':listId')
   @HttpCode(HttpStatus.OK)
-  remove(@Param('listId', ParseIntPipe) listId: number, @UserInfo() user: User) {
+  remove(@Param('listId', ParseIntPipe) listId: number, @UserInfo() user: UserEntity) {
     return this.listService.remove(listId, user);
   }
 }
