@@ -1,4 +1,11 @@
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, DeleteDateColumn, OneToMany } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  CreateDateColumn,
+  DeleteDateColumn,
+  OneToMany,
+} from 'typeorm';
 import { Member } from '../../member/entity/member.entity';
 
 @Entity({
@@ -24,6 +31,5 @@ export class User {
   deletedAt: Date | null;
 
   @OneToMany(() => Member, (member: Member) => member.user)
-  member: Member[];
-
+  members: Member[];
 }
