@@ -7,6 +7,8 @@ import { CardModule } from './card/card.module';
 import { ChecklistModule } from './checklist/checklist.module';
 import { CommentModule } from './comment/comment.module';
 import { FileModule } from './file/file.module';
+import { WorkspaceController } from './workspace/workspace.controller';
+import { MailerModule } from '@nestjs-modules/mailer';
 import { ItemModule } from './item/item.module';
 import { ListModule } from './list/list.module';
 import { UserModule } from './user/user.module';
@@ -60,4 +62,5 @@ const typeOrmModuleOptions = {
   controllers: [],
   providers: [],
 })
-export class AppModule {}
+export class AppModule {
+}

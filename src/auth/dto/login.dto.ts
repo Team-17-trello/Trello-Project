@@ -1,4 +1,11 @@
-import { PartialType } from '@nestjs/mapped-types';
-import { SignupDto } from './signup.dto';
+import {IsString, IsNotEmpty} from 'class-validator'
+export class LoginDto {
+  @IsString()
+  @IsNotEmpty({message: '이메일을 입력해주세요.'})
+  email : string
 
-export class LoginDto extends PartialType(SignupDto) {}
+  @IsString()
+  @IsNotEmpty({message: '비밀번호를 입력해주세요.'})
+  password: string
+
+}
