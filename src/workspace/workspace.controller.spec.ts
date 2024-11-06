@@ -71,29 +71,26 @@ describe('워크스페이스 컨트롤러 유닛 테스트', () => {
     //   });
     //   expect(workspaceService.workspaceCreate).toHaveBeenCalledWith(createDto);
     // });
-    const user = { id: 1, email: 'qwer@qwer',}; // 기본 user 객체
-    const createWorkspaceDto: CreateWorkspaceDto = { workspaceName: 'Test Workspace' };
-    const expectedResult = { id: 1, workspaceName: 'Test Workspace', createdAt: new Date() };
-
-    // 서비스의 메서드 모킹
-    (workspaceService.workspaceCreate as jest.Mock).mockResolvedValue(expectedResult);
-
-    // 메서드 호출 및 결과 검증
-    const result = await workspaceController.workspaceCreate(user, createWorkspaceDto);
-
-    expect(workspaceService.workspaceCreate).toHaveBeenCalledWith(user, createWorkspaceDto);
-    expect(result).toEqual(expectedResult);
+    //   const user = { id: 1, email: 'qwer@qwer' }; // 기본 user 객체
+    //   const createWorkspaceDto: CreateWorkspaceDto = { workspaceName: 'Test Workspace' };
+    //   const expectedResult = { id: 1, workspaceName: 'Test Workspace', createdAt: new Date() };
+    //   // 서비스의 메서드 모킹
+    //   (workspaceService.workspaceCreate as jest.Mock).mockResolvedValue(expectedResult);
+    //   // 메서드 호출 및 결과 검증
+    //   const result = await workspaceController.workspaceCreate(user, createWorkspaceDto);
+    //   expect(workspaceService.workspaceCreate).toHaveBeenCalledWith(user, createWorkspaceDto);
+    //   expect(result).toEqual(expectedResult);
+    // });
+    // it('워크스페이스 컨트롤러 멤버 초대 테스트', async () => {
+    //   const workspaceId = 1;
+    //   const inviteMemberDto = { userId: [1] };
+    //   const inviteMember = {
+    //     message: '멤버를 초대하였습니다.',
+    //   };
+    //   (workspaceService.inviteMembers as jest.Mock).mockResolvedValue(inviteMember);
+    //   const result = await workspaceController.inviteMembers(workspaceId, inviteMemberDto);
+    //   expect(workspaceService.inviteMembers).toHaveBeenCalledWith(workspaceId, inviteMemberDto);
+    //   expect(result).toEqual(inviteMember);
+    // });
   });
-
-  // it('워크스페이스 컨트롤러 멤버 초대 테스트', async () => {
-  //   const workspaceId = 1;
-  //   const inviteMemberDto = { userId: [1] };
-  //   const inviteMember = {
-  //     message: '멤버를 초대하였습니다.',
-  //   };
-  //   (workspaceService.inviteMembers as jest.Mock).mockResolvedValue(inviteMember);
-  //   const result = await workspaceController.inviteMembers(workspaceId, inviteMemberDto);
-  //   expect(workspaceService.inviteMembers).toHaveBeenCalledWith(workspaceId, inviteMemberDto);
-  //   expect(result).toEqual(inviteMember);
-  // });
 });

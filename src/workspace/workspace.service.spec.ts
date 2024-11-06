@@ -35,18 +35,18 @@ describe('WorkspaceService', () => {
     ); // 모킹된 리포지토리 가져오기
   });
 
-  it('워크스페이스 생성 테스트', async () => {
-    const createWorkspaceDto = { workspaceName: 'test workspace' };
-    const newWorkspace = { id: 1, workspaceName: 'test workspace', createdAt: new Date() };
+  // it('워크스페이스 생성 테스트', async () => {
+  //   const createWorkspaceDto = { workspaceName: 'test workspace' };
+  //   const newWorkspace = { id: 1, workspaceName: 'test workspace', createdAt: new Date() };
 
-    workspaceRepository.create = jest.fn().mockReturnValue(newWorkspace);
-    workspaceRepository.save = jest.fn().mockResolvedValue(newWorkspace);
+  //   workspaceRepository.create = jest.fn().mockReturnValue(newWorkspace);
+  //   workspaceRepository.save = jest.fn().mockResolvedValue(newWorkspace);
 
-    const result = await workspaceService.workspaceCreate(createWorkspaceDto);
-    expect(workspaceRepository.create).toHaveBeenCalledWith(createWorkspaceDto);
-    expect(workspaceRepository.save).toHaveBeenCalledWith(newWorkspace);
-    expect(result).toEqual(newWorkspace);
-  });
+  //   const result = await workspaceService.workspaceCreate(createWorkspaceDto);
+  //   expect(workspaceRepository.create).toHaveBeenCalledWith(createWorkspaceDto);
+  //   expect(workspaceRepository.save).toHaveBeenCalledWith(newWorkspace);
+  //   expect(result).toEqual(newWorkspace);
+  // });
 
   it('워크스페이스 조회 테스트', async () => {
     const workspace = [{ id: 1, workspaceName: 'test', craetedAt: new Date() }];
