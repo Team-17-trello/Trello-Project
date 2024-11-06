@@ -23,16 +23,27 @@ export class WorkspaceService {
     @InjectRepository(Member)
     private readonly memberRepository: Repository<Member>,
   ) {}
-aaaaaaaa
   /**워크스페이스 생성 */
-  async workspaceCreate(createWorkspaceDto: CreateWorkspaceDto): Promise<WorkspaceEntity> {
+  async workspaceCreate(
+    user: User,
+    createWorkspaceDto: CreateWorkspaceDto,
+  ): Promise<WorkspaceEntity> {
     const { workspaceName } = createWorkspaceDto;
 
     // 새로운 워크스페이스 생성
     const newWorkspace = this.workspaceRepository.create({ workspaceName });
 
     try {
-      return await this.workspaceRepository.save(newWorkspace);
+      const saveWorkspace = await this.workspaceRepository.save(newWorkspace);
+
+      const createMember = await this.memberRepository.create({
+        isAdmin: true,
+        user,
+        workspace: saveWorkspace,
+      });
+      await this.memberRepository.save(createMember);
+
+      return saveWorkspace;
     } catch (error) {
       throw new BadRequestException('워크스페이스 생성 중 오류가 발생했습니다.');
     }
@@ -54,7 +65,8 @@ aaaaaaaa
     await this.verifyWorkspaceById(workspaceId);
     const getOneWorkspace = await this.workspaceRepository.findOne({
       where: { id: workspaceId },
-      // relations: {}, //TODO:members 들어가야됌, select:{userId,name,isAdmin}
+      relations: { members: true },
+      select: {},
     });
     return getOneWorkspace;
   }
@@ -63,19 +75,14 @@ aaaaaaaa
   async addWorkspaceMember(
     user: User,
     workspaceId: number,
-    userId: number,
+    userId: number[],
   ): Promise<{ status: number; message: string }> {
-    // 1. 멤버로 추가하려는 유저가 User 테이블에 존재하는가?
-    const foundUser = await this.userRepository.findOne({ where: { id: userId } });
-    if (!foundUser) {
-      throw new NotFoundException(`해당 ID(${userId})의 사용자가 존재하지 않습니다.`);
-    }
-
     // 2. 멤버를 추가하려는 워크스페이스가 DB에 존재하는가?
     const foundWorkspace = await this.workspaceRepository.findOne({
       where: { id: workspaceId },
       relations: ['members'],
     });
+
     if (!foundWorkspace) {
       throw new NotFoundException(`해당 ID(${workspaceId})의 워크스페이스가 존재하지 않습니다.`);
     }
@@ -88,22 +95,27 @@ aaaaaaaa
       throw new ForbiddenException(`해당 워크스페이스에 멤버를 추가할 권한이 없습니다.`);
     }
 
-    // 이미 멤버로 추가되어 있는지 확인
-    if (foundWorkspace.members.some((member) => member.user.id === userId)) {
-      throw new ConflictException(`해당 유저(${userId})는 이미 워크스페이스에 속해 있습니다.`);
+    for (let i = 0; i < userId.length; i++) {
+      // 1. 멤버로 추가하려는 유저가 User 테이블에 존재하는가?
+      const foundUser = await this.userRepository.findOne({ where: { id: userId[i] } });
+      if (!foundUser) {
+        throw new NotFoundException(`해당 ID(${userId})의 사용자가 존재하지 않습니다.`);
+      }
+
+      const createMember = await this.memberRepository.create({
+        isAdmin: false,
+        user: foundUser,
+        workspace: foundWorkspace,
+      });
+      await this.memberRepository.save(createMember);
+      console.log(foundWorkspace);
+
     }
 
-    // 4. 새로운 멤버 추가
-    const newMember = new Member();
-    newMember.user = foundUser; // foundUser는 User 엔티티 객체
-    newMember.isAdmin = false; // 새로운 멤버는 기본적으로 isAdmin = false
-    newMember.workspace = foundWorkspace; // foundWorkspace는 Workspace 엔티티 객체
-
-    // 5. 워크스페이스의 멤버 배열에 새 멤버 추가
-    foundWorkspace.members.push(newMember);
-
-    // 6. 워크스페이스 저장
-    await this.workspaceRepository.save(foundWorkspace);
+    // // 이미 멤버로 추가되어 있는지 확인
+    // if (foundWorkspace.members.some((member) => member.user.id === userId)) {
+    //   throw new ConflictException(`해당 유저(${userId})는 이미 워크스페이스에 속해 있습니다.`);
+    // }
 
     return { status: 200, message: '멤버를 성공적으로 초대했습니다.' };
   }

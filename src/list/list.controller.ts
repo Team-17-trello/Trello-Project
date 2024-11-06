@@ -1,34 +1,60 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { ListService } from './list.service';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  ParseIntPipe,
+  Patch,
+  Post,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { CreateListDto } from './dto/create-list.dto';
 import { UpdateListDto } from './dto/update-list.dto';
+import { ListService } from './list.service';
+import { AuthGuard } from '@nestjs/passport';
+import { UserInfo } from 'src/utils/userInfo-decolator';
+import { User } from 'src/user/entities/user.entity';
 
-@Controller('list')
+@Controller('lists')
+@UseGuards(AuthGuard('jwt'))
 export class ListController {
   constructor(private readonly listService: ListService) {}
 
   @Post()
-  create(@Body() createListDto: CreateListDto) {
-    return this.listService.create(createListDto);
+  @HttpCode(HttpStatus.CREATED)
+  create(@Body() createListDto: CreateListDto, @UserInfo() user: User) {
+    return this.listService.create(createListDto, user);
   }
 
-  @Get()
-  findAll() {
-    return this.listService.findAll();
+  @Get(':boardId')
+  @HttpCode(HttpStatus.OK)
+  findAll(@Param('boardId', ParseIntPipe) boardId: number) {
+    return this.listService.findAll(boardId);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.listService.findOne(+id);
+  @Get(':listId')
+  @HttpCode(HttpStatus.OK)
+  findOne(@Param('listId', ParseIntPipe) listId: number) {
+    return this.listService.findOne(listId);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateListDto: UpdateListDto) {
-    return this.listService.update(+id, updateListDto);
+  @Patch(':listId')
+  @HttpCode(HttpStatus.OK)
+  update(
+    @Param('listId', ParseIntPipe) listId: number,
+    @Body() updateListDto: UpdateListDto,
+    @UserInfo() user: User,
+  ) {
+    return this.listService.update(listId, updateListDto, user);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.listService.remove(+id);
+  @Delete(':listId')
+  @HttpCode(HttpStatus.OK)
+  remove(@Param('listId', ParseIntPipe) listId: number, @UserInfo() user: User) {
+    return this.listService.remove(listId, user);
   }
 }

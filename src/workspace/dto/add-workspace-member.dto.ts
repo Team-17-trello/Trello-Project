@@ -1,7 +1,9 @@
-import { IsNotEmpty, IsNumber } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsArray, IsNotEmpty, IsNumber } from 'class-validator';
 
 export class AddWorkspaceMemberDto {
-  @IsNumber({}, { message: 'userId는 숫자여야 합니다.' })
+  @IsArray()
+  @Type(() => Number)
   @IsNotEmpty({ message: 'userId를 입력해주세요.' })
-  userId: number;
+  userId: number[];
 }

@@ -1,4 +1,12 @@
-import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { ListEntity } from 'src/list/entities/list.entity';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 
 @Entity({ name: 'boards' })
 export class BoardEntity {
@@ -20,9 +28,12 @@ export class BoardEntity {
   @CreateDateColumn({ type: 'timestamp' })
   createdAt: Date;
 
+  @UpdateDateColumn({ type: 'timestamp' })
+  updatedAt: Date;
+
   // @ManyToOne(()=>WorkspaceEntity,(workspace)=>workspace.boards,{onDelete:'CASCADE'})
   // workspace:WorkspaceEntity;
 
-  // @OneToMany(()=>ListEntity,(list)=>list.board,{cascade:true})
-  // lists:ListEntity[];
+  @OneToMany(() => ListEntity, (list) => list.board, { cascade: true })
+  lists: ListEntity[];
 }

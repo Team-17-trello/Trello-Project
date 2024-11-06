@@ -6,7 +6,7 @@ import { User } from 'src/user/entities/user.entity';
 import { UserInfo } from 'src/utils/userInfo-decolator';
 import { AddWorkspaceMemberDto } from './dto/add-workspace-member.dto';
 
-// @UseGuards(RolesGuard)
+// UseGuards(AuthGuard('jwt'));
 @Controller('workspaces')
 export class WorkspaceController {
   constructor(private readonly workspaceService: WorkspaceService) {}
@@ -21,9 +21,13 @@ export class WorkspaceController {
     return await this.workspaceService.getAllWorkspace();
   }
 
+  @UseGuards(AuthGuard('jwt'))
   @Post()
-  async workspaceCreate(@Body() createWorkspaceDto: CreateWorkspaceDto) {
-    return await this.workspaceService.workspaceCreate(createWorkspaceDto);
+  async workspaceCreate(
+    @UserInfo() user: User,
+    @Body() createWorkspaceDto: CreateWorkspaceDto
+  ) {
+    return await this.workspaceService.workspaceCreate(user, createWorkspaceDto);
   }
 
   @UseGuards(AuthGuard('jwt')) // JWT 인증 가드 사용
