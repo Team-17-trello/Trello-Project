@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import _ from 'lodash';
-import { User } from 'src/user/entities/user.entity';
+import { UserEntity } from 'src/user/entities/user.entity';
 import { Repository } from 'typeorm';
 import { CreateBoardDto } from './dto/create-board.dto';
 import { UpdateBoardDto } from './dto/update-board.dto';
@@ -14,7 +14,7 @@ export class BoardService {
     private readonly boardRepository: Repository<BoardEntity>,
   ) {}
 
-  async create(createBoardDto: CreateBoardDto, user: User): Promise<BoardEntity> {
+  async create(createBoardDto: CreateBoardDto, user: UserEntity): Promise<BoardEntity> {
     const board = this.boardRepository.create({
       ...createBoardDto,
       userId: user.id,
@@ -47,7 +47,7 @@ export class BoardService {
     return board;
   }
 
-  async update(id: number, updateBoardDto: UpdateBoardDto, user: User): Promise<BoardEntity> {
+  async update(id: number, updateBoardDto: UpdateBoardDto, user: UserEntity): Promise<BoardEntity> {
     await this.verifyBoardByUserId(user.id, id);
 
     const existingBoard = await this.findOne(id);
@@ -55,7 +55,7 @@ export class BoardService {
     return { ...existingBoard, ...updateBoardDto };
   }
 
-  async remove(id: number, user: User): Promise<{ message: string }> {
+  async remove(id: number, user: UserEntity): Promise<{ message: string }> {
     await this.verifyBoardByUserId(user.id, id);
 
     await this.boardRepository.delete(id);

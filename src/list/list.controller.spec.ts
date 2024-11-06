@@ -5,13 +5,14 @@ import { CreateListDto } from './dto/create-list.dto';
 import { ListEntity } from './entities/list.entity';
 import { UpdateListDto } from './dto/update-list.dto';
 import { BoardEntity } from '../../src/board/entities/board.entity';
-import { User } from 'src/user/entities/user.entity';
+import { UserEntity } from 'src/user/entities/user.entity';
+import { CardEntity } from '../card/entities/card.entity';
 
 describe('ListController', () => {
   let listController: ListController;
   let listService: ListService;
   let expectedBoard: BoardEntity;
-  let user: User;
+  let user: UserEntity;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -45,12 +46,12 @@ describe('ListController', () => {
     };
   });
 
-  const mockUser: User = {
+  const mockUser: UserEntity = {
     id: 1,
     email: 'email@test.com',
     password: 'password',
     nickname: 'nickname',
-  } as User;
+  } as UserEntity;
 
   it('리스트 생성 검증', async () => {
     const createListDto: CreateListDto = {
@@ -65,6 +66,7 @@ describe('ListController', () => {
       board: expectedBoard,
       createdAt: new Date('2022-01-01T00:00:00Z'),
       updatedAt: new Date('2022-01-01T00:00:00Z'),
+      card: new CardEntity(),
     };
 
     (listService.create as jest.Mock).mockResolvedValue(expectedResult);
@@ -83,7 +85,7 @@ describe('ListController', () => {
     (listService.findAll as jest.Mock).mockResolvedValue(expectedResult);
     const result = await listController.findAll(1);
     expect(result).toEqual(expectedResult);
-    expect(listService.findAll).toHaveBeenCalled(1);
+    expect(listService.findAll).toHaveBeenCalled();
   });
   it('리스트 상세 조회 검증', async () => {
     const listId = 1;
@@ -116,6 +118,7 @@ describe('ListController', () => {
       board: expectedBoard,
       createdAt: new Date('2022-01-01T00:00:00Z'),
       updatedAt: new Date('2022-01-01T00:00:00Z'),
+      card: new CardEntity(),
     };
 
     (listService.update as jest.Mock).mockResolvedValue(expectedResult);

@@ -1,25 +1,26 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { CardService } from './card.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { Card } from './entities/card.entity';
-import { Responsible } from './entities/responsible.entity';
+import { CardEntity } from './entities/card.entity';
+import { ResponsibleEntity } from './entities/responsible.entity';
 import { Repository } from 'typeorm';
-import { User } from '../user/entities/user.entity';
+import { UserEntity } from '../user/entities/user.entity';
 import { NotFoundException } from '@nestjs/common';
 import { CreateCardDto } from './dto/create-card.dto';
+import { ListEntity } from '../list/entities/list.entity';
 
 describe('CardService', () => {
   let cardService: CardService;
-  let cardRepository: Repository<Card>;
-  let responsibleRepository: Repository<Responsible>;
-  let listRepository: Repository<List>;
+  let cardRepository: Repository<CardEntity>;
+  let responsibleRepository: Repository<ResponsibleEntity>;
+  let listRepository: Repository<ListEntity>;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         CardService,
         {
-          provide: getRepositoryToken(Card),
+          provide: getRepositoryToken(CardEntity),
           useValue: {
             find: jest.fn(),
             save: jest.fn(),
@@ -29,13 +30,13 @@ describe('CardService', () => {
           },
         },
         {
-          provide: getRepositoryToken(List),
+          provide: getRepositoryToken(ListEntity),
           useValue: {
             findOne: jest.fn,
           },
         },
         {
-          provide: getRepositoryToken(Responsible),
+          provide: getRepositoryToken(ResponsibleEntity),
           useValue: {
             findOne: jest.fn(),
             save: jest.fn(),
@@ -46,9 +47,9 @@ describe('CardService', () => {
     }).compile();
 
     cardService = module.get<CardService>(CardService);
-    cardRepository = module.get<Repository<Card>>(getRepositoryToken(Card));
-    listRepository = module.get<Repository<List>>(getRepositoryToken(List));
-    responsibleRepository = module.get<Repository<Responsible>>(getRepositoryToken(Responsible));
+    cardRepository = module.get<Repository<CardEntity>>(getRepositoryToken(CardEntity));
+    listRepository = module.get<Repository<ListEntity>>(getRepositoryToken(ListEntity));
+    responsibleRepository = module.get<Repository<ResponsibleEntity>>(getRepositoryToken(ResponsibleEntity));
 
   });
 
@@ -57,24 +58,24 @@ describe('CardService', () => {
     it('존재하지 않는 리스트 아이디를 받으면 NotFoundException 을 던짐', async () => {
       jest.spyOn(listRepository, 'findOne').mockResolvedValueOnce(null);
 
-      await expect(cardService.create(new User(), {
+      await expect(cardService.create(new UserEntity(), {
         listId: 1,
         title: 'test',
         description: 'test',
         color: 'test',
         dueDate: new Date(),
       })).rejects.toThrow(NotFoundException);
-      expect(listRepository.findOne).toHaveBeenCalledWith({ where: 1 });
+      expect(listRepository.findOne).toHaveBeenCalledWith({ where: {id : 1} });
       expect(listRepository.findOne).toHaveBeenCalledTimes(1);
     });
 
     it('카드 생성에 성공하면 status 코드 201과 카드 객체를 리턴', async () => {
       // 1. 리스트 존재 확인
-      const mockList = new List();
+      const mockList = new ListEntity();
       jest.spyOn(listRepository, 'findOne').mockResolvedValueOnce(mockList);
 
       // 2. 리스트 아이디가 동일한 카드 배열의 길이 확인
-      const mockCards = [new Card(), new Card()]; // 리스트에 이미 존재하는 카드 2개
+      const mockCards = [new CardEntity(), new CardEntity()]; // 리스트에 이미 존재하는 카드 2개
       jest.spyOn(cardRepository, 'find').mockResolvedValueOnce(mockCards);
 
       // 3. 카드 저장
@@ -87,11 +88,11 @@ describe('CardService', () => {
         author: 1, // user.id (테스트에서는 간단히 1로 가정)
         list: mockList,
       };
-      jest.spyOn(cardRepository, 'save').mockResolvedValueOnce(mockCard as Card);
+      jest.spyOn(cardRepository, 'save').mockResolvedValueOnce(mockCard as CardEntity);
 
       // 4. 카드 생성 메서드 호출 및 결과 검증
       const result = await cardService.create(
-        { id: 1 } as User, // 사용자 객체를 간단히 id만 포함해서 전달
+        { id: 1 } as UserEntity, // 사용자 객체를 간단히 id만 포함해서 전달
         {
           title: 'Test Title',
           description: 'Test Description',
@@ -107,7 +108,7 @@ describe('CardService', () => {
       });
 
       // 추가적인 호출 확인
-      expect(listRepository.findOne).toHaveBeenCalledWith({ where: 1 });
+      expect(listRepository.findOne).toHaveBeenCalledWith({ where: {id : 1} });
       expect(cardRepository.find).toHaveBeenCalledWith({ where: { list: mockList } });
       expect(cardRepository.save).toHaveBeenCalledWith({
         title: 'Test Title',
@@ -125,18 +126,18 @@ describe('CardService', () => {
         jest.spyOn(listRepository, 'findOne').mockResolvedValueOnce(null);
 
         await expect(cardService.findAll(1)).rejects.toThrow(NotFoundException);
-        expect(listRepository.findOne).toHaveBeenCalledWith({ where: 1 });
+        expect(listRepository.findOne).toHaveBeenCalledWith({ where: {id : 1} });
         expect(listRepository.findOne).toHaveBeenCalledTimes(1);
       });
 
 
       it('리스트가 존재하고 카드 조회에 성공한 경우 status 코드 200과 카드 배열 리턴', async () => {
         // 1. 리스트 존재 확인
-        const mockList = new List();
+        const mockList = new ListEntity();
         jest.spyOn(listRepository, 'findOne').mockResolvedValueOnce(mockList);
 
         // 2. 리스트 아이디가 동일한 카드 배열의 길이 확인
-        const mockCards = [new Card(), new Card()]; // 리스트에 이미 존재하는 카드 2개
+        const mockCards = [new CardEntity(), new CardEntity()]; // 리스트에 이미 존재하는 카드 2개
         jest.spyOn(cardRepository, 'find').mockResolvedValueOnce(mockCards);
 
         // 3. 카드 전체 조회 메서드 호출 및 결과 검증
@@ -149,9 +150,9 @@ describe('CardService', () => {
         });
 
         // 추가적인 호출 확인
-        expect(listRepository.findOne).toHaveBeenCalledWith({ where: 1 });
+        expect(listRepository.findOne).toHaveBeenCalledWith({ where: {id : 1} });
         expect(listRepository.findOne).toHaveBeenCalledTimes(1);
-        expect(cardRepository.find).toHaveBeenCalledWith({ where: { list: mockList } })
+        expect(cardRepository.find).toHaveBeenCalledWith({ where: { list: mockList } });
         expect(cardRepository.find).toHaveBeenCalledTimes(1);
       });
     });
@@ -162,12 +163,12 @@ describe('CardService', () => {
         jest.spyOn(cardRepository, 'findOne').mockResolvedValueOnce(null);
 
         await expect(cardService.findOne(1)).rejects.toThrow(NotFoundException);
-        expect(cardRepository.findOne).toHaveBeenCalledWith({ where: 1 });
+        expect(cardRepository.findOne).toHaveBeenCalledWith({ where: {id : 1}, relations : {responsible : true,}});
         expect(cardRepository.findOne).toHaveBeenCalledTimes(1);
       });
 
       it('아이디에 해당하는 카드가 존재하고 카드 조회에 성공한 경우 status 코드 200과 카드 객체 리턴', async () => {
-        const mockCard = new Card()
+        const mockCard = new CardEntity();
         mockCard.id = 1;
         mockCard.responsible = [];
         jest.spyOn(cardRepository, 'findOne').mockResolvedValueOnce(mockCard);
@@ -181,7 +182,7 @@ describe('CardService', () => {
 
         expect(cardRepository.findOne).toHaveBeenCalledWith({
           where: { id: 1 },
-          relations: { responsible: true},
+          relations: { responsible: true },
         });
         expect(cardRepository.findOne).toHaveBeenCalledTimes(1);
 
@@ -215,18 +216,17 @@ describe('CardService', () => {
           description: 'original description',
           color: 'red',
           order: 1,
-          dueDate: new Date(),
+          dueDate: new Date('2024-11-06T10:49:31.641Z'),
           author: 1,
         };
 
         const updatedCard = { ...mockCard, ...mockUpdateCardDto };
-        jest.spyOn(cardService['cardRepository'], 'findOne').mockResolvedValue(mockCard as any);
-
-        jest.spyOn(cardService['cardRepository'], 'update').mockResolvedValue({ affected: 1 } as any);
+        jest.spyOn(cardRepository, 'findOne').mockResolvedValueOnce(mockCard as CardEntity)
+          .mockResolvedValueOnce(updatedCard as CardEntity)
+        jest.spyOn(cardRepository, 'update').mockResolvedValue({ affected: 1 } as any);
 
 
         const result = await cardService.update(1, mockUpdateCardDto);
-        const date = mockCard.dueDate;
         expect(result).toEqual({
           statusCode: 200,
           message: '성공적으로 카드가 수정되었습니다.',
@@ -272,10 +272,10 @@ describe('CardService', () => {
           author: 1,
         };
 
-        jest.spyOn(cardService['cardRepository'], 'findOne').mockResolvedValue(mockCard as any);
-        jest.spyOn(cardService['cardRepository'], 'delete').mockResolvedValue({ affectd: 1 } as any)
+        jest.spyOn(cardService['cardRepository'], 'findOne').mockResolvedValue(mockCard as CardEntity);
+        jest.spyOn(cardService['cardRepository'], 'delete').mockResolvedValue({ affectd: 1 } as any);
 
-        const result = await cardService.remove(1)
+        const result = await cardService.remove(1);
 
         expect(result).toEqual({
           status: 200,
@@ -288,7 +288,7 @@ describe('CardService', () => {
 
       it('해당 카드가 존재 하지 않으면 NotFoundException 반환', async () => {
         jest.spyOn(cardRepository, 'findOne').mockResolvedValue(null);
-        const mockResponsibleDto = { responsibles: [1, 2] }
+        const mockResponsibleDto = { responsibles: [1, 2] };
         await expect(cardService.inviteResponsible(1, mockResponsibleDto)).rejects.toThrow(NotFoundException);
 
       });
@@ -304,19 +304,19 @@ describe('CardService', () => {
           author: 1,
         };
 
-        const mockResponsibleDto = { responsibles: [1, 2] }
+        const mockResponsibleDto = { responsibles: [1, 2] };
 
-        jest.spyOn(cardRepository, 'findOne').mockResolvedValue(mockCard as any)
-        jest.spyOn(responsibleRepository, 'save').mockResolvedValue(undefined)
+        jest.spyOn(cardRepository, 'findOne').mockResolvedValue(mockCard as CardEntity);
+        jest.spyOn(responsibleRepository, 'save').mockResolvedValue(undefined);
 
-        const result = await cardService.inviteResponsible(1, mockResponsibleDto)
+        const result = await cardService.inviteResponsible(1, mockResponsibleDto);
 
         expect(result).toEqual({
           stateCode: 201,
           message: '초대가 완료되었습니다.',
-          responsible: mockResponsibleDto.responsibles
-        })
-      })
+          responsible: mockResponsibleDto.responsibles,
+        });
+      });
     });
 
     describe('remove Responsible', () => {
@@ -324,7 +324,7 @@ describe('CardService', () => {
 
       it('해당 카드가 존재 하지 않으면 NotFoundException 반환', async () => {
         jest.spyOn(cardRepository, 'findOne').mockResolvedValue(null);
-        await expect(cardService.removeResponsible(1,1)).rejects.toThrow(NotFoundException);
+        await expect(cardService.removeResponsible(1, 1)).rejects.toThrow(NotFoundException);
 
       });
 
@@ -339,8 +339,8 @@ describe('CardService', () => {
           author: 1,
         };
 
-        jest.spyOn(cardRepository, 'findOne').mockResolvedValue(mockCard as any)
-        jest.spyOn(responsibleRepository, 'findOne').mockResolvedValue(null)
+        jest.spyOn(cardRepository, 'findOne').mockResolvedValue(mockCard as CardEntity);
+        jest.spyOn(responsibleRepository, 'findOne').mockResolvedValue(null);
 
         await expect(cardService.removeResponsible(1, 1)).rejects.toThrow(NotFoundException);
 
@@ -358,30 +358,25 @@ describe('CardService', () => {
           author: 1,
         };
 
-        const mockResponsible  = {id: 1, userId:1, card: mockCard}
-        jest.spyOn(cardRepository, 'findOne').mockResolvedValue(mockCard as any)
-        jest.spyOn(responsibleRepository, 'findOne').mockResolvedValue(mockResponsible as any)
+        const mockResponsible = { id: 1, userId: 1, card: mockCard };
+        jest.spyOn(cardRepository, 'findOne').mockResolvedValue(mockCard as CardEntity);
+        jest.spyOn(responsibleRepository, 'findOne').mockResolvedValue(mockResponsible as ResponsibleEntity);
 
-        jest.spyOn(responsibleRepository, 'delete').mockResolvedValue({affected: 1} as any)
+        jest.spyOn(responsibleRepository, 'delete').mockResolvedValue({ affected: 1 } as any);
 
-        const result = await cardService.removeResponsible(1,1)
+        const result = await cardService.removeResponsible(1, 1);
 
         expect(responsibleRepository.delete).toHaveBeenCalledWith({
-          card: {id: mockCard.id}
-        })
+          card: { id: mockCard.id },
+        });
 
         expect(result).toEqual({
-          statusCode:200,
-          message: '담당자가 성공적으로 삭제되었습니다.'
-        })
+          statusCode: 200,
+          message: '담당자가 삭제되었습니다.',
+        });
 
       });
 
-
-
-
-
-
     });
   });
-})
+});

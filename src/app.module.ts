@@ -13,10 +13,10 @@ import { FileModule } from './file/file.module';
 import { ItemModule } from './item/item.module';
 import { ListEntity } from './list/entities/list.entity';
 import { ListModule } from './list/list.module';
-import { User } from './user/entities/user.entity';
+import { UserEntity } from './user/entities/user.entity';
 import { UserModule } from './user/user.module';
 import { WorkspaceModule } from './workspace/workspace.module';
-import { Member } from './member/entity/member.entity';
+import { MemberEntity } from './member/entity/member.entity';
 
 const typeOrmModuleOptions = {
   useFactory: async (configService: ConfigService): Promise<TypeOrmModuleOptions> => ({
@@ -27,7 +27,7 @@ const typeOrmModuleOptions = {
     host: configService.get('DB_HOST'),
     port: configService.get('DB_PORT'),
     database: configService.get('DB_NAME'),
-    entities: [BoardEntity, User, ListEntity, Member],
+    entities: [BoardEntity, UserEntity, ListEntity, MemberEntity],
     synchronize: configService.get('DB_SYNC'),
     logging: true,
   }),

@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthService } from './auth.service';
 import { BadRequestException, ConflictException, UnauthorizedException } from '@nestjs/common';
-import { User } from '../user/entities/user.entity';
+import { UserEntity } from '../user/entities/user.entity';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
@@ -11,7 +11,7 @@ jest.mock('bcrypt');
 
 describe('AuthService', () => {
   let authService: AuthService;
-  let userRepository: Repository<User>;
+  let userRepository: Repository<UserEntity>;
   let jwtService: JwtService;
 
   beforeEach(async () => {
@@ -19,7 +19,7 @@ describe('AuthService', () => {
       providers: [
         AuthService,
         {
-          provide: getRepositoryToken(User),
+          provide: getRepositoryToken(UserEntity),
           useValue: {
             findOne: jest.fn(),
             save: jest.fn(),
@@ -35,7 +35,7 @@ describe('AuthService', () => {
     }).compile();
 
     authService = module.get<AuthService>(AuthService);
-    userRepository = module.get<Repository<User>>(getRepositoryToken(User));
+    userRepository = module.get<Repository<UserEntity>>(getRepositoryToken(UserEntity));
     jwtService = module.get<JwtService>(JwtService);
   });
 
@@ -44,7 +44,7 @@ describe('AuthService', () => {
 
     it('유저가 이미 존재하면 ConflictException 던진다.', async () => {
       // 유저가 이미 존재하는 상황을 Mock
-      jest.spyOn(userRepository, 'findOne').mockResolvedValueOnce(new User());
+      jest.spyOn(userRepository, 'findOne').mockResolvedValueOnce(new UserEntity());
 
 
       // signUp 호출 시 ConflictException 발생 예상
@@ -75,7 +75,7 @@ describe('AuthService', () => {
 
       // 비밀번호 일치 확인
 
-      jest.spyOn(userRepository, 'findOne').mockResolvedValueOnce(new User());
+      jest.spyOn(userRepository, 'findOne').mockResolvedValueOnce(new UserEntity());
 
       await expect(authService.signup({
         email: 'didthfls2@naver.com',
@@ -127,7 +127,7 @@ describe('AuthService', () => {
         id: 1,
         email: 'test@test.com',
         password: await bcrypt.hash('wrongPassword', 10),
-      } as User);
+      } as UserEntity);
 
       await expect(authService.login({
         email: 'test@test.com',
@@ -141,7 +141,7 @@ describe('AuthService', () => {
         id: 1,
         email: 'test@test.com',
         password: await bcrypt.hash('test1234', 10),
-      } as User);
+      } as UserEntity);
       jest.spyOn(jwtService, 'sign').mockReturnValue('mockedAccessToken');
       (bcrypt.compare as jest.Mock).mockResolvedValue(true);
 

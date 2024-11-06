@@ -1,14 +1,14 @@
-import { timestamp } from 'rxjs';
 import { BoardEntity } from 'src/board/entities/board.entity';
 import {
   Column,
   CreateDateColumn,
   Entity,
-  Generated,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { CardEntity } from '../../card/entities/card.entity';
 
 @Entity({ name: 'lists' })
 export class ListEntity {
@@ -29,4 +29,7 @@ export class ListEntity {
 
   @ManyToOne(() => BoardEntity, (board) => board.lists)
   board: BoardEntity;
+
+  @OneToMany(() => CardEntity, (card) => card.list)
+  card: CardEntity;
 }

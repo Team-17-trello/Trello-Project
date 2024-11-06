@@ -1,10 +1,10 @@
 import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
-import {Card} from './card.entity';
+import {CardEntity} from './card.entity';
 
 @Entity({
   name: 'responsibles'
 })
-export class Responsible {
+export class ResponsibleEntity {
 
   @PrimaryGeneratedColumn()
   id:number
@@ -16,7 +16,7 @@ export class Responsible {
   @Column({type:'number',nullable:false, name: 'user_id'})
   userId: number
 
-  @ManyToOne(()=> Card, (card)=> card.responsible)
-  card:Card
+  @ManyToOne(()=> CardEntity, (card)=> card.responsible)
+  card:CardEntity
 
 }

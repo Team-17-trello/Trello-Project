@@ -2,25 +2,28 @@ import { BadRequestException, Injectable, NotFoundException, UnauthorizedExcepti
 import { CreateCardDto } from './dto/create-card.dto';
 import { UpdateCardDto } from './dto/update-card.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Card } from './entities/card.entity';
+import { CardEntity } from './entities/card.entity';
 import { Column, Repository } from 'typeorm';
 import { DueDateDto } from './dto/deadline.dto';
 import { ResponsibleDto } from './dto/responsible.dto';
-import { User } from '../user/entities/user.entity';
-import { Responsible } from './entities/responsible.entity';
+import { UserEntity } from '../user/entities/user.entity';
+import { ResponsibleEntity } from './entities/responsible.entity';
+import { ListEntity } from '../list/entities/list.entity';
 
 @Injectable()
 export class CardService {
-  constructor(@InjectRepository(Card)
-              private readonly cardRepository: Repository<Card>,
-              private readonly listRepository: Repository<List>,
-              private readonly responsibleRepository: Repository<Responsible>,
+  constructor(@InjectRepository(CardEntity)
+              private readonly cardRepository: Repository<CardEntity>,
+              @InjectRepository(ListEntity)
+              private readonly listRepository: Repository<ListEntity>,
+              @InjectRepository(ResponsibleEntity)
+              private readonly responsibleRepository: Repository<ResponsibleEntity>,
   ) {
   }
 
-  async create(user: User, createCardDto: CreateCardDto) {
+  async create(user: UserEntity, createCardDto: CreateCardDto) {
     const list = await this.listRepository.findOne({
-      where: createCardDto.listId,
+      where: { id: createCardDto.listId },
     });
 
     if (!list) {
@@ -33,7 +36,7 @@ export class CardService {
       },
     });
 
-    const card =  await this.cardRepository.save({
+    const card = await this.cardRepository.save({
       title: createCardDto.title,
       description: createCardDto.description,
       color: createCardDto.color,
@@ -45,12 +48,12 @@ export class CardService {
     return {
       status: 201,
       card: card,
-    }
+    };
   }
 
   async findAll(listId: number) {
     const list = await this.listRepository.findOne({
-      where: listId,
+      where: { id: listId },
     });
 
     if (!list) {
@@ -119,7 +122,7 @@ export class CardService {
       }
 
       //카드 수정
-      const updateData: Partial<Card> = {};
+      const updateData: Partial<CardEntity> = {};
 
       if (updateCardDto.title) {
         updateData.title = updateCardDto.title;
@@ -183,7 +186,7 @@ export class CardService {
 
       responsibleDto.responsibles.map(async (responsible) => {
         await this.responsibleRepository.save({
-          card:{id:cardId},
+          card: { id: cardId },
           userId: responsible,
         });
       });
@@ -225,7 +228,7 @@ export class CardService {
       });
 
       return {
-        stateCode: 200,
+        statusCode: 200,
         message: '담당자가 삭제되었습니다.',
       };
 
