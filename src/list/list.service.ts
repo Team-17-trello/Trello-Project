@@ -4,6 +4,7 @@ import { UpdateListDto } from './dto/update-list.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ListEntity } from './entities/list.entity';
+import { User } from 'src/user/entities/user.entity';
 
 @Injectable()
 export class ListService {
@@ -12,7 +13,7 @@ export class ListService {
     private readonly listRepository: Repository<ListEntity>,
   ) {}
 
-  async create(createListDto: CreateListDto): Promise<ListEntity> {
+  async create(createListDto: CreateListDto, user: User): Promise<ListEntity> {
     // 해당 보드 내의 리스트 개수를 세어 order 값 설정
     const listCount = await this.listRepository.count({
       where: { board: { id: createListDto.boardId } },
@@ -28,7 +29,7 @@ export class ListService {
     return this.listRepository.save(list);
   }
 
-  findAll() {
+  findAll(boardId: number) {
     return `This action returns all list`;
   }
 
@@ -36,11 +37,11 @@ export class ListService {
     return `This action returns a #${id} list`;
   }
 
-  update(id: number, updateListDto: UpdateListDto) {
+  update(id: number, updateListDto: UpdateListDto, user: User) {
     return `This action updates a #${id} list`;
   }
 
-  remove(id: number) {
+  remove(id: number, user: User) {
     return `This action removes a #${id} list`;
   }
 }

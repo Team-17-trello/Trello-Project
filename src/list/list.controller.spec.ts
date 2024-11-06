@@ -5,11 +5,13 @@ import { CreateListDto } from './dto/create-list.dto';
 import { ListEntity } from './entities/list.entity';
 import { UpdateListDto } from './dto/update-list.dto';
 import { BoardEntity } from '../../src/board/entities/board.entity';
+import { User } from 'src/user/entities/user.entity';
 
 describe('ListController', () => {
   let listController: ListController;
   let listService: ListService;
   let expectedBoard: BoardEntity;
+  let user: User;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -43,6 +45,13 @@ describe('ListController', () => {
     };
   });
 
+  const mockUser: User = {
+    id: 1,
+    email: 'email@test.com',
+    password: 'password',
+    nickname: 'nickname',
+  } as User;
+
   it('리스트 생성 검증', async () => {
     const createListDto: CreateListDto = {
       boardId: 1,
@@ -60,10 +69,10 @@ describe('ListController', () => {
 
     (listService.create as jest.Mock).mockResolvedValue(expectedResult);
 
-    const result = await listController.create(createListDto);
+    const result = await listController.create(createListDto, user);
 
     expect(result).toEqual(expectedResult);
-    expect(listService.create).toHaveBeenCalledWith(createListDto);
+    expect(listService.create).toHaveBeenCalledWith(createListDto, user);
   });
   it('리스트 전체 조회 검증', async () => {
     const expectedResult = [
@@ -72,9 +81,9 @@ describe('ListController', () => {
     ];
 
     (listService.findAll as jest.Mock).mockResolvedValue(expectedResult);
-    const result = await listController.findAll();
+    const result = await listController.findAll(1);
     expect(result).toEqual(expectedResult);
-    expect(listService.findAll).toHaveBeenCalled();
+    expect(listService.findAll).toHaveBeenCalled(1);
   });
   it('리스트 상세 조회 검증', async () => {
     const listId = 1;
@@ -111,7 +120,7 @@ describe('ListController', () => {
 
     (listService.update as jest.Mock).mockResolvedValue(expectedResult);
 
-    const result = await listController.update(listId, updateListDto);
+    const result = await listController.update(listId, updateListDto, user);
 
     expect(result).toEqual(expectedResult);
     expect(listService.update).toHaveBeenCalledWith(listId, updateListDto);
@@ -123,7 +132,7 @@ describe('ListController', () => {
 
     (listService.remove as jest.Mock).mockResolvedValue(expectedResult);
 
-    const result = await listController.remove(listId);
+    const result = await listController.remove(listId, user);
     expect(result).toEqual(expectedResult);
     expect(listService.remove).toHaveBeenCalledWith(listId);
   });

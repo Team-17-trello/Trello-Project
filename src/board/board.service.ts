@@ -1,9 +1,11 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import _ from 'lodash';
+import { User } from 'src/user/entities/user.entity';
+import { Repository } from 'typeorm';
 import { CreateBoardDto } from './dto/create-board.dto';
 import { UpdateBoardDto } from './dto/update-board.dto';
 import { BoardEntity } from './entities/board.entity';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 
 @Injectable()
 export class BoardService {
@@ -12,13 +14,19 @@ export class BoardService {
     private readonly boardRepository: Repository<BoardEntity>,
   ) {}
 
-  async create(createBoardDto: CreateBoardDto): Promise<BoardEntity> {
-    const board = this.boardRepository.create(createBoardDto);
+  async create(createBoardDto: CreateBoardDto, user: User): Promise<BoardEntity> {
+    const board = this.boardRepository.create({
+      ...createBoardDto,
+      userId: user.id,
+    });
     return await this.boardRepository.save(board);
   }
 
-  async findAll(): Promise<{ boards: BoardEntity[] }> {
+  async findAll(workspaceId: number): Promise<{ boards: BoardEntity[] }> {
     const boards = await this.boardRepository.find({
+      // where: {
+      //   workspace: { id: workspaceId },
+      // },
       select: ['id', 'name', 'backgroundColor', 'description'],
     });
     return { boards };
@@ -39,19 +47,32 @@ export class BoardService {
     return board;
   }
 
-  async update(id: number, updateBoardDto: UpdateBoardDto): Promise<BoardEntity> {
+  async update(id: number, updateBoardDto: UpdateBoardDto, user: User): Promise<BoardEntity> {
+    await this.verifyBoardByUserId(user.id, id);
+
     const existingBoard = await this.findOne(id);
     await this.boardRepository.update(id, updateBoardDto);
     return { ...existingBoard, ...updateBoardDto };
   }
 
-  //TODO: 생성한 사용자만 삭제 가능 추가
-  async remove(id: number): Promise<{ message: string }> {
-    const result = await this.boardRepository.delete(id);
-    if (result.affected === 0) {
-      throw new NotFoundException('보드를 찾을 수 없습니다.');
-    }
+  async remove(id: number, user: User): Promise<{ message: string }> {
+    await this.verifyBoardByUserId(user.id, id);
+
+    await this.boardRepository.delete(id);
+    // if (result.affected === 0) {
+    //   throw new NotFoundException('보드를 찾을 수 없습니다.');
+    // }
 
     return { message: '보드가 성공적으로 삭제되었습니다.' };
+  }
+
+  async verifyBoardByUserId(userId: number, boardId: number) {
+    const board = await this.boardRepository.findOneBy({ userId: userId, id: boardId });
+
+    if (_.isNil(board)) {
+      throw new BadRequestException('해당 유저가 생성한 보드가 아닙니다.');
+    }
+
+    return board;
   }
 }
