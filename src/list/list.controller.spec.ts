@@ -62,6 +62,7 @@ describe('ListController', () => {
       id: 1,
       name: 'To do',
       order: 1,
+      userId: 1,
       board: expectedBoard,
       createdAt: new Date('2022-01-01T00:00:00Z'),
       updatedAt: new Date('2022-01-01T00:00:00Z'),
@@ -83,7 +84,7 @@ describe('ListController', () => {
     (listService.findAll as jest.Mock).mockResolvedValue(expectedResult);
     const result = await listController.findAll(1);
     expect(result).toEqual(expectedResult);
-    expect(listService.findAll).toHaveBeenCalled(1);
+    expect(listService.findAll).toHaveBeenCalledWith(1);
   });
   it('리스트 상세 조회 검증', async () => {
     const listId = 1;
@@ -113,6 +114,7 @@ describe('ListController', () => {
       id: 1,
       name: 'Done',
       order: 1,
+      userId: 1,
       board: expectedBoard,
       createdAt: new Date('2022-01-01T00:00:00Z'),
       updatedAt: new Date('2022-01-01T00:00:00Z'),
@@ -120,10 +122,10 @@ describe('ListController', () => {
 
     (listService.update as jest.Mock).mockResolvedValue(expectedResult);
 
-    const result = await listController.update(listId, updateListDto, user);
+    const result = await listController.update(listId, updateListDto, mockUser);
 
     expect(result).toEqual(expectedResult);
-    expect(listService.update).toHaveBeenCalledWith(listId, updateListDto);
+    expect(listService.update).toHaveBeenCalledWith(listId, updateListDto, mockUser);
   });
 
   it('리스트 삭제 검증', async () => {
@@ -132,8 +134,8 @@ describe('ListController', () => {
 
     (listService.remove as jest.Mock).mockResolvedValue(expectedResult);
 
-    const result = await listController.remove(listId, user);
+    const result = await listController.remove(listId, mockUser);
     expect(result).toEqual(expectedResult);
-    expect(listService.remove).toHaveBeenCalledWith(listId);
+    expect(listService.remove).toHaveBeenCalledWith(listId, mockUser);
   });
 });

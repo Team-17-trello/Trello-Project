@@ -1,23 +1,22 @@
 import {
-  Controller,
-  Get,
-  Post,
   Body,
-  Patch,
-  Param,
+  Controller,
   Delete,
-  Query,
+  Get,
   HttpCode,
   HttpStatus,
-  UseGuards,
+  Param,
   ParseIntPipe,
+  Post,
+  Put,
+  UseGuards,
 } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
+import { User } from 'src/user/entities/user.entity';
+import { UserInfo } from 'src/utils/userInfo-decolator';
 import { BoardService } from './board.service';
 import { CreateBoardDto } from './dto/create-board.dto';
 import { UpdateBoardDto } from './dto/update-board.dto';
-import { AuthGuard } from '@nestjs/passport';
-import { UserInfo } from 'src/utils/userInfo-decolator';
-import { User } from 'src/user/entities/user.entity';
 
 @Controller('boards')
 @UseGuards(AuthGuard('jwt'))
@@ -30,7 +29,8 @@ export class BoardController {
     return await this.boardService.create(createBoardDto, user);
   }
 
-  @Get(':workspaceId')
+  //TODO: 수정 필요함
+  @Get('/workspace/:workspaceId')
   @HttpCode(HttpStatus.OK)
   async findAll(@Param('workspaceId', ParseIntPipe) workspaceId: number) {
     return await this.boardService.findAll(workspaceId);
@@ -42,7 +42,7 @@ export class BoardController {
     return await this.boardService.findOne(boardId);
   }
 
-  @Patch(':boardId')
+  @Put(':boardId')
   @HttpCode(HttpStatus.OK)
   async update(
     @Param('boardId', ParseIntPipe) boardId: number,

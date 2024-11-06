@@ -7,17 +7,17 @@ import {
   HttpStatus,
   Param,
   ParseIntPipe,
-  Patch,
   Post,
+  Put,
   Query,
   UseGuards,
 } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
+import { User } from 'src/user/entities/user.entity';
+import { UserInfo } from 'src/utils/userInfo-decolator';
 import { CreateListDto } from './dto/create-list.dto';
 import { UpdateListDto } from './dto/update-list.dto';
 import { ListService } from './list.service';
-import { AuthGuard } from '@nestjs/passport';
-import { UserInfo } from 'src/utils/userInfo-decolator';
-import { User } from 'src/user/entities/user.entity';
 
 @Controller('lists')
 @UseGuards(AuthGuard('jwt'))
@@ -30,7 +30,7 @@ export class ListController {
     return this.listService.create(createListDto, user);
   }
 
-  @Get(':boardId')
+  @Get('/inventory/:boardId')
   @HttpCode(HttpStatus.OK)
   findAll(@Param('boardId', ParseIntPipe) boardId: number) {
     return this.listService.findAll(boardId);
@@ -42,7 +42,7 @@ export class ListController {
     return this.listService.findOne(listId);
   }
 
-  @Patch(':listId')
+  @Put(':listId')
   @HttpCode(HttpStatus.OK)
   update(
     @Param('listId', ParseIntPipe) listId: number,

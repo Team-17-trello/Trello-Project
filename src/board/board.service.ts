@@ -59,9 +59,6 @@ export class BoardService {
     await this.verifyBoardByUserId(user.id, id);
 
     await this.boardRepository.delete(id);
-    // if (result.affected === 0) {
-    //   throw new NotFoundException('보드를 찾을 수 없습니다.');
-    // }
 
     return { message: '보드가 성공적으로 삭제되었습니다.' };
   }

@@ -1,10 +1,8 @@
-import { timestamp } from 'rxjs';
 import { BoardEntity } from 'src/board/entities/board.entity';
 import {
   Column,
   CreateDateColumn,
   Entity,
-  Generated,
   ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -20,6 +18,9 @@ export class ListEntity {
 
   @Column({ type: 'int' })
   order: number;
+
+  @Column({ type: 'int' })
+  userId: number;
 
   @CreateDateColumn({ type: 'timestamp' })
   createdAt: Date;
