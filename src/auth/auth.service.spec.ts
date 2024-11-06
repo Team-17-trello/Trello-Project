@@ -98,8 +98,7 @@ describe('AuthService', () => {
         nickname: 'tester',
       });
 
-      expect(result).toBe('회원가입에 성공했습니다!');
-      expect(bcrypt.hash).toHaveBeenCalledWith('test1234', 10);
+      expect(result).toBe('회원가입에 성공했습니다!');expect(bcrypt.hash).toHaveBeenCalledWith('test1234', 10);
       expect(saveSpy).toHaveBeenCalledTimes(1);
       expect(saveSpy).toHaveBeenCalledWith(
         expect.objectContaining({
