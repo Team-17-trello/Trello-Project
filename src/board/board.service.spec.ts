@@ -1,7 +1,7 @@
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { User } from 'src/user/entities/user.entity';
+import { UserEntity } from 'src/user/entities/user.entity';
 import { Repository } from 'typeorm';
 import { BoardService } from './board.service';
 import { BoardEntity } from './entities/board.entity';
@@ -19,12 +19,12 @@ const mockBoardRepository = {
 describe('BoardService', () => {
   let service: BoardService;
   let repository: Repository<BoardEntity>;
-  const mockUser: User = {
+  const mockUser: UserEntity = {
     id: 1,
     email: 'email@test.com',
     password: 'password',
     nickname: 'nickname',
-  } as User;
+  } as UserEntity;
 
   const mockBoard: BoardEntity = {
     id: 1,

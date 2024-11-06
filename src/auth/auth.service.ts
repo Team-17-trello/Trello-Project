@@ -1,7 +1,7 @@
 import { BadRequestException, ConflictException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { SignupDto } from './dto/signup.dto';
 import { LoginDto } from './dto/login.dto';
-import {User} from '../user/entities/user.entity';
+import {UserEntity} from '../user/entities/user.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
@@ -10,8 +10,8 @@ import {JwtService} from '@nestjs/jwt'
 
 @Injectable()
 export class AuthService {
-  constructor(@InjectRepository(User)
-              private readonly userRepository: Repository<User>,
+  constructor(@InjectRepository(UserEntity)
+              private readonly userRepository: Repository<UserEntity>,
               private readonly jwtService : JwtService) {
   }
   async signup (signUpDto: SignupDto) {

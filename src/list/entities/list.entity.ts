@@ -4,9 +4,11 @@ import {
   CreateDateColumn,
   Entity,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { CardEntity } from '../../card/entities/card.entity';
 
 @Entity({ name: 'lists' })
 export class ListEntity {
@@ -30,4 +32,7 @@ export class ListEntity {
 
   @ManyToOne(() => BoardEntity, (board) => board.lists)
   board: BoardEntity;
+
+  @OneToMany(() => CardEntity, (card) => card.list)
+  card: CardEntity;
 }

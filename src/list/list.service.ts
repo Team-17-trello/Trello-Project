@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { BoardEntity } from 'src/board/entities/board.entity';
-import { User } from 'src/user/entities/user.entity';
+import { UserEntity } from 'src/user/entities/user.entity';
 import { Repository } from 'typeorm';
 import { CreateListDto } from './dto/create-list.dto';
 import { UpdateListDto } from './dto/update-list.dto';
@@ -16,11 +16,10 @@ export class ListService {
     private readonly boardRepository: Repository<BoardEntity>,
   ) {}
 
-  async create(createListDto: CreateListDto, user: User): Promise<ListEntity> {
+  async create(createListDto: CreateListDto, user: UserEntity): Promise<ListEntity> {
     const board = await this.boardRepository.findOne({ where: { id: createListDto.boardId } });
 
     if (!board) throw new NotFoundException('해당 보드를 찾을수없습니다.');
-
     const listCount = await this.listRepository.count({
       where: { board: { id: createListDto.boardId } },
     });
@@ -53,7 +52,7 @@ export class ListService {
     return list;
   }
 
-  async update(id: number, updateListDto: UpdateListDto, user: User): Promise<ListEntity> {
+  async update(id: number, updateListDto: UpdateListDto, user: UserEntity): Promise<ListEntity> {
     await this.verifyListByBoardId(user.id, id);
 
     await this.listRepository.update({ id }, updateListDto);
@@ -63,7 +62,7 @@ export class ListService {
     return updatedList;
   }
 
-  async remove(id: number, user: User): Promise<{ message: string }> {
+  async remove(id: number, user: UserEntity): Promise<{ message: string }> {
     await this.verifyListByBoardId(user.id, id);
 
     const result = await this.listRepository.delete({ id });

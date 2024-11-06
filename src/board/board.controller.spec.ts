@@ -4,18 +4,18 @@ import { BoardService } from './board.service';
 import { CreateBoardDto } from './dto/create-board.dto';
 import { UpdateBoardDto } from './dto/update-board.dto';
 import { BoardEntity } from 'src/board/entities/board.entity';
-import { User } from 'src/user/entities/user.entity';
+import { UserEntity } from 'src/user/entities/user.entity';
 
 describe('BoardController', () => {
   let boardController: BoardController;
   let boardService: BoardService;
 
-  const mockUser: User = {
+  const mockUser: UserEntity = {
     id: 1,
     email: 'email@test.com',
     password: 'password',
     nickname: 'nickname',
-  } as User;
+  } as UserEntity;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
