@@ -153,7 +153,7 @@ describe('CardService', () => {
       // 추가적인 호출 확인
       expect(listRepository.findOne).toHaveBeenCalledWith({ where: { id: 1 } });
       expect(listRepository.findOne).toHaveBeenCalledTimes(1);
-      expect(cardRepository.find).toHaveBeenCalledWith({ where: { list: mockList } });
+      expect(cardRepository.find).toHaveBeenCalledWith({ where: { list: mockList }, order: { order: 'asc' } });
       expect(cardRepository.find).toHaveBeenCalledTimes(1);
     });
   });
@@ -378,5 +378,64 @@ describe('CardService', () => {
 
     });
 
+  });
+  describe('moveCard', () => {
+
+    it('첫 번째 위치로 이동하는 경우 newOrder 값이 첫 번째 카드의 절반으로 설정', async () => {
+      const moveCardDto = { listId: 1, order: 1 };
+      const mockCard = { id: 1, order: 5 };
+      const mockCards = [{ id: 2, order: 10 }];
+
+      jest.spyOn(cardRepository, 'findOne').mockResolvedValue(mockCard as CardEntity);
+      jest.spyOn(cardRepository, 'find').mockResolvedValue(mockCards as CardEntity[]);
+      jest.spyOn(cardRepository, 'save').mockResolvedValueOnce(mockCard as CardEntity);
+
+      await cardService.moveCard(mockCard.id, moveCardDto);
+
+      expect(mockCard.order).toBe(mockCards[0].order / 2);
+      expect(cardRepository.save).toHaveBeenCalledWith(mockCard);
+    });
+
+    it('마지막 위치로 이동하는 경우 newOrder 값이 마지막 카드의 order + 1', async () => {
+      const moveCardDto = { listId: 1, order: 6 };
+      const mockCard = { id: 1, order: 5 };
+      const mockCards = [
+        { id: 2, order: 1 },
+        { id: 3, order: 2 },
+        { id: 4, order: 3 },
+        { id: 5, order: 4 },
+        { id: 6, order: 5 },
+      ];
+
+      jest.spyOn(cardRepository, 'findOne').mockResolvedValue(mockCard as CardEntity);
+      jest.spyOn(cardRepository, 'find').mockResolvedValue(mockCards as CardEntity[]);
+      jest.spyOn(cardRepository, 'save').mockResolvedValueOnce(mockCard as CardEntity);
+
+      await cardService.moveCard(mockCard.id, moveCardDto);
+
+      expect(mockCard.order).toBe(mockCards[mockCards.length - 1].order + 1);
+      expect(cardRepository.save).toHaveBeenCalledWith(mockCard);
+    });
+
+    it('중간 위치로 이동하는 경우 newOrder 가 targetOrder 와 preTargetOrder 의 중간 값', async () => {
+      const moveCardDto = { listId: 1, order: 3 };
+      const mockCard = { id: 1, order: 5 };
+      const mockCards = [
+        { id: 2, order: 1 },
+        { id: 3, order: 2 },
+        { id: 4, order: 4 },
+        { id: 5, order: 6 },
+      ];
+
+      jest.spyOn(cardRepository, 'findOne').mockResolvedValue(mockCard as CardEntity);
+      jest.spyOn(cardRepository, 'find').mockResolvedValue(mockCards as CardEntity[]);
+      jest.spyOn(cardRepository, 'save').mockResolvedValueOnce(mockCard as CardEntity);
+
+      await cardService.moveCard(mockCard.id, moveCardDto);
+
+      const expectedOrder = (mockCards[moveCardDto.order - 1].order + mockCards[moveCardDto.order - 2].order) / 2;
+      expect(mockCard.order).toBe(expectedOrder);
+      expect(cardRepository.save).toHaveBeenCalledWith(mockCard);
+    });
   });
 });
