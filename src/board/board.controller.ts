@@ -25,11 +25,10 @@ export class BoardController {
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  async create(@Body() createBoardDto: CreateBoardDto) {
-    return await this.boardService.create(createBoardDto);
+  async create(@Body() createBoardDto: CreateBoardDto, @UserInfo() user: UserEntity) {
+    return await this.boardService.create(createBoardDto, user);
   }
 
-  //TODO: 수정 필요함
   @Get('/workspace/:workspaceId')
   @HttpCode(HttpStatus.OK)
   async findAll(@Param('workspaceId', ParseIntPipe) workspaceId: number) {
@@ -47,13 +46,14 @@ export class BoardController {
   async update(
     @Param('boardId', ParseIntPipe) boardId: number,
     @Body() updateBoardDto: UpdateBoardDto,
+    @UserInfo() user: UserEntity,
   ) {
-    return await this.boardService.update(boardId, updateBoardDto);
+    return await this.boardService.update(boardId, updateBoardDto, user);
   }
 
   @Delete(':boardId')
   @HttpCode(HttpStatus.OK)
-  async remove(@Param('boardId', ParseIntPipe) boardId: number) {
-    return await this.boardService.remove(boardId);
+  async remove(@Param('boardId', ParseIntPipe) boardId: number, @UserInfo() user: UserEntity) {
+    return await this.boardService.remove(boardId, user);
   }
 }

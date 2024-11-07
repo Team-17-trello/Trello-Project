@@ -9,6 +9,12 @@ import { UserEntity } from 'src/user/entities/user.entity';
 describe('BoardController', () => {
   let boardController: BoardController;
   let boardService: BoardService;
+  const mockUser: UserEntity = {
+    id: 1,
+    email: 'email@test.com',
+    password: 'password',
+    nickname: 'nickname',
+  } as UserEntity;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -39,23 +45,14 @@ describe('BoardController', () => {
       backgroundColor: '#FFFF',
     };
 
-    const expectedResult: BoardEntity = {
-      id: 1,
-      name: 'board',
-      description: 'description',
-      backgroundColor: '#FFFF',
-      userId: 1,
-      createdAt: new Date('2022-01-01T00:00:00Z'),
-      updatedAt: new Date('2022-01-01T00:00:00Z'),
-      lists: [],
-    };
+    const result = { id: 1, ...createBoardDto, mockUser };
 
-    (boardService.create as jest.Mock).mockResolvedValue(expectedResult);
+    (boardService.create as jest.Mock).mockResolvedValue(result);
 
-    const result = await boardController.create(createBoardDto);
+    const response = await boardController.create(createBoardDto, mockUser);
 
-    expect(result).toEqual(expectedResult);
-    expect(boardService.create).toHaveBeenCalledWith(createBoardDto);
+    expect(boardService.create).toHaveBeenCalledWith(createBoardDto, mockUser);
+    expect(response).toEqual(result);
   });
 
   it('보드 전체 조회 검증', async () => {
@@ -95,23 +92,18 @@ describe('BoardController', () => {
       name: 'new Board',
     };
 
-    const expectedResult: BoardEntity = {
-      id: 1,
-      name: 'new Board',
-      description: 'description',
-      backgroundColor: '#FFFF',
-      userId: 1,
-      createdAt: new Date('2022-01-01T00:00:00Z'),
-      updatedAt: new Date('2022-01-01T00:00:00Z'),
-      lists: [], // 관계 형성하면서 추가됨 오류시 이부분 수정
+    const expectedResult = {
+      id: boardId,
+      name: updateBoardDto.name || 'default name',
+      user: mockUser,
     };
 
     (boardService.update as jest.Mock).mockResolvedValue(expectedResult);
 
-    const result = await boardController.update(boardId, updateBoardDto);
+    const result = await boardController.update(boardId, updateBoardDto, mockUser);
 
     expect(result).toEqual(expectedResult);
-    expect(boardService.update).toHaveBeenCalledWith(boardId, updateBoardDto);
+    expect(boardService.update).toHaveBeenCalledWith(boardId, updateBoardDto, mockUser);
   });
 
   it('보드 삭제 검증', async () => {
@@ -120,8 +112,8 @@ describe('BoardController', () => {
 
     (boardService.remove as jest.Mock).mockResolvedValue(expectedResult);
 
-    const result = await boardController.remove(boardId);
+    const result = await boardController.remove(boardId, mockUser);
     expect(result).toEqual(expectedResult);
-    expect(boardService.remove).toHaveBeenCalledWith(boardId);
+    expect(boardService.remove).toHaveBeenCalledWith(boardId, mockUser);
   });
 });

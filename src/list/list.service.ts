@@ -5,6 +5,7 @@ import { Repository } from 'typeorm';
 import { CreateListDto } from './dto/create-list.dto';
 import { UpdateListDto } from './dto/update-list.dto';
 import { ListEntity } from './entities/list.entity';
+import { UserEntity } from 'src/user/entities/user.entity';
 
 @Injectable()
 export class ListService {
@@ -15,18 +16,34 @@ export class ListService {
     private readonly boardRepository: Repository<BoardEntity>,
   ) {}
 
-  async create(createListDto: CreateListDto): Promise<ListEntity> {
+  async create(createListDto: CreateListDto, user: UserEntity): Promise<ListEntity> {
     const board = await this.boardRepository.findOne({ where: { id: createListDto.boardId } });
 
     if (!board) throw new NotFoundException('해당 보드를 찾을수없습니다.');
-    const listCount = await this.listRepository.count({
+
+    const getLastOrder = await this.listRepository.findOne({
       where: { board: { id: createListDto.boardId } },
+      order: {
+        order: 'DESC',
+      },
     });
+
+    if (!getLastOrder) {
+      const result = await this.listRepository.save({
+        order: 1,
+        userId: user.id,
+        board: board,
+        ...createListDto,
+      });
+
+      return result;
+    }
 
     const list = this.listRepository.create({
       ...createListDto,
-      order: listCount + 1,
+      order: getLastOrder.order + 1,
       board,
+      userId: user.id,
     });
 
     return await this.listRepository.save(list);
@@ -36,7 +53,7 @@ export class ListService {
     const lists = await this.listRepository.find({
       where: { board: { id: boardId } },
       order: {
-        order: 'DESC',
+        order: 'ASC',
       },
     });
 
@@ -61,8 +78,11 @@ export class ListService {
     return updatedList;
   }
 
-  async updateOrder(id: number, updateListDto: UpdateListDto) {
+  async updateOrder(boardId: number, updateListDto: UpdateListDto) {
     const allOrderList = await this.listRepository.find({
+      where: {
+        board: { id: boardId },
+      },
       select: {
         order: true,
       },
@@ -71,11 +91,12 @@ export class ListService {
       },
     });
 
-    let getOrder = 0;
+    let getOrder: number = 0;
 
     if (updateListDto.order === 1) {
       getOrder = allOrderList[0].order / 2;
-    } else if (updateListDto.order === allOrderList.length + 1) {
+      [1, 2, 3, 4, 5];
+    } else if (updateListDto.order >= allOrderList.length) {
       getOrder = allOrderList[allOrderList.length - 1].order + 1;
     } else {
       const targetOrder = allOrderList[updateListDto.order - 1].order;
@@ -84,7 +105,13 @@ export class ListService {
       getOrder = (targetOrder + preTargetOrder) / 2;
     }
 
-    await this.listRepository.update({ id: id }, { order: getOrder });
+    await this.listRepository.update({ id: updateListDto.listId }, { order: getOrder });
+
+    const result = await this.listRepository.findOne({
+      where: { id: updateListDto.listId },
+    });
+
+    return result;
   }
 
   async remove(id: number): Promise<{ message: string }> {

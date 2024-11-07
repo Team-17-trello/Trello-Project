@@ -85,7 +85,7 @@ describe('CardService', () => {
         description: 'Test Description',
         color: 'blue',
         order: 3, // 새로운 카드의 order는 mockCards.length + 1
-        author: 1, // user.id (테스트에서는 간단히 1로 가정)
+        userId: 1, // user.id (테스트에서는 간단히 1로 가정)
         list: mockList,
       };
       jest.spyOn(cardRepository, 'save').mockResolvedValueOnce(mockCard as CardEntity);
@@ -115,7 +115,7 @@ describe('CardService', () => {
         description: 'Test Description',
         color: 'blue',
         order: 3, // mockCards.length + 1
-        author: 1, // user.id
+        userId: 1, // user.id
         list: mockList,
       });
     });
@@ -171,7 +171,7 @@ describe('CardService', () => {
     it('아이디에 해당하는 카드가 존재하고 카드 조회에 성공한 경우 status 코드 200과 카드 객체 리턴', async () => {
       const mockCard = new CardEntity();
       mockCard.id = 1;
-      mockCard.responsible = [];
+      mockCard.responsibles = [];
       jest.spyOn(cardRepository, 'findOne').mockResolvedValueOnce(mockCard);
 
       const result = await cardService.findOne(1);
@@ -218,7 +218,7 @@ describe('CardService', () => {
         color: 'red',
         order: 1,
         dueDate: new Date('2024-11-06T10:49:31.641Z'),
-        author: 1,
+        userId: 1,
       };
 
       const updatedCard = { ...mockCard, ...mockUpdateCardDto };
@@ -270,7 +270,7 @@ describe('CardService', () => {
         color: 'red',
         order: 1,
         dueDate: new Date(),
-        author: 1,
+        userId: 1,
       };
 
       jest.spyOn(cardService['cardRepository'], 'findOne').mockResolvedValue(mockCard as CardEntity);
@@ -302,7 +302,7 @@ describe('CardService', () => {
         color: 'red',
         order: 1,
         dueDate: new Date(),
-        author: 1,
+        userId: 1,
       };
 
       const mockResponsibleDto = { responsibles: [1, 2] };
@@ -337,7 +337,7 @@ describe('CardService', () => {
         color: 'red',
         order: 1,
         dueDate: new Date(),
-        author: 1,
+        userId: 1,
       };
 
       jest.spyOn(cardRepository, 'findOne').mockResolvedValue(mockCard as CardEntity);
@@ -356,7 +356,7 @@ describe('CardService', () => {
         color: 'red',
         order: 1,
         dueDate: new Date(),
-        author: 1,
+        userId: 1,
       };
 
       const mockResponsible = { id: 1, userId: 1, card: mockCard };
