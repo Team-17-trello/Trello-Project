@@ -12,6 +12,7 @@ import { CreateWorkspaceDto } from './dto/create-workspace.dto';
 import _ from 'lodash';
 import { User } from 'src/user/entities/user.entity';
 import { Member } from 'src/member/entity/member.entity';
+import { log } from 'console';
 
 @Injectable()
 export class WorkspaceService {
@@ -51,7 +52,7 @@ export class WorkspaceService {
 
   /**워크스페이스 전체 조회 */
   async getAllWorkspace(): Promise<WorkspaceEntity[]> {
-    const getWorkspace = await this.workspaceRepository.find()|| [];;
+    const getWorkspace = (await this.workspaceRepository.find()) || [];
 
     if (getWorkspace.length === 0) {
       throw new BadRequestException('등록된 워크스페이스가 없습니다.');
@@ -102,29 +103,34 @@ export class WorkspaceService {
         throw new NotFoundException(`해당 ID(${userId})의 사용자가 존재하지 않습니다.`);
       }
 
+      for (let i = 0; i < userId.length; i++) {
+        const inviteMember = await this.memberRepository.findOne({
+          where: {
+            workspace: { id: workspaceId },
+            user: { id: userId[i] },
+          },
+        });
+        if (inviteMember) {
+          throw new ConflictException(`유저${userId}가 이미 초대되었습니다.`);
+        }
+      }
+
       const createMember = await this.memberRepository.create({
         isAdmin: false,
         user: foundUser,
         workspace: foundWorkspace,
       });
       await this.memberRepository.save(createMember);
-      console.log(foundWorkspace);
-
     }
-
-    // // 이미 멤버로 추가되어 있는지 확인
-    // if (foundWorkspace.members.some((member) => member.user.id === userId)) {
-    //   throw new ConflictException(`해당 유저(${userId})는 이미 워크스페이스에 속해 있습니다.`);
-    // }
 
     return { status: 201, message: '멤버를 성공적으로 초대했습니다.' };
   }
 
-    async verifyWorkspaceById(workspaceId: number) {
-    const workspace = await this.workspaceRepository.findOne({ 
-      where:{id:workspaceId},
-      relations:{members:true},
-     });
+  async verifyWorkspaceById(workspaceId: number) {
+    const workspace = await this.workspaceRepository.findOne({
+      where: { id: workspaceId },
+      relations: { members: true },
+    });
     if (_.isNil(workspace)) {
       throw new BadRequestException('존재하지 않는 워크스페이스 입니다.');
     }
