@@ -80,6 +80,11 @@ export class ListService {
   }
 
   async updateOrder(boardId: number, updateListDto: UpdateListDto) {
+
+    const list = await this.listRepository.findOne({
+      where: { id: updateListDto.listId },
+    });
+
     const allOrderList = await this.listRepository.find({
       where: {
         board: { id: boardId },
@@ -96,9 +101,13 @@ export class ListService {
 
     if (updateListDto.order === 1) {
       getOrder = allOrderList[0].order / 2;
-      [1, 2, 3, 4, 5];
-    } else if (updateListDto.order >= allOrderList.length) {
+    } else if (updateListDto.order === allOrderList.length) {
       getOrder = allOrderList[allOrderList.length - 1].order + 1;
+    } else if (updateListDto.order > list.order) {
+      const targetOrder = allOrderList[updateListDto.order].order;
+      const preTargetOrder = allOrderList[updateListDto.order - 1].order;
+
+      getOrder = (targetOrder + preTargetOrder) / 2;
     } else {
       const targetOrder = allOrderList[updateListDto.order - 1].order;
       const preTargetOrder = allOrderList[updateListDto.order - 2].order;
