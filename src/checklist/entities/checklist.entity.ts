@@ -26,6 +26,6 @@ export class ChecklistEntity {
   @ManyToOne(() => CardEntity, (card) => card.checklist)
   card: CardEntity;
 
-  @ManyToOne(() => WorkspaceEntity, (workspace) => workspace.checklist)
-  workspace: WorkspaceEntity;
+//   @ManyToOne(() => WorkspaceEntity, (workspace) => workspace.checklist)
+//   workspace: WorkspaceEntity;
 }
