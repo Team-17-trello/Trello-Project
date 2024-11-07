@@ -10,7 +10,7 @@ import {
 
 import { ResponsibleEntity } from './responsible.entity';
 import { ListEntity } from '../../list/entities/list.entity';
-
+import { ChecklistEntity } from '../../checklist/entities/checklist.entity';
 @Entity({
   name: 'cards',
 })
@@ -47,4 +47,7 @@ export class CardEntity {
 
   @Column({ type: 'int', nullable: false })
   author: number;
+
+  @OneToMany(() => ChecklistEntity, (checklist) => checklist.card)
+  checklist: ChecklistEntity;
 }
