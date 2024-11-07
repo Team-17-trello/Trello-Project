@@ -1,18 +1,16 @@
-
+import { WorkspaceEntity } from 'src/workspace/entities/workspace.entity';
 import {
-  Entity,
   Column,
-  PrimaryGeneratedColumn,
   CreateDateColumn,
-  ManyToOne,
+  Entity,
   JoinColumn,
-  JoinTable,
+  ManyToOne,
+  PrimaryGeneratedColumn,
 } from 'typeorm';
 import { UserEntity } from '../../user/entities/user.entity';
-import { WorkspaceEntity } from 'src/workspace/entities/workspace.entity';
 
 @Entity({
-  name: 'member',
+  name: 'members',
 })
 export class MemberEntity {
   @PrimaryGeneratedColumn()
@@ -28,8 +26,6 @@ export class MemberEntity {
   @JoinColumn()
   workspace: WorkspaceEntity;
 
-  @ManyToOne(() => UserEntity, (user: UserEntity) => user.members)
+  @ManyToOne(() => UserEntity, (user: UserEntity) => user.members, { onDelete: 'CASCADE' })
   user: UserEntity;
 }
-
-

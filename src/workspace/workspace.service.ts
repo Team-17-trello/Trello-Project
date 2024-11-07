@@ -36,11 +36,12 @@ export class WorkspaceService {
     try {
       const saveWorkspace = await this.workspaceRepository.save(newWorkspace);
 
-      const createMember = await this.memberRepository.create({
+      const createMember = this.memberRepository.create({
         isAdmin: true,
         user,
         workspace: saveWorkspace,
       });
+
       await this.memberRepository.save(createMember);
 
       return saveWorkspace;
