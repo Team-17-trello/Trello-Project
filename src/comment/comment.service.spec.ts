@@ -63,8 +63,9 @@ describe('CommentService', () => {
       createdAt: new Date(),
       updatedAt: null,
       dueDate: new Date(),
-      responsible: null,
-      comment: null,
+      responsibles: null,
+      comments: null,
+      workspace: null
     };
 
     const mockCommentDto: CommentDto = {

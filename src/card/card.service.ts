@@ -20,11 +20,13 @@ export class CardService {
     private readonly listRepository: Repository<ListEntity>,
     @InjectRepository(ResponsibleEntity)
     private readonly responsibleRepository: Repository<ResponsibleEntity>,
-  ) {}
+  ) {
+  }
 
   async create(user: UserEntity, createCardDto: CreateCardDto) {
     const list = await this.listRepository.findOne({
       where: { id: createCardDto.listId },
+      relations: { board: { workspace: true } },
     });
 
     if (!list) {
@@ -40,13 +42,18 @@ export class CardService {
       },
     });
 
-    const card = await this.cardRepository.save({
+    const newOrder = (cards?.order ?? 0) + 1;
+
+    const card : CardEntity  = await this.cardRepository.save({
       title: createCardDto.title,
       description: createCardDto.description,
       color: createCardDto.color,
-      order: cards.order + 1,
-      author: user.id,
+      order: newOrder,
+      userId: user.id,
       list: list,
+      workspace: list.board.workspace,
+      comments: null,
+      responsibles: null,
     });
 
     return {
@@ -286,5 +293,10 @@ export class CardService {
     card.list = list;
 
     await this.cardRepository.save(card);
+
+    return {
+      status: 200,
+      message: '카드 위치가 변경되었습니다.',
+    };
   }
 }

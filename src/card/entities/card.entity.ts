@@ -30,17 +30,17 @@ export class CardEntity {
   @Column({ type: 'varchar', nullable: false })
   color: string;
 
-  @Column({ type: 'int', nullable: false })
+  @Column({ type: 'float', nullable: false })
   order: number;
 
   @CreateDateColumn({ type: 'timestamp', nullable: false, name: 'created_at' })
   createdAt: Date;
 
-  @UpdateDateColumn({ type: 'timestamp', nullable: false, name: 'updated_at' })
-  updatedAt: Date;
+  @UpdateDateColumn({ type: 'timestamp', nullable: true, name: 'updated_at' })
+  updatedAt: Date | null;
 
   @Column({ type: 'timestamp', nullable: true, name: 'due_date', default: null })
-  dueDate: Date;
+  dueDate: Date
 
   @Column({ type: 'int', nullable: false })
   userId: number;
@@ -48,12 +48,13 @@ export class CardEntity {
   @ManyToOne(() => ListEntity, (list) => list.cards)
   list: ListEntity;
 
-  @ManyToOne(() => WorkspaceEntity, (workspace) => workspace.cards)
-  workspace: WorkspaceEntity;
 
-  @OneToMany(() => ResponsibleEntity, (responsible) => responsible.card)
+  @OneToMany(() => ResponsibleEntity, (responsibles) => responsibles.card)
   responsibles: ResponsibleEntity[];
 
-  @OneToMany(() => CommentEntity, (comment) => comment.card)
+  @OneToMany(() =>CommentEntity, (comments) => comments.card)
   comments: CommentEntity[];
+
+  @ManyToOne(() => WorkspaceEntity, (workspace) => workspace.cards)
+  workspace: WorkspaceEntity;
 }

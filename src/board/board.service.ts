@@ -18,8 +18,14 @@ export class BoardService {
   ) {}
 
   async create(createBoardDto: CreateBoardDto, user: UserEntity): Promise<BoardEntity> {
-    const board = this.boardRepository.create({
-      ...createBoardDto,
+    const workspace = await this.workspaceRepository.findOne({
+      where: { id: createBoardDto.workspaceId },
+    });
+    const board: BoardEntity = this.boardRepository.create({
+      name: createBoardDto.name,
+      description: createBoardDto.description,
+      backgroundColor: createBoardDto.backgroundColor,
+      workspace: workspace,
       userId: user.id,
     });
     return await this.boardRepository.save(board);

@@ -14,6 +14,7 @@ export class UserService {
     private readonly userRepository: Repository<UserEntity>,
   ) {}
 
+
   async update(user: UserEntity, userUpdateDto: UpdateUserDto) {
     const target = await this.userRepository.findOne({
       where: { id: user.id },
@@ -37,7 +38,12 @@ export class UserService {
     }
 
     // 변경된 값이 포함된 객체로 한 번에 업데이트
-    return await this.userRepository.update(user.id, updateData);
+    await this.userRepository.update(user.id, updateData);
+
+    return {
+      statusCode:200,
+      message: '수정이 완료되었습니다.'
+    }
   }
 
   async remove(user: UserEntity, removeUserDto: RemoveUserDto) {

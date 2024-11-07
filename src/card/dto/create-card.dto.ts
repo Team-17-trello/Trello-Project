@@ -18,7 +18,6 @@ export class CreateCardDto {
   color: string;
 
   @IsDate()
-  @IsNotEmpty({ message: '마감일을 입력해주세요' })
-  dueDate: Date;
+  dueDate?: Date;
 
 }
