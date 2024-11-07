@@ -24,6 +24,6 @@ export class WorkspaceEntity extends BaseEntity {
   @OneToMany(() => MemberEntity, (member) => member.workspace)
   members: MemberEntity[];
 
-  @OneToMany(() => ChecklistEntity, (checklist) => checklist.workspace)
-  checklist: ChecklistEntity[];
+  // @OneToMany(() => ChecklistEntity, (checklist) => checklist.workspace)
+  // checklists: ChecklistEntity[];
 }

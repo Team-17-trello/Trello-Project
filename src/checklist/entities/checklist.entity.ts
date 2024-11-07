@@ -23,9 +23,9 @@ export class ChecklistEntity {
   @CreateDateColumn({ type: 'timestamp', nullable: false })
   createdAt: Date;
 
-  @ManyToOne(() => CardEntity, (card) => card.checklist)
+  @ManyToOne(() => CardEntity, (card) => card.checklists)
   card: CardEntity;
 
-  @ManyToOne(() => WorkspaceEntity, (workspace) => workspace.checklist)
-  workspace: WorkspaceEntity;
+  //   @ManyToOne(() => WorkspaceEntity, (workspace) => workspace.checklists)
+  //   workspace: WorkspaceEntity;
 }

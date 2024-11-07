@@ -6,7 +6,7 @@ import { ConfigService } from '@nestjs/config';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  const port = process.env.SERVER_PORT;
+  const port = process.env.PORT;
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true,

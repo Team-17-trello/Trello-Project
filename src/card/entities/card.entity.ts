@@ -49,5 +49,5 @@ export class CardEntity {
   author: number;
 
   @OneToMany(() => ChecklistEntity, (checklist) => checklist.card)
-  checklist: ChecklistEntity;
+  checklists: ChecklistEntity;
 }
