@@ -10,6 +10,8 @@ import {
 
 import { ResponsibleEntity } from './responsible.entity';
 import { ListEntity } from '../../list/entities/list.entity';
+import { WorkspaceEntity } from 'src/workspace/entities/workspace.entity';
+import { CommentEntity } from 'src/comment/entities/comment.entity';
 
 @Entity({
   name: 'cards',
@@ -52,5 +54,5 @@ export class CardEntity {
   responsibles: ResponsibleEntity[];
 
   @OneToMany(() => CommentEntity, (comment) => comment.card)
-  comment: CommentEntity[];
+  comments: CommentEntity[];
 }
