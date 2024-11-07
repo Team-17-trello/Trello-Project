@@ -22,7 +22,7 @@ export class CommentEntity {
   @UpdateDateColumn({ type: 'timestamp', nullable: true, name: 'updated_at' })
   updatedAt: Date | null;
 
-  @ManyToOne(() => CardEntity, (card) => card.comment)
+  @ManyToOne(() => CardEntity, (card) => card.comments)
   card: CardEntity;
 
 

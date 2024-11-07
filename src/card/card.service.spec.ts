@@ -171,7 +171,7 @@ describe('CardService', () => {
     it('아이디에 해당하는 카드가 존재하고 카드 조회에 성공한 경우 status 코드 200과 카드 객체 리턴', async () => {
       const mockCard = new CardEntity();
       mockCard.id = 1;
-      mockCard.responsible = [];
+      mockCard.responsibles = [];
       jest.spyOn(cardRepository, 'findOne').mockResolvedValueOnce(mockCard);
 
       const result = await cardService.findOne(1);

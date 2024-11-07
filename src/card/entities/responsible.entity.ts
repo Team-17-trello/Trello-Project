@@ -21,6 +21,6 @@ export class ResponsibleEntity {
   @Column({ type: 'int', nullable: false, name: 'user_id' })
   userId: number;
 
-  @ManyToOne(() => CardEntity, (card) => card.responsible)
+  @ManyToOne(() => CardEntity, (card) => card.responsibles)
   card: CardEntity;
 }

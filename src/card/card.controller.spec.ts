@@ -51,8 +51,8 @@ describe('CardController', () => {
     createdAt: new Date,
     updatedAt: null,
     list: null,
-    responsible: null,
-    comment: null,
+    responsibles: null,
+    comments: null,
   };
 
   const mockUser: UserEntity = {
@@ -77,8 +77,8 @@ describe('CardController', () => {
       createdAt: new Date,
       updatedAt: null,
       list: null,
-      responsible: null,
-      comment: null,
+      responsibles: null,
+      comments: null,
     },
   ];
 

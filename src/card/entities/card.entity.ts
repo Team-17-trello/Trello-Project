@@ -43,14 +43,14 @@ export class CardEntity {
   @Column({ type: 'int', nullable: false })
   userId: number;
 
-  @ManyToOne(() => ListEntity, (list) => list.card)
+  @ManyToOne(() => ListEntity, (list) => list.cards)
   list: ListEntity;
 
-  @OneToMany(() => ResponsibleEntity, (responsible) => responsible.card)
-  responsible: ResponsibleEntity[];
+  @OneToMany(() => ResponsibleEntity, (responsibles) => responsibles.card)
+  responsibles: ResponsibleEntity[];
 
-  @OneToMany(() =>CommentEntity, (comment) => comment.card)
-  comment: CommentEntity[];
+  @OneToMany(() =>CommentEntity, (comments) => comments.card)
+  comments: CommentEntity[];
 
 
 }
