@@ -10,6 +10,7 @@ import {
 
 import { ResponsibleEntity } from './responsible.entity';
 import { ListEntity } from '../../list/entities/list.entity';
+import { WorkspaceEntity } from 'src/workspace/entities/workspace.entity';
 
 @Entity({
   name: 'cards',
@@ -39,11 +40,14 @@ export class CardEntity {
   @Column({ type: 'timestamp', nullable: true, name: 'due_date', default: null })
   dueDate: Date;
 
-  @ManyToOne(() => ListEntity, (list) => list.card)
+  @ManyToOne(() => ListEntity, (list) => list.cards)
   list: ListEntity;
 
+  @ManyToOne(() => WorkspaceEntity, (workspace) => workspace.cards)
+  workspace: WorkspaceEntity;
+
   @OneToMany(() => ResponsibleEntity, (responsible) => responsible.card)
-  responsible: ResponsibleEntity[];
+  responsibles: ResponsibleEntity[];
 
   @Column({ type: 'int', nullable: false })
   author: number;

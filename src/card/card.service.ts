@@ -68,9 +68,9 @@ export class CardService {
       where: {
         list: list,
       },
-      order : {
+      order: {
         order: 'asc',
-      }
+      },
     });
 
     return {
@@ -85,7 +85,7 @@ export class CardService {
         id: cardId,
       },
       relations: {
-        responsible: true,
+        responsibles: true,
         // comment : true,
         // checkList : true,
         // file : true,

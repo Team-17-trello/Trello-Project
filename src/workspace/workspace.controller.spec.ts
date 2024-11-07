@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { WorkspaceController } from './workspace.controller';
 import { WorkspaceService } from './workspace.service';
 import { AuthGuard } from '@nestjs/passport';
-import { User } from 'src/user/entities/user.entity';
+import { UserEntity } from 'src/user/entities/user.entity';
 import { CreateWorkspaceDto } from './dto/create-workspace.dto';
 import { pull } from 'lodash';
 import { AddWorkspaceMemberDto } from './dto/add-workspace-member.dto';
@@ -56,7 +56,7 @@ describe('워크스페이스 컨트롤러 유닛 테스트', () => {
   });
 
   it('워크스페이스 컨트롤러 생성 테스트 ', async () => {
-    const user: User = {
+    const user: UserEntity = {
       id: 1,
       nickname: 'test',
       email: 'test@test.com',
@@ -81,7 +81,7 @@ describe('워크스페이스 컨트롤러 유닛 테스트', () => {
     expect(workspaceService.workspaceCreate).toHaveBeenCalledWith(user, createDto);
   });
   it('워크스페이스 컨트롤러 멤버 초대 테스트', async () => {
-    const user: User = {
+    const user: UserEntity = {
       id: 1,
       nickname: 'test',
       email: 'test@test.com',

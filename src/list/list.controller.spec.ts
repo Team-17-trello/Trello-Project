@@ -34,17 +34,6 @@ describe('ListController', () => {
 
     listController = module.get<ListController>(ListController);
     listService = module.get<ListService>(ListService);
-
-    expectedBoard = {
-      id: 1,
-      name: 'Sample Board',
-      description: 'A sample board',
-      backgroundColor: '#FFFFFF',
-      userId: 1,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      lists: [],
-    };
   });
 
   it('리스트 생성 검증', async () => {
@@ -53,16 +42,7 @@ describe('ListController', () => {
       name: 'To Do',
     };
 
-    const expectedResult: ListEntity = {
-      id: 1,
-      name: 'To do',
-      order: 1,
-      userId: 1,
-      board: expectedBoard,
-      createdAt: new Date('2022-01-01T00:00:00Z'),
-      updatedAt: new Date('2022-01-01T00:00:00Z'),
-      card: [],
-    };
+    const expectedResult = { id: 1, ...createListDto, mockUser };
 
     (listService.create as jest.Mock).mockResolvedValue(expectedResult);
 
@@ -116,7 +96,7 @@ describe('ListController', () => {
       updatedAt: new Date('2022-01-01T00:00:00Z'),
       dueDate: new Date('2022-12-31T00:00:00Z'),
       list: {} as ListEntity,
-      responsible: [],
+      responsibles: [],
       author: 1,
     } as CardEntity;
 
@@ -128,7 +108,7 @@ describe('ListController', () => {
       board: expectedBoard,
       createdAt: new Date('2022-01-01T00:00:00Z'),
       updatedAt: new Date('2022-01-01T00:00:00Z'),
-      card: [expectedCard],
+      cards: [expectedCard],
     };
 
     (listService.update as jest.Mock).mockResolvedValue(expectedResult);
@@ -167,7 +147,7 @@ describe('ListController', () => {
       updatedAt: new Date('2022-01-01T00:00:00Z'),
       dueDate: new Date('2022-12-31T00:00:00Z'),
       list: {} as ListEntity,
-      responsible: [],
+      responsibles: [],
       author: 1,
     } as CardEntity;
 
@@ -179,7 +159,7 @@ describe('ListController', () => {
       board: expectedBoard,
       createdAt: new Date('2022-01-01T00:00:00Z'),
       updatedAt: new Date('2022-01-01T00:00:00Z'),
-      card: [expectedCard],
+      cards: [expectedCard],
     };
 
     (listService.updateOrder as jest.Mock).mockResolvedValue(expectedResult);

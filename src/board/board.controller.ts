@@ -29,7 +29,6 @@ export class BoardController {
     return await this.boardService.create(createBoardDto, user);
   }
 
-  //TODO: 수정 필요함
   @Get('/workspace/:workspaceId')
   @HttpCode(HttpStatus.OK)
   async findAll(@Param('workspaceId', ParseIntPipe) workspaceId: number) {

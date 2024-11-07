@@ -24,9 +24,9 @@ export class BoardService {
 
   async findAll(workspaceId: number): Promise<{ boards: BoardEntity[] }> {
     const boards = await this.boardRepository.find({
-      // where: {
-      //   workspace: { id: workspaceId },
-      // },
+      where: {
+        workspace: { id: workspaceId },
+      },
       select: ['id', 'name', 'backgroundColor', 'description'],
     });
     return { boards };
@@ -35,11 +35,11 @@ export class BoardService {
   async findOne(id: number): Promise<BoardEntity> {
     const board = await this.boardRepository.findOne({
       where: { id },
-      // relations: {
-      //   // lists: {
-      //   //   cards: true,
-      //   // },
-      // },
+      relations: {
+        lists: {
+          cards: true,
+        },
+      },
     });
     if (!board) {
       throw new NotFoundException('보드를 찾을 수 없습니다.');

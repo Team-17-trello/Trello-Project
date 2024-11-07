@@ -9,6 +9,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { CardEntity } from '../../card/entities/card.entity';
+import { WorkspaceEntity } from 'src/workspace/entities/workspace.entity';
 
 @Entity({ name: 'lists' })
 export class ListEntity {
@@ -30,9 +31,9 @@ export class ListEntity {
   @UpdateDateColumn({ type: 'timestamp' })
   updatedAt: Date;
 
-  @ManyToOne(() => BoardEntity, (board) => board.lists)
+  @ManyToOne(() => BoardEntity, (board) => board.lists, { onDelete: 'CASCADE' })
   board: BoardEntity;
 
   @OneToMany(() => CardEntity, (card) => card.list)
-  card: CardEntity[];
+  cards: CardEntity[];
 }

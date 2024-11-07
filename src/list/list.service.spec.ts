@@ -210,7 +210,66 @@ describe('ListService', () => {
       const boardId = 1;
       const listId = 1;
       const updateListDto: UpdateListDto = { listId, order: 1 };
-      const expectOrder = mockAllOrderList[0].order / 2;
+      const expectedOrder = mockAllOrderList[0].order / 2;
+
+      mockListRepository.find.mockResolvedValue(mockAllOrderList);
+      mockListRepository.update.mockResolvedValue(undefined);
+      mockListRepository.findOne.mockResolvedValue({
+        id: listId,
+        order: expectedOrder,
+      } as ListEntity);
+
+      const result = await listService.updateOrder(boardId, updateListDto);
+
+      expect(mockListRepository.update).toHaveBeenCalledWith(
+        { id: updateListDto.listId },
+        { order: expectedOrder },
+      );
+      expect(result!.order).toBe(expectedOrder);
+    });
+
+    it('리스트 순서를 마지막으로 변경하는 경우', async () => {
+      const boardId = 1;
+      const listId = 2;
+      const updateListDto: UpdateListDto = { listId, order: 4 };
+      const expectedOrder = mockAllOrderList[mockAllOrderList.length - 1].order + 1;
+
+      mockListRepository.find.mockResolvedValue(mockAllOrderList);
+      mockListRepository.update.mockResolvedValue(undefined);
+      mockListRepository.findOne.mockResolvedValue({
+        id: listId,
+        order: expectedOrder,
+      } as ListEntity);
+
+      const result = await listService.updateOrder(boardId, updateListDto);
+
+      expect(mockListRepository.update).toHaveBeenCalledWith(
+        { id: updateListDto.listId },
+        { order: expectedOrder },
+      );
+      expect(result!.order).toBe(expectedOrder);
+    });
+
+    it('리스트 순서를 중간으로 변경하는 경우', async () => {
+      const boardId = 1;
+      const listId = 3;
+      const updateListDto: UpdateListDto = { listId, order: 2 };
+      const expectedOrder = (mockAllOrderList[1].order + mockAllOrderList[0].order) / 2;
+
+      mockListRepository.find.mockResolvedValue(mockAllOrderList);
+      mockListRepository.update.mockResolvedValue(undefined);
+      mockListRepository.findOne.mockResolvedValue({
+        id: listId,
+        order: expectedOrder,
+      } as ListEntity);
+
+      const result = await listService.updateOrder(boardId, updateListDto);
+
+      expect(mockListRepository.update).toHaveBeenCalledWith(
+        { id: updateListDto.listId },
+        { order: expectedOrder },
+      );
+      expect(result!.order).toBe(expectedOrder);
     });
   });
 
