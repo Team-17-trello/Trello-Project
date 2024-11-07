@@ -6,12 +6,15 @@ import { Repository } from 'typeorm';
 import { CreateBoardDto } from './dto/create-board.dto';
 import { UpdateBoardDto } from './dto/update-board.dto';
 import { BoardEntity } from './entities/board.entity';
+import { WorkspaceEntity } from 'src/workspace/entities/workspace.entity';
 
 @Injectable()
 export class BoardService {
   constructor(
     @InjectRepository(BoardEntity)
     private readonly boardRepository: Repository<BoardEntity>,
+    @InjectRepository(WorkspaceEntity)
+    private readonly workspaceRepository: Repository<WorkspaceEntity>,
   ) {}
 
   async create(createBoardDto: CreateBoardDto, user: UserEntity): Promise<BoardEntity> {
@@ -23,12 +26,17 @@ export class BoardService {
   }
 
   async findAll(workspaceId: number): Promise<{ boards: BoardEntity[] }> {
+    const workspace = await this.workspaceRepository.findOne({
+      where: { id: workspaceId },
+    });
+
     const boards = await this.boardRepository.find({
       where: {
-        workspace: { id: workspaceId },
+        workspace: workspace,
       },
       select: ['id', 'name', 'backgroundColor', 'description'],
     });
+
     return { boards };
   }
 
@@ -36,9 +44,7 @@ export class BoardService {
     const board = await this.boardRepository.findOne({
       where: { id },
       relations: {
-        lists: {
-          cards: true,
-        },
+        lists: true,
       },
     });
     if (!board) {

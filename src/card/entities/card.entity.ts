@@ -12,6 +12,7 @@ import { ResponsibleEntity } from './responsible.entity';
 import { ListEntity } from '../../list/entities/list.entity';
 import { WorkspaceEntity } from 'src/workspace/entities/workspace.entity';
 import { CommentEntity } from 'src/comment/entities/comment.entity';
+import { itemsEntity } from 'src/item/entities/item.entity';
 
 @Entity({
   name: 'cards',
