@@ -27,7 +27,7 @@ export class CommentService {
         throw new NotFoundException('해당 카드가 존재하지 않습니다.');
       }
 
-      const comment = await this.commentRepository.save({
+      const comment : CommentEntity = await this.commentRepository.save({
         text: commentDto.text,
         userId: user.id,
         card: card,

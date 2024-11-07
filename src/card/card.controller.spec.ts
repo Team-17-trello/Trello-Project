@@ -53,6 +53,7 @@ describe('CardController', () => {
     list: null,
     responsibles: null,
     comments: null,
+    workspace: null,
   };
 
   const mockUser: UserEntity = {
@@ -79,6 +80,7 @@ describe('CardController', () => {
       list: null,
       responsibles: null,
       comments: null,
+      workspace: null,
     },
   ];
 
