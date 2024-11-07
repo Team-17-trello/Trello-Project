@@ -22,7 +22,9 @@ export class WorkspaceService {
     private readonly userRepository: Repository<UserEntity>,
     @InjectRepository(MemberEntity)
     private readonly memberRepository: Repository<MemberEntity>,
-  ) {}
+  ) {
+  }
+
   /**워크스페이스 생성 */
   async workspaceCreate(
     user: UserEntity,
@@ -114,16 +116,14 @@ export class WorkspaceService {
         throw new NotFoundException(`해당 ID(${userId})의 사용자가 존재하지 않습니다.`);
       }
 
-      for (let i = 0; i < userId.length; i++) {
-        const inviteMember = await this.memberRepository.findOne({
-          where: {
-            workspace: { id: workspaceId },
-            user: { id: userId[i] },
-          },
-        });
-        if (inviteMember) {
-          throw new ConflictException(`유저${userId}가 이미 초대되었습니다.`);
-        }
+      const inviteMember = await this.memberRepository.findOne({
+        where: {
+          workspace: { id: workspaceId },
+          user: { id: userId[i] },
+        },
+      });
+      if (inviteMember) {
+        throw new ConflictException(`유저${userId}가 이미 초대되었습니다.`);
       }
 
       const createMember = await this.memberRepository.create({
