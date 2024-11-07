@@ -286,5 +286,10 @@ export class CardService {
     card.list = list;
 
     await this.cardRepository.save(card);
+
+    return {
+      status : 200,
+      message : '카드 위치가 변경되었습니다.'
+    }
   }
 }
