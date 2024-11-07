@@ -36,9 +36,12 @@ export class CardService {
       throw new NotFoundException('존재하지 않는 리스트입니다 확인해주세요.');
     }
 
-    const cards = await this.cardRepository.find({
+    const cards = await this.cardRepository.findOne({
       where: {
         list: list,
+      },
+      order: {
+        order: 'DESC',
       },
     });
 
@@ -46,7 +49,7 @@ export class CardService {
       title: createCardDto.title,
       description: createCardDto.description,
       color: createCardDto.color,
-      order: cards.length + 1,
+      order: cards.order + 1,
       author: user.id,
       list: list,
     });

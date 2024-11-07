@@ -9,15 +9,14 @@ import {
   ParseIntPipe,
   Post,
   Put,
-  Query,
   UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { UserEntity } from 'src/user/entities/user.entity';
-import { UserInfo } from 'src/utils/userInfo-decolator';
 import { CreateListDto } from './dto/create-list.dto';
 import { UpdateListDto } from './dto/update-list.dto';
 import { ListService } from './list.service';
+import { UserInfo } from 'src/utils/userInfo-decolator';
+import { UserEntity } from 'src/user/entities/user.entity';
 
 @Controller('lists')
 @UseGuards(AuthGuard('jwt'))
@@ -26,8 +25,8 @@ export class ListController {
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  create(@Body() createListDto: CreateListDto) {
-    return this.listService.create(createListDto);
+  create(@Body() createListDto: CreateListDto, @UserInfo() user: UserEntity) {
+    return this.listService.create(createListDto, user);
   }
 
   @Get('/inventory/:boardId')
@@ -48,10 +47,13 @@ export class ListController {
     return this.listService.update(listId, updateListDto);
   }
 
-  @Put('orders/:listId')
+  @Put('orders/:boardId')
   @HttpCode(HttpStatus.OK)
-  updateOrder(@Param('listId', ParseIntPipe) listId: number, @Body() updateListDto: UpdateListDto) {
-    return this.listService.update(listId, updateListDto);
+  updateOrder(
+    @Param('boardId', ParseIntPipe) boardId: number,
+    @Body() updateListDto: UpdateListDto,
+  ) {
+    return this.listService.updateOrder(boardId, updateListDto);
   }
 
   @Delete(':listId')

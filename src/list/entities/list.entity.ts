@@ -18,7 +18,7 @@ export class ListEntity {
   @Column({ type: 'varchar' })
   name: string;
 
-  @Column({ type: 'int' })
+  @Column({ type: 'float' })
   order: number;
 
   @Column({ type: 'int' })
