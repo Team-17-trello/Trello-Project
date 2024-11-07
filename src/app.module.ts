@@ -19,6 +19,7 @@ import { WorkspaceModule } from './workspace/workspace.module';
 import { MemberEntity } from './member/entity/member.entity';
 import { CardEntity } from './card/entities/card.entity';
 import { ResponsibleEntity } from './card/entities/responsible.entity';
+import { CommentEntity } from './comment/entities/comment.entity';
 
 const typeOrmModuleOptions = {
   useFactory: async (configService: ConfigService): Promise<TypeOrmModuleOptions> => ({
@@ -29,7 +30,7 @@ const typeOrmModuleOptions = {
     host: configService.get('DB_HOST'),
     port: configService.get('DB_PORT'),
     database: configService.get('DB_NAME'),
-    entities: [BoardEntity, UserEntity, ListEntity, MemberEntity, CardEntity, ResponsibleEntity],
+    entities: [BoardEntity, UserEntity, ListEntity, MemberEntity, CardEntity, ResponsibleEntity, CommentEntity],
     synchronize: configService.get('DB_SYNC'),
     logging: true,
   }),

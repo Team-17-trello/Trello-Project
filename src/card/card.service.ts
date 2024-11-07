@@ -42,7 +42,7 @@ export class CardService {
       description: createCardDto.description,
       color: createCardDto.color,
       order: cards.length + 1,
-      author: user.id,
+      userId: user.id,
       list: list,
     });
 
