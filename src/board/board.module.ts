@@ -3,9 +3,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { BoardController } from './board.controller';
 import { BoardService } from './board.service';
 import { BoardEntity } from './entities/board.entity';
+import { WorkspaceEntity } from '../workspace/entities/workspace.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([BoardEntity])],
+  imports: [TypeOrmModule.forFeature([BoardEntity, WorkspaceEntity])],
   controllers: [BoardController],
   providers: [BoardService],
 })
