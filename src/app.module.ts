@@ -16,11 +16,12 @@ import { MailerModule } from '@nestjs-modules/mailer';
 import { ItemModule } from './item/item.module';
 import { ListEntity } from './list/entities/list.entity';
 import { ListModule } from './list/list.module';
-import { User } from './user/entities/user.entity';
+import { UserEntity } from './user/entities/user.entity';
 import { UserModule } from './user/user.module';
 import { WorkspaceModule } from './workspace/workspace.module';
-import { Member } from './member/entity/member.entity';
-
+import { MemberEntity } from './member/entity/member.entity';
+import { CardEntity } from './card/entities/card.entity';
+import { ResponsibleEntity } from './card/entities/responsible.entity';
 
 const typeOrmModuleOptions = {
   useFactory: async (configService: ConfigService): Promise<TypeOrmModuleOptions> => ({
@@ -31,7 +32,15 @@ const typeOrmModuleOptions = {
     host: configService.get('DB_HOST'),
     port: configService.get('DB_PORT'),
     database: configService.get('DB_NAME'),
-    entities: [WorkspaceEntity, BoardEntity, User, Member, ListEntity],
+    entities: [
+      BoardEntity,
+      UserEntity,
+      ListEntity,
+      MemberEntity,
+      CardEntity,
+      ResponsibleEntity,
+      WorkspaceEntity,
+    ],
     synchronize: configService.get('DB_SYNC'),
     logging: true,
   }),
@@ -63,7 +72,6 @@ const typeOrmModuleOptions = {
     ChecklistModule,
     ItemModule,
     FileModule,
-
   ],
   controllers: [],
   providers: [],

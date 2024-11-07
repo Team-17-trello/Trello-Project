@@ -4,8 +4,8 @@ import { WorkspaceEntity } from './entities/workspace.entity';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { BadRequestException } from '@nestjs/common';
-import { User } from 'src/user/entities/user.entity';
-import { Member } from 'src/member/entity/member.entity';
+import { UserEntity } from 'src/user/entities/user.entity';
+import { MemberEntity } from 'src/member/entity/member.entity';
 
 describe('WorkspaceService', () => {
   const mockRepository = {
@@ -18,8 +18,8 @@ describe('WorkspaceService', () => {
 
   let workspaceService: WorkspaceService;
   let workspaceRepository: Repository<WorkspaceEntity>; // 모킹된 리포지토리
-  let userRepository: Repository<User>;
-  let memberRepository: Repository<Member>;
+  let userRepository: Repository<UserEntity>;
+  let memberRepository: Repository<MemberEntity>;
   beforeEach(async () => {
     jest.clearAllMocks();
 
@@ -38,14 +38,14 @@ describe('WorkspaceService', () => {
           useValue: mockRepository, // 모킹된 리포지토리 사용
         },
         {
-          provide: getRepositoryToken(User),
+          provide: getRepositoryToken(UserEntity),
           useValue: {
             findOne: jest.fn(),
             save: jest.fn(),
           },
         },
         {
-          provide: getRepositoryToken(Member),
+          provide: getRepositoryToken(MemberEntity),
           useValue: {
             create: jest.fn(),
             save: jest.fn(),
@@ -59,12 +59,12 @@ describe('WorkspaceService', () => {
     workspaceRepository = module.get<Repository<WorkspaceEntity>>(
       getRepositoryToken(WorkspaceEntity),
     );
-    memberRepository = module.get<Repository<Member>>(getRepositoryToken(Member));
-    userRepository = module.get<Repository<User>>(getRepositoryToken(User)); // 모킹된 리포지토리 가져오기
+    memberRepository = module.get<Repository<MemberEntity>>(getRepositoryToken(MemberEntity));
+    userRepository = module.get<Repository<UserEntity>>(getRepositoryToken(UserEntity)); // 모킹된 리포지토리 가져오기
   });
 
   it('워크스페이스 생성 테스트', async () => {
-    const user: User = {
+    const user: UserEntity = {
       id: 1,
       email: 'test@test',
       password: 'password',

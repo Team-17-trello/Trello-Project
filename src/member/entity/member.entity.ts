@@ -1,3 +1,4 @@
+
 import {
   Entity,
   Column,
@@ -7,13 +8,13 @@ import {
   JoinColumn,
   JoinTable,
 } from 'typeorm';
-import { User } from '../../user/entities/user.entity';
+import { UserEntity } from '../../user/entities/user.entity';
 import { WorkspaceEntity } from 'src/workspace/entities/workspace.entity';
 
 @Entity({
   name: 'member',
 })
-export class Member {
+export class MemberEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -23,10 +24,12 @@ export class Member {
   @Column({ type: 'boolean', nullable: false, name: 'is_admin' })
   isAdmin: boolean;
 
-  @ManyToOne(() => User, (user) => user.members)
-  user: User;
-
   @ManyToOne(() => WorkspaceEntity, (workspace) => workspace.members)
   @JoinColumn()
   workspace: WorkspaceEntity;
+
+  @ManyToOne(() => UserEntity, (user: UserEntity) => user.members)
+  user: UserEntity;
 }
+
+

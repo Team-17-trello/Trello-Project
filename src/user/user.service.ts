@@ -1,6 +1,6 @@
 import { ConflictException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { User } from './entities/user.entity';
+import { UserEntity } from './entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { RemoveUserDto } from './dto/remove.dto';
@@ -10,11 +10,18 @@ import { compare } from 'bcrypt';
 @Injectable()
 export class UserService {
   constructor(
+<<<<<<< HEAD
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
   ) {}
+=======
+    @InjectRepository(UserEntity)
+    private readonly userRepository: Repository<UserEntity>,
+  ) {
+  }
+>>>>>>> origin
 
-  async update(user: User, userUpdateDto: UpdateUserDto) {
+  async update(user: UserEntity, userUpdateDto: UpdateUserDto) {
     const target = await this.userRepository.findOne({
       where: { id: user.id },
     });
@@ -26,7 +33,7 @@ export class UserService {
     if (isNicknameExists) {
       throw new ConflictException('이미 사용 중인 닉네임입니다. 다시 시도해주세요.');
     }
-    const updateData: Partial<User> = {};
+    const updateData: Partial<UserEntity> = {};
 
     if (userUpdateDto.nickname) {
       updateData.nickname = userUpdateDto.nickname;
@@ -40,8 +47,13 @@ export class UserService {
     return await this.userRepository.update(user.id, updateData);
   }
 
+<<<<<<< HEAD
   async remove(user: User, removeUserDto: RemoveUserDto) {
     try {
+=======
+  async remove(user: UserEntity, removeUserDto: RemoveUserDto) {
+    try{
+>>>>>>> origin
       const findUser = await this.userRepository.findOne({
         where: { id: user.id },
       });

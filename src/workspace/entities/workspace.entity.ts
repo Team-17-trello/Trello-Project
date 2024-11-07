@@ -7,7 +7,7 @@ import {
   BaseEntity,
   JoinTable,
 } from 'typeorm';
-import { Member } from 'src/member/entity/member.entity';
+import { MemberEntity } from 'src/member/entity/member.entity';
 
 @Entity({ name: 'workspace' })
 export class WorkspaceEntity extends BaseEntity {
@@ -20,6 +20,6 @@ export class WorkspaceEntity extends BaseEntity {
   @CreateDateColumn({ type: 'timestamp', nullable: true, name: 'createdAt' })
   createdAt: Date;
 
-  @OneToMany(() => Member, (member) => member.workspace)
-  members: Member[];
+  @OneToMany(() => MemberEntity, (member) => member.workspace)
+  members: MemberEntity[];
 }

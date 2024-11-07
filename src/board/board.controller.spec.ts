@@ -4,18 +4,11 @@ import { BoardService } from './board.service';
 import { CreateBoardDto } from './dto/create-board.dto';
 import { UpdateBoardDto } from './dto/update-board.dto';
 import { BoardEntity } from 'src/board/entities/board.entity';
-import { User } from 'src/user/entities/user.entity';
+import { UserEntity } from 'src/user/entities/user.entity';
 
 describe('BoardController', () => {
   let boardController: BoardController;
   let boardService: BoardService;
-
-  const mockUser: User = {
-    id: 1,
-    email: 'email@test.com',
-    password: 'password',
-    nickname: 'nickname',
-  } as User;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -59,10 +52,10 @@ describe('BoardController', () => {
 
     (boardService.create as jest.Mock).mockResolvedValue(expectedResult);
 
-    const result = await boardController.create(createBoardDto, mockUser);
+    const result = await boardController.create(createBoardDto);
 
     expect(result).toEqual(expectedResult);
-    expect(boardService.create).toHaveBeenCalledWith(createBoardDto, mockUser);
+    expect(boardService.create).toHaveBeenCalledWith(createBoardDto);
   });
 
   it('보드 전체 조회 검증', async () => {
@@ -115,10 +108,10 @@ describe('BoardController', () => {
 
     (boardService.update as jest.Mock).mockResolvedValue(expectedResult);
 
-    const result = await boardController.update(boardId, updateBoardDto, mockUser);
+    const result = await boardController.update(boardId, updateBoardDto);
 
     expect(result).toEqual(expectedResult);
-    expect(boardService.update).toHaveBeenCalledWith(boardId, updateBoardDto, mockUser);
+    expect(boardService.update).toHaveBeenCalledWith(boardId, updateBoardDto);
   });
 
   it('보드 삭제 검증', async () => {
@@ -127,8 +120,8 @@ describe('BoardController', () => {
 
     (boardService.remove as jest.Mock).mockResolvedValue(expectedResult);
 
-    const result = await boardController.remove(boardId, mockUser);
+    const result = await boardController.remove(boardId);
     expect(result).toEqual(expectedResult);
-    expect(boardService.remove).toHaveBeenCalledWith(boardId, mockUser);
+    expect(boardService.remove).toHaveBeenCalledWith(boardId);
   });
 });

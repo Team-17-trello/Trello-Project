@@ -10,22 +10,22 @@ import { WorkspaceEntity } from './entities/workspace.entity';
 import { Repository } from 'typeorm';
 import { CreateWorkspaceDto } from './dto/create-workspace.dto';
 import _ from 'lodash';
-import { Member } from 'src/member/entity/member.entity';
-import { User } from 'src/user/entities/user.entity';
+import { MemberEntity } from 'src/member/entity/member.entity';
+import { UserEntity } from 'src/user/entities/user.entity';
 
 @Injectable()
 export class WorkspaceService {
   constructor(
     @InjectRepository(WorkspaceEntity)
     private workspaceRepository: Repository<WorkspaceEntity>,
-    @InjectRepository(User)
-    private readonly userRepository: Repository<User>,
-    @InjectRepository(Member)
-    private readonly memberRepository: Repository<Member>,
+    @InjectRepository(UserEntity)
+    private readonly userRepository: Repository<UserEntity>,
+    @InjectRepository(MemberEntity)
+    private readonly memberRepository: Repository<MemberEntity>,
   ) {}
   /**워크스페이스 생성 */
   async workspaceCreate(
-    user: User,
+    user: UserEntity,
     createWorkspaceDto: CreateWorkspaceDto,
   ): Promise<WorkspaceEntity> {
     const { workspaceName } = createWorkspaceDto;
@@ -85,7 +85,7 @@ export class WorkspaceService {
 
   /** 워크스페이스 멤버 초대 */
   async addWorkspaceMember(
-    user: User,
+    user: UserEntity,
     workspaceId: number,
     userId: number[],
   ): Promise<{ status: number; message: string }> {
