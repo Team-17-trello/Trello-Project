@@ -93,7 +93,7 @@ export class CardService {
       },
       relations: {
         responsibles: true,
-        // comment : true,
+        comments : true,
         // checkList : true,
         // file : true,
       },
@@ -268,6 +268,27 @@ export class CardService {
       order: { order: 'ASC' },
     });
 
+    if (cards.length === 0) {
+      newOrder = 1;
+      const list = await this.listRepository.findOne({
+        where: { id: moveCardDto.listId },
+      });
+      console.log(list);
+      if (!list){
+        throw new NotFoundException('존재하지 않는 리스트입니다.');
+      }
+
+      card.order = newOrder;
+      card.list = list;
+
+      await this.cardRepository.save(card);
+
+      return {
+        status: 200,
+        message: '카드 위치가 변경되었습니다.',
+      };
+    }
+
     // 첫번째로 옮기는 경우 (앞 값이 없을 떄)
     if (moveCardDto.order === 1) {
       newOrder = cards[0].order / 2;
@@ -294,6 +315,10 @@ export class CardService {
     const list = await this.listRepository.findOne({
       where: { id: moveCardDto.listId },
     });
+    console.log(list);
+    if (!list){
+      throw new NotFoundException('존재하지 않는 리스트입니다.');
+    }
 
     card.order = newOrder;
     card.list = list;
