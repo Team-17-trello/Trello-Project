@@ -47,7 +47,7 @@ export class AuthService {
     })
 
 
-    return '회원가입에 성공했습니다!';
+    return {message:'회원가입에 성공했습니다!'};
   }
 
 
