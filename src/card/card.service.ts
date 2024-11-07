@@ -1,14 +1,9 @@
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateCardDto } from './dto/create-card.dto';
 import { UpdateCardDto } from './dto/update-card.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CardEntity } from './entities/card.entity';
-import { Column, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { DueDateDto } from './dto/duedate.dto';
 import { ResponsibleDto } from './dto/responsible.dto';
 import { UserEntity } from '../user/entities/user.entity';
@@ -59,7 +54,7 @@ export class CardService {
       card: card,
     };
   }
-  // TODO : orderBy로 정렬하기
+
   async findAll(listId: number) {
     const list = await this.listRepository.findOne({
       where: { id: listId },
@@ -73,6 +68,9 @@ export class CardService {
       where: {
         list: list,
       },
+      order : {
+        order: 'asc',
+      }
     });
 
     return {
