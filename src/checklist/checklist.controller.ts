@@ -9,23 +9,18 @@ import { AuthGuard } from '@nestjs/passport';
 export class ChecklistController {
   constructor(private readonly checklistService: ChecklistService) {}
 
-  // @Post()
-  // create(@Body() createChecklistDto: CreateChecklistDto) {
-  //   return this.checklistService.createCheklist(createChecklistDto);
-  // }
+  @Post('')
+  create(@Body() createChecklistDto: CreateChecklistDto) {
+    return this.checklistService.createCheklist(createChecklistDto);
+  }
 
-  // @Get()
-  // findAll() {
-  //   return this.checklistService.findAllChecklist();
-  // }
+  @Put(':id')
+  update(@Param() @Body() updateChecklistDto: UpdateChecklistDto) {
+    return this.checklistService.updateChecklist(updateChecklistDto);
+  }
 
-  // @Put(':id')
-  // update(@Param('id') id: string, @Body() updateChecklistDto: UpdateChecklistDto) {
-  //   return this.checklistService.updateChecklist(+id, updateChecklistDto);
-  // }
-
-  // @Delete('')
-  // remove(@Param('id') id: string) {
-  //   return this.checklistService.removeChecklist(+id);
-  // }
+  @Delete(':checklistId')
+  remove(@Param('checklistId') checklistId: number) {
+    return this.checklistService.removeChecklist(checklistId);
+  }
 }

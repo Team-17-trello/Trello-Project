@@ -1,56 +1,77 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ChecklistController } from './checklist.controller';
 import { ChecklistService } from './checklist.service';
+import { CreateChecklistDto } from './dto/create-checklist.dto';
+import { ChecklistEntity } from './entities/checklist.entity';
+import { UpdateChecklistDto } from './dto/update-checklist.dto';
+import { DeleteResult } from 'typeorm';
 
-describe('ChecklistController', () => {
-  let controller: ChecklistController;
+describe('체크리스트 컨트롤러 테스트', () => {
+  let checklistController: ChecklistController;
+  let checklistService: ChecklistService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [ChecklistController],
-      providers: [ChecklistService],
+      providers: [
+        {
+          provide: ChecklistService,
+          useValue: {
+            createCheklist: jest.fn(),
+            findAll: jest.fn(),
+            updateChecklist: jest.fn(),
+            removeChecklist: jest.fn(),
+          },
+        },
+      ],
     }).compile();
 
-    controller = module.get<ChecklistController>(ChecklistController);
+    checklistController = module.get<ChecklistController>(ChecklistController);
+    checklistService = module.get<ChecklistService>(ChecklistService);
   });
 
-  it('should be defined', () => {
-    expect(controller).toBeDefined();
+  it('체크리스트 컨트롤러 생성 테스트', async () => {
+    const createChecklistDto: CreateChecklistDto = {
+      cardId: 1,
+      checklistName: 'test',
+    };
+    const expectedResult: ChecklistEntity = {
+      id: 1,
+      checklistName: 'test',
+      createdAt: new Date(),
+      card: null,
+      workspace: null,
+    };
+    (checklistService.createCheklist as jest.Mock).mockResolvedValue(expectedResult);
+    const result = await checklistController.create(createChecklistDto);
+    expect(result).toEqual(expectedResult);
+    expect(checklistService.createCheklist).toHaveBeenCalledWith(createChecklistDto);
+  });
+
+  it('체크리스트 컨트롤러 수정 테스트', async () => {
+    const checklistId = 1;
+    const updateChecklistDto: UpdateChecklistDto = { checklistName: 'test' };
+    const expectedResult: ChecklistEntity = {
+      id: 1,
+      checklistName: 'test',
+      createdAt: new Date(),
+      card: null,
+      workspace: null,
+    };
+    (checklistService.updateChecklist as jest.Mock).mockResolvedValue(expectedResult);
+
+    const result = await checklistController.update(updateChecklistDto);
+
+    expect(result).toEqual(expectedResult);
+    expect(checklistService.updateChecklist).toHaveBeenCalledWith(updateChecklistDto);
+  });
+  it('체크리스트 컨트롤러 삭제 테스트', async () => {
+    const checklistId = 1;
+    const expectedResult = { message: '체크리스트가 삭제 되었습니다.' };
+
+    (checklistService.removeChecklist as jest.Mock).mockResolvedValue(expectedResult);
+    const result = await checklistController.remove(checklistId);
+    expect(result).toEqual(expectedResult);
+    expect(checklistService.removeChecklist).toHaveBeenCalledWith(checklistId);
   });
 });
-
-
-// (예시)
-// describe('HeroController', () => {
-//   let controller: HeroController; // 컨트롤러 변수 선언
-//   let service: HeroService; // 서비스 변수 선언
-
-//   // 각 테스트 실행 전에 모듈과 종속성 설정
-//   beforeEach(async () => {
-//     const module: TestingModule = await Test.createTestingModule({
-//       controllers: [HeroController], // 테스트할 컨트롤러 설정
-//       providers: [
-//         {
-//           provide: HeroService,
-//           useValue: {
-//             findHeroById: jest.fn().mockReturnValue({ id: 1, name: 'Batman' }), // 서비스 메서드 모의(Mock) 처리
-//           },
-//         },
-//       ],
-//     }).compile();
-
-//     controller = module.get<HeroController>(HeroController); // 컨트롤러 인스턴스 가져오기
-//     service = module.get<HeroService>(HeroService); // 서비스 인스턴스 가져오기
-//   });
-
-//   // 컨트롤러가 정의되었는지 테스트
-//   it('should be defined', () => {
-//     expect(controller).toBeDefined();
-//   });
-
-//   // 컨트롤러의 getHero 메서드가 올바른 데이터를 반환하는지 테스트
-//   it('should return hero by id', async () => {
-//     // getHero 메서드 호출 후 반환값 검증
-//     expect(await controller.getHero(1)).toEqual({ id: 1, name: 'Batman' });
-//   });
-// });
