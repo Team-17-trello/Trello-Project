@@ -1,4 +1,4 @@
-import { IsDate, IsDateString, IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { IsDate, IsDateString, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class CreateCardDto {
   @IsNumber()
@@ -18,6 +18,7 @@ export class CreateCardDto {
   color: string;
 
   @IsDateString()
+  @IsOptional()
   dueDate?: Date;
 
 }
