@@ -10,10 +10,16 @@ import { compare } from 'bcrypt';
 @Injectable()
 export class UserService {
   constructor(
+<<<<<<< HEAD
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
+  ) {}
+=======
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
   ) {
   }
+>>>>>>> origin
 
   async update(user: UserEntity, userUpdateDto: UpdateUserDto) {
     const target = await this.userRepository.findOne({
@@ -24,7 +30,7 @@ export class UserService {
       where: { nickname: userUpdateDto.nickname },
     });
 
-    if (isNicknameExists){
+    if (isNicknameExists) {
       throw new ConflictException('이미 사용 중인 닉네임입니다. 다시 시도해주세요.');
     }
     const updateData: Partial<UserEntity> = {};
@@ -39,37 +45,36 @@ export class UserService {
 
     // 변경된 값이 포함된 객체로 한 번에 업데이트
     return await this.userRepository.update(user.id, updateData);
-
-
   }
 
+<<<<<<< HEAD
+  async remove(user: User, removeUserDto: RemoveUserDto) {
+    try {
+=======
   async remove(user: UserEntity, removeUserDto: RemoveUserDto) {
     try{
+>>>>>>> origin
       const findUser = await this.userRepository.findOne({
         where: { id: user.id },
       });
 
-      if (!(await compare(removeUserDto.password, findUser.password))){
-        throw new UnauthorizedException ('비밀번호가 일치하지 않습니다.')
+      if (!(await compare(removeUserDto.password, findUser.password))) {
+        throw new UnauthorizedException('비밀번호가 일치하지 않습니다.');
       }
 
       await this.userRepository.update(findUser.id, {
         email: null,
         password: null,
         nickname: null,
-        deletedAt: new Date()})
+        deletedAt: new Date(),
+      });
       return {
         statusCode: 200,
-        message: '계정이 성공적으로 삭제 되었습니다.'
-      }
-
-
-    } catch(error){
-      console.error(error)
-      throw error
+        message: '계정이 성공적으로 삭제 되었습니다.',
+      };
+    } catch (error) {
+      console.error(error);
+      throw error;
     }
-
-
-
   }
 }

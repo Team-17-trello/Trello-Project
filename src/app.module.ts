@@ -10,6 +10,9 @@ import { CardModule } from './card/card.module';
 import { ChecklistModule } from './checklist/checklist.module';
 import { CommentModule } from './comment/comment.module';
 import { FileModule } from './file/file.module';
+import { WorkspaceEntity } from './workspace/entities/workspace.entity';
+import { WorkspaceController } from './workspace/workspace.controller';
+import { MailerModule } from '@nestjs-modules/mailer';
 import { ItemModule } from './item/item.module';
 import { ListEntity } from './list/entities/list.entity';
 import { ListModule } from './list/list.module';
@@ -29,7 +32,15 @@ const typeOrmModuleOptions = {
     host: configService.get('DB_HOST'),
     port: configService.get('DB_PORT'),
     database: configService.get('DB_NAME'),
-    entities: [BoardEntity, UserEntity, ListEntity, MemberEntity, CardEntity, ResponsibleEntity],
+    entities: [
+      BoardEntity,
+      UserEntity,
+      ListEntity,
+      MemberEntity,
+      CardEntity,
+      ResponsibleEntity,
+      WorkspaceEntity,
+    ],
     synchronize: configService.get('DB_SYNC'),
     logging: true,
   }),
