@@ -117,7 +117,7 @@ describe('ListController', () => {
       dueDate: new Date('2022-12-31T00:00:00Z'),
       list: {} as ListEntity,
       responsible: [],
-      author: 1,
+      userId: 1,
     } as CardEntity;
 
     const expectedResult: ListEntity = {
@@ -168,7 +168,7 @@ describe('ListController', () => {
       dueDate: new Date('2022-12-31T00:00:00Z'),
       list: {} as ListEntity,
       responsible: [],
-      author: 1,
+      userId: 1,
     } as CardEntity;
 
     const expectedResult: ListEntity = {
