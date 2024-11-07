@@ -19,8 +19,8 @@ export class CardController {
     return this.cardService.create(user, createCardDto);
   }
 
-  @Get(':listId')
-  findAll(@Param() listId: string) {
+  @Get('/all/:listId')
+  findAll(@Param('listId') listId: string) {
     return this.cardService.findAll(+listId);
   }
 

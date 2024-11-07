@@ -7,23 +7,22 @@ import { AuthModule } from './auth/auth.module';
 import { BoardModule } from './board/board.module';
 import { BoardEntity } from './board/entities/board.entity';
 import { CardModule } from './card/card.module';
+import { CardEntity } from './card/entities/card.entity';
+import { ResponsibleEntity } from './card/entities/responsible.entity';
 import { ChecklistModule } from './checklist/checklist.module';
 import { CommentModule } from './comment/comment.module';
+import { CommentEntity } from './comment/entities/comment.entity';
 import { FileModule } from './file/file.module';
-import { WorkspaceEntity } from './workspace/entities/workspace.entity';
-import { WorkspaceController } from './workspace/workspace.controller';
-import { MailerModule } from '@nestjs-modules/mailer';
 import { ItemModule } from './item/item.module';
 import { ListEntity } from './list/entities/list.entity';
 import { ListModule } from './list/list.module';
+import { MemberEntity } from './member/entity/member.entity';
 import { UserEntity } from './user/entities/user.entity';
 import { UserModule } from './user/user.module';
+import { WorkspaceEntity } from './workspace/entities/workspace.entity';
 import { WorkspaceModule } from './workspace/workspace.module';
-import { MemberEntity } from './member/entity/member.entity';
-import { CardEntity } from './card/entities/card.entity';
-import { ResponsibleEntity } from './card/entities/responsible.entity';
+
 import { ChecklistEntity } from './checklist/entities/checklist.entity';
-import { CommentEntity } from './comment/entities/comment.entity';
 
 const typeOrmModuleOptions = {
   useFactory: async (configService: ConfigService): Promise<TypeOrmModuleOptions> => ({

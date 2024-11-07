@@ -42,11 +42,13 @@ export class CardService {
       },
     });
 
+    const newOrder = (cards?.order ?? 0) + 1;
+
     const card : CardEntity  = await this.cardRepository.save({
       title: createCardDto.title,
       description: createCardDto.description,
       color: createCardDto.color,
-      order: cards.order + 1,
+      order: newOrder,
       userId: user.id,
       list: list,
       workspace: list.board.workspace,

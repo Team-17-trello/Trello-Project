@@ -13,6 +13,7 @@ import { ListEntity } from '../../list/entities/list.entity';
 import { ChecklistEntity } from '../../checklist/entities/checklist.entity';
 import { WorkspaceEntity } from 'src/workspace/entities/workspace.entity';
 import { CommentEntity } from 'src/comment/entities/comment.entity';
+import { itemsEntity } from 'src/item/entities/item.entity';
 
 @Entity({
   name: 'cards',
@@ -43,11 +44,11 @@ export class CardEntity {
   dueDate: Date;
 
   @Column({ type: 'int', nullable: false })
-  author: number;
+  userId: number;
 
   @OneToMany(() => ChecklistEntity, (checklist) => checklist.card)
   checklists: ChecklistEntity;
-  userId: number;
+  
 
   @ManyToOne(() => ListEntity, (list) => list.cards)
   list: ListEntity;
