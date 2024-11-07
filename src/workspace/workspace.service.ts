@@ -10,9 +10,8 @@ import { WorkspaceEntity } from './entities/workspace.entity';
 import { Repository } from 'typeorm';
 import { CreateWorkspaceDto } from './dto/create-workspace.dto';
 import _ from 'lodash';
-import { User } from 'src/user/entities/user.entity';
 import { Member } from 'src/member/entity/member.entity';
-import { log } from 'console';
+import { User } from 'src/user/entities/user.entity';
 
 @Injectable()
 export class WorkspaceService {
@@ -64,11 +63,23 @@ export class WorkspaceService {
   /**워크스페이스 상세 조회 */
   async getWorkspaceById(workspaceId: number) {
     await this.verifyWorkspaceById(workspaceId);
-    const getOneWorkspace = await this.workspaceRepository.findOne({
+    const getOneWorkspace = await this.workspaceRepository.find({
       where: { id: workspaceId },
-      relations: { members: true },
-      // select: {},
+      relations: { members: { user: true } },
+      select: {
+        id: true,
+        workspaceName: true,
+        createdAt: true,
+        members: {
+          isAdmin: true,
+          user: {
+            id: true,
+            nickname: true,
+          },
+        },
+      },
     });
+
     return getOneWorkspace;
   }
 
