@@ -1,5 +1,15 @@
-import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  CreateDateColumn,
+  ManyToOne,
+  JoinColumn,
+  JoinTable,
+} from 'typeorm';
 import { UserEntity } from '../../user/entities/user.entity';
+import { WorkspaceEntity } from 'src/workspace/entities/workspace.entity';
 
 @Entity({
   name: 'member',
@@ -13,6 +23,10 @@ export class MemberEntity {
 
   @Column({ type: 'boolean', nullable: false, name: 'is_admin' })
   isAdmin: boolean;
+
+  @ManyToOne(() => WorkspaceEntity, (workspace) => workspace.members)
+  @JoinColumn()
+  workspace: WorkspaceEntity;
 
   @ManyToOne(() => UserEntity, (user: UserEntity) => user.members)
   user: UserEntity;
