@@ -41,10 +41,10 @@ describe('체크리스트 컨트롤러 테스트', () => {
       createdAt: new Date(),
       card: null,
     };
-    (checklistService.createCheklist as jest.Mock).mockResolvedValue(expectedResult);
+    (checklistService.createChecklist as jest.Mock).mockResolvedValue(expectedResult);
     const result = await checklistController.create(createChecklistDto);
     expect(result).toEqual(expectedResult);
-    expect(checklistService.createCheklist).toHaveBeenCalledWith(createChecklistDto);
+    expect(checklistService.createChecklist).toHaveBeenCalledWith(createChecklistDto);
   });
 
   it('체크리스트 컨트롤러 수정 테스트', async () => {
