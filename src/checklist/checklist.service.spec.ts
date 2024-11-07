@@ -18,5 +18,8 @@ describe('ChecklistService', () => {
   });
 
   //체크리스트 생성
-  //checklistCreate
+  //checklistCreate메서드의 이름을 넣으면 생성된 체크리스트 반환
+  it('체크리스트 생성 확인', ()=> {
+    
+  })
 });
