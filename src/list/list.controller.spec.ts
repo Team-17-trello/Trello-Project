@@ -7,6 +7,7 @@ import { UpdateListDto } from './dto/update-list.dto';
 import { ListEntity } from './entities/list.entity';
 import { ListController } from './list.controller';
 import { ListService } from './list.service';
+import { WorkspaceEntity } from 'src/workspace/entities/workspace.entity';
 
 describe('ListController', () => {
   let listController: ListController;
@@ -97,7 +98,6 @@ describe('ListController', () => {
       dueDate: new Date('2022-12-31T00:00:00Z'),
       list: {} as ListEntity,
       responsibles: [],
-      author: 1,
     } as CardEntity;
 
     const expectedResult: ListEntity = {
@@ -137,6 +137,7 @@ describe('ListController', () => {
     };
 
     const expectedBoard = new BoardEntity();
+
     const expectedCard = {
       id: 1,
       title: 'Test Card',
@@ -146,10 +147,12 @@ describe('ListController', () => {
       createdAt: new Date('2022-01-01T00:00:00Z'),
       updatedAt: new Date('2022-01-01T00:00:00Z'),
       dueDate: new Date('2022-12-31T00:00:00Z'),
+      userId: 1,
       list: {} as ListEntity,
       responsibles: [],
-      author: 1,
-    } as CardEntity;
+      comments: [],
+      workspace: {} as WorkspaceEntity,
+    };
 
     const expectedResult: ListEntity = {
       id: listId,
