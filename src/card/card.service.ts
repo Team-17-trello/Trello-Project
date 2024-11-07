@@ -73,7 +73,7 @@ export class CardService {
 
     const cards = await this.cardRepository.find({
       where: {
-        list: list,
+        list: {id : list.id},
       },
       order: {
         order: 'asc',
