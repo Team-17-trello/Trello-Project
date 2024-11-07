@@ -10,11 +10,9 @@ import { compare } from 'bcrypt';
 @Injectable()
 export class UserService {
   constructor(
-
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
-  ) {
-  }
+  ) {}
 
 
   async update(user: UserEntity, userUpdateDto: UpdateUserDto) {
@@ -48,10 +46,8 @@ export class UserService {
     }
   }
 
-
   async remove(user: UserEntity, removeUserDto: RemoveUserDto) {
-    try{
-
+    try {
       const findUser = await this.userRepository.findOne({
         where: { id: user.id },
       });

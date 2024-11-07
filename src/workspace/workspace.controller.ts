@@ -2,7 +2,7 @@ import { Body, Controller, Get, Param, Post, Put, Query, UseGuards } from '@nest
 import { WorkspaceService } from './workspace.service';
 import { CreateWorkspaceDto } from './dto/create-workspace.dto';
 import { AuthGuard } from '@nestjs/passport';
-import { User } from 'src/user/entities/user.entity';
+import { UserEntity } from 'src/user/entities/user.entity';
 import { UserInfo } from 'src/utils/userInfo-decolator';
 import { AddWorkspaceMemberDto } from './dto/add-workspace-member.dto';
 
@@ -23,14 +23,17 @@ export class WorkspaceController {
 
   @UseGuards(AuthGuard('jwt'))
   @Post()
-  async workspaceCreate(@UserInfo() user: User, @Body() createWorkspaceDto: CreateWorkspaceDto) {
+  async workspaceCreate(
+    @UserInfo() user: UserEntity,
+    @Body() createWorkspaceDto: CreateWorkspaceDto,
+  ) {
     return await this.workspaceService.workspaceCreate(user, createWorkspaceDto);
   }
 
   @UseGuards(AuthGuard('jwt')) // JWT 인증 가드 사용
   @Put(':workspaceId/members') // workspaceId를 URL 파라미터로 받음
   async addWorkspaceMember(
-    @UserInfo() user: User, // @UserInfo() 데코레이터를 통해 현재 유저 정보 가져오기
+    @UserInfo() user: UserEntity, // @UserInfo() 데코레이터를 통해 현재 유저 정보 가져오기
     @Param('workspaceId') workspaceId: number, // URL에서 workspaceId 추출
     @Body() addWorkspaceMemberDto: AddWorkspaceMemberDto, // DTO를 통해 유저 정보 받기
   ) {

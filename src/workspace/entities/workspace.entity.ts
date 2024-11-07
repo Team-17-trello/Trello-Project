@@ -1,13 +1,14 @@
-import {
-  Entity,
-  Column,
-  PrimaryGeneratedColumn,
-  CreateDateColumn,
-  OneToMany,
-  BaseEntity,
-  JoinTable,
-} from 'typeorm';
+import { BoardEntity } from 'src/board/entities/board.entity';
+import { CardEntity } from 'src/card/entities/card.entity';
 import { MemberEntity } from 'src/member/entity/member.entity';
+import {
+  BaseEntity,
+  Column,
+  CreateDateColumn,
+  Entity,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity({ name: 'workspace' })
 export class WorkspaceEntity extends BaseEntity {
@@ -22,4 +23,10 @@ export class WorkspaceEntity extends BaseEntity {
 
   @OneToMany(() => MemberEntity, (member) => member.workspace)
   members: MemberEntity[];
+
+  @OneToMany(() => BoardEntity, (board) => board.workspace)
+  boards: BoardEntity[];
+
+  @OneToMany(() => CardEntity, (card) => card.workspace)
+  cards: CardEntity[];
 }
