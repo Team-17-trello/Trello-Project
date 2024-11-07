@@ -1,19 +1,19 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { UserEntity } from 'src/user/entities/user.entity';
+import { BoardEntity } from '../../src/board/entities/board.entity';
+import { CardEntity } from '../card/entities/card.entity';
+import { CreateListDto } from './dto/create-list.dto';
+import { UpdateListDto } from './dto/update-list.dto';
+import { ListEntity } from './entities/list.entity';
 import { ListController } from './list.controller';
 import { ListService } from './list.service';
-import { CreateListDto } from './dto/create-list.dto';
-import { ListEntity } from './entities/list.entity';
-import { UpdateListDto } from './dto/update-list.dto';
-import { BoardEntity } from '../../src/board/entities/board.entity';
-import { UserEntity } from 'src/user/entities/user.entity';
-import { CardEntity } from '../card/entities/card.entity';
-import { ResponsibleEntity } from 'src/card/entities/responsible.entity';
+import { WorkspaceEntity } from 'src/workspace/entities/workspace.entity';
 
 describe('ListController', () => {
   let listController: ListController;
   let listService: ListService;
   let expectedBoard: BoardEntity;
-  let user: UserEntity;
+  let mockUser: UserEntity;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -27,6 +27,7 @@ describe('ListController', () => {
             findOne: jest.fn(),
             update: jest.fn(),
             remove: jest.fn(),
+            updateOrder: jest.fn(),
           },
         },
       ],
@@ -34,17 +35,6 @@ describe('ListController', () => {
 
     listController = module.get<ListController>(ListController);
     listService = module.get<ListService>(ListService);
-
-    expectedBoard = {
-      id: 1,
-      name: 'Sample Board',
-      description: 'A sample board',
-      backgroundColor: '#FFFFFF',
-      userId: 1,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      lists: [],
-    };
   });
 
   it('리스트 생성 검증', async () => {
@@ -53,23 +43,14 @@ describe('ListController', () => {
       name: 'To Do',
     };
 
-    const expectedResult: ListEntity = {
-      id: 1,
-      name: 'To do',
-      order: 1,
-      userId: 1,
-      board: expectedBoard,
-      createdAt: new Date('2022-01-01T00:00:00Z'),
-      updatedAt: new Date('2022-01-01T00:00:00Z'),
-      card: [],
-    };
+    const expectedResult = { id: 1, ...createListDto, mockUser };
 
     (listService.create as jest.Mock).mockResolvedValue(expectedResult);
 
-    const result = await listController.create(createListDto);
+    const result = await listController.create(createListDto, mockUser);
 
     expect(result).toEqual(expectedResult);
-    expect(listService.create).toHaveBeenCalledWith(createListDto);
+    expect(listService.create).toHaveBeenCalledWith(createListDto, mockUser);
   });
   it('리스트 전체 조회 검증', async () => {
     const expectedResult = [
@@ -101,12 +82,12 @@ describe('ListController', () => {
     expect(listService.findOne).toHaveBeenCalledWith(listId);
   });
   it('리스트 수정 검증', async () => {
-    const listId = 1;
+    const listId: number = 1;
     const updateListDto: UpdateListDto = {
       name: 'Done',
     };
 
-    const expectedCard = {
+    const expectedCard: CardEntity = {
       id: 1,
       title: 'Test Card',
       description: 'This is a test card',
@@ -116,8 +97,7 @@ describe('ListController', () => {
       updatedAt: new Date('2022-01-01T00:00:00Z'),
       dueDate: new Date('2022-12-31T00:00:00Z'),
       list: {} as ListEntity,
-      responsible: [],
-      userId: 1,
+      responsibles: [],
     } as CardEntity;
 
     const expectedResult: ListEntity = {
@@ -128,7 +108,7 @@ describe('ListController', () => {
       board: expectedBoard,
       createdAt: new Date('2022-01-01T00:00:00Z'),
       updatedAt: new Date('2022-01-01T00:00:00Z'),
-      card: [expectedCard],
+      cards: [expectedCard],
     };
 
     (listService.update as jest.Mock).mockResolvedValue(expectedResult);
@@ -157,6 +137,7 @@ describe('ListController', () => {
     };
 
     const expectedBoard = new BoardEntity();
+
     const expectedCard = {
       id: 1,
       title: 'Test Card',
@@ -166,10 +147,12 @@ describe('ListController', () => {
       createdAt: new Date('2022-01-01T00:00:00Z'),
       updatedAt: new Date('2022-01-01T00:00:00Z'),
       dueDate: new Date('2022-12-31T00:00:00Z'),
-      list: {} as ListEntity,
-      responsible: [],
       userId: 1,
-    } as CardEntity;
+      list: {} as ListEntity,
+      responsibles: [],
+      comments: [],
+      workspace: {} as WorkspaceEntity,
+    };
 
     const expectedResult: ListEntity = {
       id: listId,
@@ -179,7 +162,7 @@ describe('ListController', () => {
       board: expectedBoard,
       createdAt: new Date('2022-01-01T00:00:00Z'),
       updatedAt: new Date('2022-01-01T00:00:00Z'),
-      card: [expectedCard],
+      cards: [expectedCard],
     };
 
     (listService.updateOrder as jest.Mock).mockResolvedValue(expectedResult);

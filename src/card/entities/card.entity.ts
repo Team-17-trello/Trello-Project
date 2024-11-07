@@ -10,7 +10,8 @@ import {
 
 import { ResponsibleEntity } from './responsible.entity';
 import { ListEntity } from '../../list/entities/list.entity';
-import { CommentEntity } from '../../comment/entities/comment.entity';
+import { WorkspaceEntity } from 'src/workspace/entities/workspace.entity';
+import { CommentEntity } from 'src/comment/entities/comment.entity';
 
 @Entity({
   name: 'cards',
@@ -43,14 +44,15 @@ export class CardEntity {
   @Column({ type: 'int', nullable: false })
   userId: number;
 
-  @ManyToOne(() => ListEntity, (list) => list.card)
+  @ManyToOne(() => ListEntity, (list) => list.cards)
   list: ListEntity;
 
+  @ManyToOne(() => WorkspaceEntity, (workspace) => workspace.cards)
+  workspace: WorkspaceEntity;
+
   @OneToMany(() => ResponsibleEntity, (responsible) => responsible.card)
-  responsible: ResponsibleEntity[];
+  responsibles: ResponsibleEntity[];
 
-  @OneToMany(() =>CommentEntity, (comment) => comment.card)
-  comment: CommentEntity[];
-
-
+  @OneToMany(() => CommentEntity, (comment) => comment.card)
+  comments: CommentEntity[];
 }

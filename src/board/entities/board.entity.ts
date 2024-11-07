@@ -1,8 +1,10 @@
 import { ListEntity } from 'src/list/entities/list.entity';
+import { WorkspaceEntity } from 'src/workspace/entities/workspace.entity';
 import {
   Column,
   CreateDateColumn,
   Entity,
+  ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -31,8 +33,8 @@ export class BoardEntity {
   @UpdateDateColumn({ type: 'timestamp' })
   updatedAt: Date;
 
-  // @ManyToOne(()=>WorkspaceEntity,(workspace)=>workspace.boards,{onDelete:'CASCADE'})
-  // workspace:WorkspaceEntity;
+  @ManyToOne(() => WorkspaceEntity, (workspace) => workspace.boards, { onDelete: 'CASCADE' })
+  workspace: WorkspaceEntity;
 
   @OneToMany(() => ListEntity, (list) => list.board, { cascade: true })
   lists: ListEntity[];

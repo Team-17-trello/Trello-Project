@@ -12,9 +12,7 @@ export class UserService {
   constructor(
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
-  ) {
-  }
-
+  ) {}
 
   async update(user: UserEntity, userUpdateDto: UpdateUserDto) {
     const target = await this.userRepository.findOne({
@@ -42,10 +40,8 @@ export class UserService {
     return await this.userRepository.update(user.id, updateData);
   }
 
-
   async remove(user: UserEntity, removeUserDto: RemoveUserDto) {
-    try{
-
+    try {
       const findUser = await this.userRepository.findOne({
         where: { id: user.id },
       });

@@ -1,11 +1,15 @@
-import { IsOptional, IsString } from 'class-validator';
+import { IS_ALPHA, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class UpdateListDto {
   @IsString()
   @IsOptional()
   name?: string;
 
-  @IsString()
+  @IsNumber()
   @IsOptional()
   order?: number;
+
+  @IsNumber()
+  @IsOptional()
+  listId?: number;
 }
