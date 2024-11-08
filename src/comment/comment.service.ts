@@ -82,7 +82,6 @@ export class CommentService {
       });
 
       return {
-        statusCode: 200,
         message: '댓글이 삭제 되었습니다.',
       };
     } catch (error) {
