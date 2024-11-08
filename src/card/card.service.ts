@@ -273,7 +273,7 @@ export class CardService {
       const list = await this.listRepository.findOne({
         where: { id: moveCardDto.listId },
       });
-      console.log(list);
+
       if (!list){
         throw new NotFoundException('존재하지 않는 리스트입니다.');
       }
@@ -294,7 +294,7 @@ export class CardService {
       newOrder = cards[0].order / 2;
     }
     // 마지막에 삽입하는 경우 [1,2,3,4,5]
-    else if (moveCardDto.order === cards.length + 1) {
+    else if (moveCardDto.order >= cards.length) {
       newOrder = cards[cards.length - 1].order + 1;
     } else if (moveCardDto.order > card.order) {
 
