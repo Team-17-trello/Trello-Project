@@ -5,6 +5,7 @@ import { UserEntity } from 'src/user/entities/user.entity';
 import { Repository } from 'typeorm';
 import { BoardService } from './board.service';
 import { BoardEntity } from './entities/board.entity';
+import { WorkspaceEntity } from 'src/workspace/entities/workspace.entity';
 
 const mockBoardRepository = {
   create: jest.fn(),
@@ -14,6 +15,10 @@ const mockBoardRepository = {
   update: jest.fn(),
   delete: jest.fn(),
   findOneBy: jest.fn(),
+};
+
+const mockWorkspaceRepository = {
+  findOne: jest.fn(),
 };
 
 describe('BoardService', () => {
@@ -39,6 +44,10 @@ describe('BoardService', () => {
           provide: getRepositoryToken(BoardEntity),
           useValue: mockBoardRepository,
         },
+        {
+          provide: getRepositoryToken(WorkspaceEntity),
+          useValue: mockWorkspaceRepository,
+        },
       ],
     }).compile();
 
@@ -62,6 +71,7 @@ describe('BoardService', () => {
         workspaceId: 1,
       };
 
+      mockWorkspaceRepository.findOne.mockResolvedValue(createBoardDto.workspaceId);
       mockBoardRepository.create.mockReturnValue(mockBoard);
       mockBoardRepository.save.mockResolvedValue(mockBoard);
 
@@ -69,7 +79,9 @@ describe('BoardService', () => {
 
       expect(data).toEqual(mockBoard);
       expect(mockBoardRepository.create).toHaveBeenCalledWith({
-        ...createBoardDto,
+        name: createBoardDto.name,
+        description: createBoardDto.description,
+        workspace: createBoardDto.workspaceId,
         userId: mockUser.id,
       });
       expect(mockBoardRepository.save).toHaveBeenCalledWith(mockBoard);
@@ -105,22 +117,22 @@ describe('BoardService', () => {
         name: 'Board 1',
         backgroundColor: '#FFFFFF',
         description: 'Test Description',
-        // lists: [
-        //   {
-        //     id: 1,
-        //     name: 'List 1',
-        //     order: 1,
-        //     cards: [
-        //       {
-        //         id: 1,
-        //         name: 'Card 1',
-        //         description: 'Card Description',
-        //         order: 1,
-        //         dueDate: new Date(),
-        //       },
-        //     ],
-        //   },
-        // ],
+        lists: [
+          {
+            id: 1,
+            name: 'List 1',
+            order: 1,
+            cards: [
+              {
+                id: 1,
+                name: 'Card 1',
+                description: 'Card Description',
+                order: 1,
+                dueDate: new Date(),
+              },
+            ],
+          },
+        ],
       };
 
       mockBoardRepository.findOne.mockResolvedValue(board);
@@ -129,11 +141,9 @@ describe('BoardService', () => {
 
       expect(mockBoardRepository.findOne).toHaveBeenCalledWith({
         where: { id: 1 },
-        // relations: {
-        //   lists: {
-        //     cards: true,
-        //   },
-        // },
+        relations: {
+          lists: true,
+        },
       });
       expect(data).toEqual(board);
     });
@@ -169,7 +179,10 @@ describe('BoardService', () => {
       const data = await service.update(1, updateBoardDto, mockUser);
 
       expect(service.verifyBoardByUserId).toHaveBeenCalledWith(mockUser.id, board.id);
-      expect(mockBoardRepository.findOne).toHaveBeenCalledWith({ where: { id: board.id } });
+      expect(mockBoardRepository.findOne).toHaveBeenCalledWith({
+        where: { id: board.id },
+        relations: { lists: true },
+      });
       expect(mockBoardRepository.update).toHaveBeenCalledWith(board.id, updateBoardDto);
       expect(data).toEqual(updatedBoard);
     });

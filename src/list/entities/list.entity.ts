@@ -9,7 +9,6 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { CardEntity } from '../../card/entities/card.entity';
-import { WorkspaceEntity } from 'src/workspace/entities/workspace.entity';
 
 @Entity({ name: 'lists' })
 export class ListEntity {

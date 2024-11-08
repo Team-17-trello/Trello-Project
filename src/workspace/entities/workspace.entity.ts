@@ -11,7 +11,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
-@Entity({ name: 'workspace' })
+@Entity({ name: 'workspaces' })
 export class WorkspaceEntity extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
