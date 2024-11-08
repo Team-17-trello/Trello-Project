@@ -93,7 +93,7 @@ export class CardService {
       relations: {
         responsibles: true,
         comments: true,
-        //checkList : true,
+        checkList: true,
         // file : true,
       },
     });
