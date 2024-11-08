@@ -16,27 +16,15 @@ export class ChecklistService {
   // 체크리스트 생성
   async createChecklist(createChecklistDto: CreateChecklistDto): Promise<ChecklistEntity> {
     const { cardId, checklistName } = createChecklistDto;
-
-    // 이름이 중복된 체크리스트가 있는지 확인
-    const foundCreateChecklistName = await this.checklistRepository.findOne({
-      where: { checklistName },
-    });
-    
-    // ConflictException: 이름이 중복되면 예외를 발생
-    if (foundCreateChecklistName) {
-      throw new ConflictException(`해당 체크리스트의 이름 "${checklistName}"이 이미 존재합니다.`);
-    }
-
+    await this.checkDuplicateChecklist(checklistName);
     // 카드 엔티티의 기본 형태를 정의하고 체크리스트를 생성
     const card = { id: cardId } as CardEntity;
     const checklist = this.checklistRepository.create({
       card,
       checklistName,
     });
-
     // 생성된 체크리스트를 저장
     await this.checklistRepository.save(checklist);
-
     return checklist;
   }
 
@@ -45,24 +33,14 @@ export class ChecklistService {
     checklistId: number,
     updateChecklistDto: UpdateChecklistDto,
   ): Promise<ChecklistEntity> {
-    const checklist = await this.checklistRepository.findOne({
-      where: { id: checklistId },
-    });
-
-    // NotFoundException: 체크리스트가 없으면 예외를 발생
-    if (!checklist) {
-      throw new NotFoundException('해당하는 체크리스트가 없습니다.');
-    }
-
+    await this.verifychecklist(checklistId);
     // 업데이트할 데이터 준비
     const updateData: Partial<ChecklistEntity> = {};
     if (updateChecklistDto.checklistName) {
       updateData.checklistName = updateChecklistDto.checklistName;
     }
-
     // 체크리스트 업데이트 실행
     await this.checklistRepository.update(checklistId, updateData);
-
     // 업데이트된 체크리스트 반환
     return this.checklistRepository.findOne({
       where: { id: checklistId },
@@ -71,14 +49,7 @@ export class ChecklistService {
 
   // 체크리스트 삭제
   async removeChecklist(checklistId: number) {
-    const checklist = await this.checklistRepository.findOne({
-      where: { id: checklistId },
-    });
-
-    // NotFoundException: 체크리스트가 없으면 예외를 발생
-    if (!checklist) {
-      throw new NotFoundException('해당하는 체크리스트가 없습니다.');
-    }
+    await this.verifychecklist(checklistId);
 
     // 체크리스트 삭제
     await this.checklistRepository.delete({
@@ -87,5 +58,26 @@ export class ChecklistService {
 
     // 삭제 성공 메시지 반환
     return { message: '체크리스트가 삭제 되었습니다.' };
+  }
+
+  // 체크리스트 중복 된 이름 확인 함수
+  private async checkDuplicateChecklist(checklistName: string) {
+    const foundCreateChecklistName = await this.checklistRepository.findOne({
+      where: { checklistName },
+    });
+    if (foundCreateChecklistName) {
+      throw new ConflictException(`해당 체크리스트의 이름 "${checklistName}"이 이미 존재합니다.`);
+    }
+    return foundCreateChecklistName;
+  }
+
+  // 체크리스트 존재 여부 확인
+  private async verifychecklist(checklistId: number) {
+    const checklist = await this.checklistRepository.findOne({
+      where: { id: checklistId },
+    });
+    if (!checklist) {
+      throw new NotFoundException('해당하는 체크리스트가 없습니다.');
+    }
   }
 }

@@ -30,9 +30,9 @@ export class WorkspaceService {
     createWorkspaceDto: CreateWorkspaceDto,
   ): Promise<WorkspaceEntity> {
     const { workspaceName } = createWorkspaceDto;
-    const userId = user.id
+    const userId = user.id;
     const newWorkspace = await this.workspaceRepository.create({ workspaceName, userId });
-    
+
     try {
       const saveWorkspace = await this.workspaceRepository.save(newWorkspace);
 
@@ -94,14 +94,12 @@ export class WorkspaceService {
     workspaceId: number,
     userIds: number[],
   ): Promise<{ status: number; message: string }> {
-    const foundWorkspace = await this.verifyWorkspaceById(workspaceId) //워크스페이스id로 워스크페이스 존재여부 확인
-    await this.verifyAdminPrivileges(user, workspaceId) //user가 워크스페이스의 어드민 권한이 있는지 확인
+    const foundWorkspace = await this.verifyWorkspaceById(workspaceId); //워크스페이스id로 워스크페이스 존재여부 확인
+    await this.verifyAdminPrivileges(user, workspaceId); //user가 워크스페이스의 어드민 권한이 있는지 확인
 
-    await this.addMembersToWorspace(foundWorkspace, userIds) //해당 워크스페이스에 userIds배열에 있는 모든 유저 추가
-
+    await this.addMembersToWorspace(foundWorkspace, userIds); //해당 워크스페이스에 userIds배열에 있는 모든 유저 추가
     return { status: 201, message: '멤버를 성공적으로 초대했습니다.' };
   }
-
 
   //워크스페이스 존재 여부 확인 함수
   private async verifyWorkspaceById(workspaceId: number) {
@@ -115,8 +113,7 @@ export class WorkspaceService {
     return workspace;
   }
 
-
-  //verifyAdminPrivileges(어드민 권한 확인)함수 
+  //verifyAdminPrivileges(어드민 권한 확인)함수
   //별도의 유틸파일로 이사 예정
   private async verifyAdminPrivileges(user: UserEntity, workspaceId: number) {
     const foundAdminMember = await this.memberRepository.findOne({
@@ -126,7 +123,6 @@ export class WorkspaceService {
       throw new ForbiddenException(`해당 워크스페이스에 멤버를 추가할 권한이 없습니다.`);
     }
   }
-
 
   //멤버 추가 함수
   private async addMembersToWorspace(workspace: WorkspaceEntity, userIds: number[]) {
@@ -143,18 +139,14 @@ export class WorkspaceService {
     }
   }
 
-
-
   //유저 존재 여부 확인 함수
   private async verifyUserById(userId: number): Promise<UserEntity> {
     const user = await this.userRepository.findOne({ where: { id: userId } });
-    if(!user) {
-      throw new NotFoundException(`ID(${userId})의 사용자가 존재하지 않습니다.`)
+    if (!user) {
+      throw new NotFoundException(`ID(${userId})의 사용자가 존재하지 않습니다.`);
     }
     return user;
   }
-
-
 
   //중복 멤버 확인 함수
   private async checkDuplicateMember(workspaceId: number, userId: number) {
