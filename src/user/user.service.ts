@@ -12,9 +12,10 @@ export class UserService {
   constructor(
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
-  ) {}
+  ) {
+  }
 
-
+  // TODO : 비밀번호만 변경하는 경우인데 닉네임 중복 예외처리에 걸림
   async update(user: UserEntity, userUpdateDto: UpdateUserDto) {
     const target = await this.userRepository.findOne({
       where: { id: user.id },
@@ -41,9 +42,9 @@ export class UserService {
     await this.userRepository.update(user.id, updateData);
 
     return {
-      statusCode:200,
-      message: '수정이 완료되었습니다.'
-    }
+      statusCode: 200,
+      message: '수정이 완료되었습니다.',
+    };
   }
 
   async remove(user: UserEntity, removeUserDto: RemoveUserDto) {
@@ -56,11 +57,8 @@ export class UserService {
         throw new UnauthorizedException('비밀번호가 일치하지 않습니다.');
       }
 
-      await this.userRepository.update(findUser.id, {
-        email: null,
-        password: null,
-        nickname: null,
-        deletedAt: new Date(),
+      await this.userRepository.softDelete({
+        id: user.id,
       });
       return {
         statusCode: 200,

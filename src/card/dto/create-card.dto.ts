@@ -1,4 +1,4 @@
-import { IsDate, IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { IsDate, IsDateString, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class CreateCardDto {
   @IsNumber()
@@ -17,7 +17,8 @@ export class CreateCardDto {
   @IsNotEmpty({ message: '색상을 입력해주세요' })
   color: string;
 
-  @IsDate()
+  @IsDateString()
+  @IsOptional()
   dueDate?: Date;
 
 }

@@ -34,18 +34,18 @@ export class CardController {
     return this.cardService.update(+id, updateCardDto);
   }
 
-  @Patch('date')
+  @Patch('date/:id')
   setDueDate(@Param('id') id: string, @Body() dueDateDto: DueDateDto) {
     return this.cardService.setDueDate(+id, dueDateDto);
   }
 
-  @Post('/:cardId/responsible')
+  @Post(':cardId/responsible')
   inviteResponsible(@Param('cardId') cardId: string, @Body() responsibleDto: ResponsibleDto) {
     return this.cardService.inviteResponsible(+cardId, responsibleDto);
   }
 
-  @Delete('/:cardId/responsible/:id')
-  removeResponsible(@Param('cardId') cardId: string, @Param('id') id: string) {
+  @Delete(':cardId/responsible/:responsibleId')
+  removeResponsible(@Param('cardId') cardId: string, @Param('responsibleId') id: string) {
     return this.cardService.removeResponsible(+cardId, +id);
   }
 
@@ -55,7 +55,7 @@ export class CardController {
   }
 
   @Patch(':id/move')
-  moveCard(@Param('id') id: string, moveCardDto: MoveCardDto) {
+  moveCard(@Param('id') id: string, @Body() moveCardDto: MoveCardDto) {
     return this.cardService.moveCard(+id, moveCardDto);
   }
 }
