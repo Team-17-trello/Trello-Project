@@ -116,7 +116,8 @@ describe('WorkspaceService', () => {
 
   it('워크스페이스 상세 조회 테스트', async () => {
     const workspace = { id: 1, workspaceName: 'test', createdAt: new Date(), members: [] };
-    mockRepository.findOne.mockResolvedValue(workspace);
+
+    workspaceRepository.findOne = jest.fn().mockResolvedValue(workspace);
 
     const result = await workspaceService.getWorkspaceById(1);
     expect(workspaceRepository.findOne).toHaveBeenCalledWith({
@@ -125,5 +126,6 @@ describe('WorkspaceService', () => {
     });
     expect(result).toEqual(workspace);
   });
-  it('워크스페이스 멤버 초대 테스트', async () => {});
+
+  it('워크스페이스에 멤버 추가 성공', async () => {});
 });

@@ -48,12 +48,13 @@ describe('CardController', () => {
     order: 1,
     dueDate: new Date('2024-11-06T10:49:31.641Z'),
     userId: 1,
-    createdAt: new Date,
+    createdAt: new Date(),
     updatedAt: null,
     list: null,
     responsibles: null,
     comments: null,
     workspace: null,
+    checklists: null,
   };
 
   const mockUser: UserEntity = {
@@ -75,12 +76,13 @@ describe('CardController', () => {
       order: 1,
       dueDate: new Date('2024-11-06T10:49:31.641Z'),
       userId: 1,
-      createdAt: new Date,
+      createdAt: new Date(),
       updatedAt: null,
       list: null,
       responsibles: null,
       comments: null,
       workspace: null,
+      checklists: null,
     },
   ];
 
@@ -132,8 +134,6 @@ describe('CardController', () => {
       cardController.findOne(mockCardId);
       expect(spy).toHaveBeenCalledWith(+mockCardId);
       expect(spy).toHaveBeenCalledTimes(1);
-
-
     });
   });
 
@@ -144,9 +144,7 @@ describe('CardController', () => {
         title: 'test',
         description: 'test',
         color: 'black',
-
       };
-
 
       const spy = jest.spyOn(cardService, 'update').mockResolvedValue({
         statusCode: 200,
@@ -154,11 +152,9 @@ describe('CardController', () => {
         updated: mockCard,
       });
 
-
       cardController.update(mockCardId, mockUpdateCardDto);
       expect(spy).toHaveBeenCalledWith(+mockCardId, mockUpdateCardDto);
       expect(spy).toHaveBeenCalledWith(+mockCardId, mockUpdateCardDto);
-
     });
   });
 
@@ -174,13 +170,11 @@ describe('CardController', () => {
       cardController.remove(mockCardId);
       expect(spy).toHaveBeenCalledWith(+mockCardId);
       expect(spy).toHaveBeenCalledTimes(1);
-
     });
   });
 
   describe('setDueDate', () => {
     it('cardService.setDueDate 메소드가 올바른 인자와 호출되는지 확인', () => {
-
       const mockCardId = '1';
       const mockDueDateDto: DueDateDto = {
         dueDate: new Date(),
@@ -196,7 +190,6 @@ describe('CardController', () => {
 
       expect(spy).toHaveBeenCalledWith(+mockCardId, mockDueDateDto);
       expect(spy).toHaveBeenCalledTimes(1);
-
     });
   });
 
@@ -217,7 +210,6 @@ describe('CardController', () => {
 
       expect(spy).toHaveBeenCalledWith(+mockCardId, mockResponsibleDto);
       expect(spy).toHaveBeenCalledTimes(1);
-
     });
   });
 
@@ -235,7 +227,6 @@ describe('CardController', () => {
 
       expect(spy).toHaveBeenCalledWith(+mockCardId, +mockResponsibleId);
       expect(spy).toHaveBeenCalledTimes(1);
-
     });
   });
 
@@ -256,7 +247,6 @@ describe('CardController', () => {
 
       expect(spy).toHaveBeenCalledWith(+mockCardId, mockMoveCardDTO);
       expect(spy).toHaveBeenCalledTimes(1);
-
     });
   });
 });
