@@ -19,14 +19,20 @@ import { MoveCardDto } from './dto/move-card.dto';
 import { UserInfo } from '../utils/userInfo-decolator';
 import { AuthGuard } from '@nestjs/passport';
 import { UserEntity } from '../user/entities/user.entity';
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
+@ApiBearerAuth()
+@ApiTags('카드')
 @UseGuards(AuthGuard('jwt'))
 @Controller('cards')
 export class CardController {
   constructor(private readonly cardService: CardService) {}
 
   @Post()
+
   @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({ summary: '카드 생성' })
+  @ApiResponse({ status: 201, description: '카드가 성공적으로 생성됨', type: CreateCardDto })
   create(@UserInfo() user: UserEntity, @Body() createCardDto: CreateCardDto) {
     return this.cardService.create(user, createCardDto);
   }

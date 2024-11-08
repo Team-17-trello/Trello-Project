@@ -263,10 +263,6 @@ describe('ListService', () => {
       const preTargetOrder = mockAllOrderList[updateListDto.order - 2].order;
       const expectedOrder = (targetOrder + preTargetOrder) / 2;
 
-      console.log('targetOrder:', targetOrder);
-      console.log('preTargetOrder:', preTargetOrder);
-      console.log('expectedOrder:', expectedOrder);
-
       mockListRepository.findOne.mockResolvedValue(list);
       mockListRepository.find.mockResolvedValue(mockAllOrderList);
       mockListRepository.update.mockResolvedValue({

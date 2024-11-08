@@ -1,3 +1,4 @@
+
 import {
   Body,
   Controller,
@@ -10,12 +11,16 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
-import { UserInfo } from '../utils/userInfo-decolator';
+
+import { AuthGuard } from '@nestjs/passport';
+import { ApiBearerAuth } from '@nestjs/swagger';
+
 import { UserEntity } from '../user/entities/user.entity';
+import { UserInfo } from '../utils/userInfo-decolator';
 import { CommentService } from './comment.service';
 import { CommentDto } from './dto/comment.dto';
-import { AuthGuard } from '@nestjs/passport';
 
+@ApiBearerAuth()
 @Controller('comments')
 @UseGuards(AuthGuard('jwt'))
 export class CommentController {

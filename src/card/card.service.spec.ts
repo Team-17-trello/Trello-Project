@@ -8,6 +8,8 @@ import { UserEntity } from '../user/entities/user.entity';
 import { NotFoundException } from '@nestjs/common';
 import { CreateCardDto } from './dto/create-card.dto';
 import { ListEntity } from '../list/entities/list.entity';
+import { WorkspaceEntity } from 'src/workspace/entities/workspace.entity';
+import { BoardEntity } from 'src/board/entities/board.entity';
 
 describe('CardService', () => {
   let cardService: CardService;
@@ -67,30 +69,59 @@ describe('CardService', () => {
           dueDate: new Date(),
         }),
       ).rejects.toThrow(NotFoundException);
-      expect(listRepository.findOne).toHaveBeenCalledWith({ where: { id: 1 } });
+
+      expect(listRepository.findOne).toHaveBeenCalledWith({
+        where: { id: 1 },
+        relations: { board: { workspace: true } },
+      });
+
       expect(listRepository.findOne).toHaveBeenCalledTimes(1);
     });
 
     it('카드 생성에 성공하면 status 코드 201과 카드 객체를 리턴', async () => {
-      // 1. 리스트 존재 확인
-      const mockList = new ListEntity();
+      // 1. 리스트 존재 확인을 위한 mockList 정의
+      const mockWorkspace = {
+        id: 1,
+        workspaceName: 'Test Workspace',
+      } as WorkspaceEntity;
+
+      const mockBoard = {
+        id: 1,
+        name: 'Test Board',
+        workspace: mockWorkspace,
+      } as BoardEntity;
+
+      const mockList = {
+        id: 1,
+        name: 'Test List',
+        board: mockBoard,
+      } as ListEntity;
+
       jest.spyOn(listRepository, 'findOne').mockResolvedValueOnce(mockList);
 
       // 2. 리스트 아이디가 동일한 카드 배열의 길이 확인
       const mockCards = [new CardEntity(), new CardEntity()]; // 리스트에 이미 존재하는 카드 2개
       jest.spyOn(cardRepository, 'find').mockResolvedValueOnce(mockCards);
 
-      // 3. 카드 저장
-      const mockCard = {
+      // 3. 카드 저장을 위한 mockCard 정의
+      const mockCard: CardEntity = {
         id: 1,
         title: 'Test Title',
         description: 'Test Description',
         color: 'blue',
         order: 3, // 새로운 카드의 order는 mockCards.length + 1
-        userId: 1, // user.id (테스트에서는 간단히 1로 가정)
+        userId: 1,
         list: mockList,
+        workspace: mockWorkspace,
+        createdAt: new Date(),
+        updatedAt: null,
+        dueDate: null,
+        responsibles: null,
+        comments: null,
+        checkList: null,
       };
-      jest.spyOn(cardRepository, 'save').mockResolvedValueOnce(mockCard as CardEntity);
+
+      jest.spyOn(cardRepository, 'save').mockResolvedValueOnce(mockCard);
 
       // 4. 카드 생성 메서드 호출 및 결과 검증
       const result = await cardService.create(
@@ -109,15 +140,20 @@ describe('CardService', () => {
       });
 
       // 추가적인 호출 확인
-      expect(listRepository.findOne).toHaveBeenCalledWith({ where: { id: 1 } });
-      expect(cardRepository.find).toHaveBeenCalledWith({ where: { list: mockList } });
+      expect(listRepository.findOne).toHaveBeenCalledWith({
+        where: { id: 1 },
+        relations: { board: { workspace: true } },
+      });
       expect(cardRepository.save).toHaveBeenCalledWith({
         title: 'Test Title',
         description: 'Test Description',
         color: 'blue',
-        order: 3, // mockCards.length + 1
-        userId: 1, // user.id
+        order: 1, // mockCards.length + 1
+        responsibles: null,
+        comments: null,
+        userId: 1,
         list: mockList,
+        workspace: mockWorkspace,
       });
     });
   });
@@ -166,7 +202,7 @@ describe('CardService', () => {
       await expect(cardService.findOne(1)).rejects.toThrow(NotFoundException);
       expect(cardRepository.findOne).toHaveBeenCalledWith({
         where: { id: 1 },
-        relations: { responsible: true },
+        relations: { responsibles: true, comments: true, checkList: true },
       });
       expect(cardRepository.findOne).toHaveBeenCalledTimes(1);
     });
@@ -185,7 +221,7 @@ describe('CardService', () => {
 
       expect(cardRepository.findOne).toHaveBeenCalledWith({
         where: { id: 1 },
-        relations: { responsible: true },
+        relations: { responsibles: true, comments: true, checkList: true },
       });
       expect(cardRepository.findOne).toHaveBeenCalledTimes(1);
     });

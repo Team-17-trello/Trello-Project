@@ -92,6 +92,7 @@ export class CardService {
   }
 
   async findOne(cardId: number) {
+
     try {
       const card = await this.cardRepository.findOne({
         where: {
