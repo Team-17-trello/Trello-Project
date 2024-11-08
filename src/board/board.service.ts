@@ -21,6 +21,7 @@ export class BoardService {
     const workspace = await this.workspaceRepository.findOne({
       where: { id: createBoardDto.workspaceId },
     });
+
     const board: BoardEntity = this.boardRepository.create({
       name: createBoardDto.name,
       description: createBoardDto.description,
@@ -28,6 +29,7 @@ export class BoardService {
       workspace: workspace,
       userId: user.id,
     });
+
     return await this.boardRepository.save(board);
   }
 
@@ -40,7 +42,7 @@ export class BoardService {
       where: {
         workspace: workspace,
       },
-      select: ['id', 'name', 'backgroundColor', 'description'],
+      select: ['id', 'name', 'backgroundColor', 'description', 'userId'],
     });
 
     return { boards };
@@ -80,7 +82,7 @@ export class BoardService {
   async verifyBoardByUserId(userId: number, boardId: number) {
     const board = await this.boardRepository.findOneBy({ userId: userId, id: boardId });
     if (_.isNil(board)) {
-      throw new BadRequestException('해당 유저가 생성한 보드가 아닙니다.');
+      throw new BadRequestException('해당 보드가 없거나, 해당 유저가 생성한 보드가 아닙니다.');
     }
     return board;
   }
