@@ -14,8 +14,7 @@ export class ListService {
     private readonly listRepository: Repository<ListEntity>,
     @InjectRepository(BoardEntity)
     private readonly boardRepository: Repository<BoardEntity>,
-  ) {
-  }
+  ) {}
 
   async create(createListDto: CreateListDto, user: UserEntity): Promise<ListEntity> {
     const board = await this.boardRepository.findOne({ where: { id: createListDto.boardId } });
@@ -80,7 +79,6 @@ export class ListService {
   }
 
   async updateOrder(boardId: number, updateListDto: UpdateListDto) {
-
     const list = await this.listRepository.findOne({
       where: { id: updateListDto.listId },
     });
@@ -117,11 +115,7 @@ export class ListService {
 
     await this.listRepository.update({ id: updateListDto.listId }, { order: getOrder });
 
-    const result = await this.listRepository.findOne({
-      where: { id: updateListDto.listId },
-    });
-
-    return result;
+    return { ...list, order: getOrder };
   }
 
   async remove(id: number): Promise<{ message: string }> {

@@ -13,11 +13,6 @@ describe('ListService', () => {
   let listService: ListService;
   let listRepository: Repository<ListEntity>;
   let boardRepository: Repository<BoardEntity>;
-  const mockAllOrderList: Array<Pick<ListEntity, 'order'>> = [
-    { order: 1 },
-    { order: 2 },
-    { order: 3 },
-  ];
 
   const mockUser: UserEntity = {
     id: 1,
@@ -180,7 +175,10 @@ describe('ListService', () => {
 
       const result = await listService.findOne(listId);
       expect(result).toEqual(expectedResult);
-      expect(listRepository.findOne).toHaveBeenCalledWith({ where: { id: listId } });
+      expect(listRepository.findOne).toHaveBeenCalledWith({
+        where: { id: listId },
+        relations: { cards: true },
+      });
     });
 
     it('리스트 목록이 없는 경우 검증', async () => {
@@ -191,6 +189,11 @@ describe('ListService', () => {
   });
 
   describe('update', () => {
+    const mockAllOrderList: Array<Pick<ListEntity, 'order'>> = [
+      { order: 1 },
+      { order: 2 },
+      { order: 3 },
+    ];
     it('리스트 이름 수정 검증', async () => {
       const listId = 1;
       const updateListDto = { name: 'Done' };
@@ -254,14 +257,22 @@ describe('ListService', () => {
       const boardId = 1;
       const listId = 3;
       const updateListDto: UpdateListDto = { listId, order: 2 };
-      const expectedOrder = (mockAllOrderList[1].order + mockAllOrderList[0].order) / 2;
 
+      const list = { id: listId, order: 2 } as ListEntity;
+      const targetOrder = mockAllOrderList[updateListDto.order - 1].order;
+      const preTargetOrder = mockAllOrderList[updateListDto.order - 2].order;
+      const expectedOrder = (targetOrder + preTargetOrder) / 2;
+
+      console.log('targetOrder:', targetOrder);
+      console.log('preTargetOrder:', preTargetOrder);
+      console.log('expectedOrder:', expectedOrder);
+
+      mockListRepository.findOne.mockResolvedValue(list);
       mockListRepository.find.mockResolvedValue(mockAllOrderList);
-      mockListRepository.update.mockResolvedValue(undefined);
-      mockListRepository.findOne.mockResolvedValue({
+      mockListRepository.update.mockResolvedValue({
         id: listId,
         order: expectedOrder,
-      } as ListEntity);
+      });
 
       const result = await listService.updateOrder(boardId, updateListDto);
 
@@ -269,6 +280,7 @@ describe('ListService', () => {
         { id: updateListDto.listId },
         { order: expectedOrder },
       );
+
       expect(result!.order).toBe(expectedOrder);
     });
   });
