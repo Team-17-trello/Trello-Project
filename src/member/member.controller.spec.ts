@@ -37,11 +37,9 @@ describe('MemberController', () => {
 
   const workspaceId = '1';
 
-
   describe('switch', () => {
-    it('switch 메소드를 실행하고 결과를 반환',  () => {
+    it('switch 메소드를 실행하고 결과를 반환', () => {
       const spy = jest.spyOn(memberService, 'switch').mockResolvedValue({
-        status: 200,
         message: '권한을 변경하였습니다.',
       });
 

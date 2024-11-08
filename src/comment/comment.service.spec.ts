@@ -63,6 +63,7 @@ describe('CommentService', () => {
       responsibles: null,
       comments: null,
       workspace: null,
+      checkList: null,
     };
 
     const mockCommentDto: CommentDto = {
