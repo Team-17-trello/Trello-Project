@@ -6,10 +6,8 @@ import { CardEntity } from './entities/card.entity';
 import { UserEntity } from '../user/entities/user.entity';
 import { DueDateDto } from './dto/duedate.dto';
 import { UpdateCardDto } from './dto/update-card.dto';
-import { IsString } from 'class-validator';
 import { ResponsibleDto } from './dto/responsible.dto';
 import { MoveCardDto } from './dto/move-card.dto';
-import exp from 'constants';
 
 describe('CardController', () => {
   let cardController: CardController;
@@ -54,7 +52,7 @@ describe('CardController', () => {
     responsibles: null,
     comments: null,
     workspace: null,
-    checklists: null,
+    checkList: null,
   };
 
   const mockUser: UserEntity = {
@@ -82,7 +80,7 @@ describe('CardController', () => {
       responsibles: null,
       comments: null,
       workspace: null,
-      checklists: null,
+      checkList: null,
     },
   ];
 

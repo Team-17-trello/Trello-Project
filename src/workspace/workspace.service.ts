@@ -132,7 +132,6 @@ export class WorkspaceService {
     }
   }
 
-  //유저 존재 여부 확인 함수
   private async foundUserById(userId: number): Promise<UserEntity> {
     const user = await this.userRepository.findOne({ where: { id: userId } });
     if (!user) {

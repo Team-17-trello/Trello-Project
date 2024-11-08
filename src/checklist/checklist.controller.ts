@@ -15,7 +15,12 @@ import { ChecklistService } from './checklist.service';
 import { CreateChecklistDto } from './dto/create-checklist.dto';
 import { UpdateChecklistDto } from './dto/update-checklist.dto';
 import { AuthGuard } from '@nestjs/passport';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
+<<<<<<< HEAD
+=======
+@ApiBearerAuth()
+>>>>>>> origin
 @UseGuards(AuthGuard('jwt'))
 @Controller('checklists')
 export class ChecklistController {

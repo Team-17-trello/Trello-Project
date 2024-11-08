@@ -5,6 +5,7 @@ import { Repository } from 'typeorm';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { CreateItemDto } from './dto/create-item.dto';
 import { UpdateItemDto } from './dto/update-item.dto';
+import { ChecklistEntity } from 'src/checklist/entities/checklist.entity';
 
 describe('ItemService', () => {
   let service: ItemService;
@@ -18,6 +19,10 @@ describe('ItemService', () => {
     findOne: jest.fn(),
   };
 
+  const mockChecklistRepository = {
+    findOne: jest.fn(),
+  };
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -25,6 +30,10 @@ describe('ItemService', () => {
         {
           provide: getRepositoryToken(itemsEntity),
           useValue: mockItemRepository,
+        },
+        {
+          provide: getRepositoryToken(ChecklistEntity),
+          useValue: mockChecklistRepository,
         },
       ],
     }).compile();
@@ -41,15 +50,23 @@ describe('ItemService', () => {
     it('아이템 생성하고 반환해야 한다', async () => {
       const createItemDto: CreateItemDto = { checklistId: 1, content: 'Test content' };
       const savedItem = { id: 1, content: 'Test content', status: false };
+      const mockChecklist = { id: 1 };
 
+      const { checklistId, content } = createItemDto;
+
+      mockChecklistRepository.findOne.mockResolvedValue(mockChecklist);
       mockItemRepository.create.mockReturnValue(savedItem);
       mockItemRepository.save.mockResolvedValue(savedItem);
 
       const result = await service.create(createItemDto);
 
+      expect(mockChecklistRepository.findOne).toHaveBeenCalledWith({
+        where: { id: checklistId },
+      });
       expect(mockItemRepository.create).toHaveBeenCalledWith({
         content: createItemDto.content,
         status: false,
+        checklist: mockChecklist,
       });
       expect(mockItemRepository.save).toHaveBeenCalledWith(savedItem);
       expect(result).toEqual(savedItem);

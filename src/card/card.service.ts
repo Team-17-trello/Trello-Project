@@ -20,8 +20,7 @@ export class CardService {
     private readonly listRepository: Repository<ListEntity>,
     @InjectRepository(ResponsibleEntity)
     private readonly responsibleRepository: Repository<ResponsibleEntity>,
-  ) {
-  }
+  ) {}
 
   async create(user: UserEntity, createCardDto: CreateCardDto) {
     const list = await this.listRepository.findOne({
@@ -73,7 +72,7 @@ export class CardService {
 
     const cards = await this.cardRepository.find({
       where: {
-        list: {id : list.id},
+        list: { id: list.id },
       },
       order: {
         order: 'asc',
@@ -93,8 +92,8 @@ export class CardService {
       },
       relations: {
         responsibles: true,
-        comments : true,
-        // checkList : true,
+        comments: true,
+        checkList: true,
         // file : true,
       },
     });
@@ -109,15 +108,13 @@ export class CardService {
     };
   }
 
-  async checkResponsible(user) {
-    //카드 담당자 인지 확인
+  async checkResponsible(user: UserEntity) {
     const findResponsible = await this.responsibleRepository.findOne({
       where: { userId: user.id },
     });
     return findResponsible;
   }
 
-  //카드 수정 메소드 (트랜잭션, 동시성 처리 필요)
   async update(id: number, updateCardDto: UpdateCardDto) {
     try {
       // if (!(await this.checkResponsible(user))) {
@@ -131,8 +128,7 @@ export class CardService {
       if (!card) {
         throw new NotFoundException('해당하는 카드가 없습니다 확인해주세요');
       }
- 
-      //카드 수정
+
       const updateData: Partial<CardEntity> = {};
 
       if (updateCardDto.title) {
@@ -158,11 +154,9 @@ export class CardService {
       };
     } catch (error) {
       throw error;
-      console.error(error);
     }
   }
 
-  //마감 기한 설정 메소드
   async setDueDate(id: number, dueDateDto: DueDateDto) {
     try {
       await this.cardRepository.update(id, { dueDate: dueDateDto.dueDate });
@@ -174,11 +168,9 @@ export class CardService {
       };
     } catch (error) {
       throw error;
-      console.error(error);
     }
   }
 
-  //책임자
   async inviteResponsible(cardId: number, responsibleDto: ResponsibleDto) {
     try {
       const card = await this.cardRepository.findOne({
@@ -202,7 +194,6 @@ export class CardService {
       };
     } catch (error) {
       throw error;
-      console.error(error);
     }
   }
 
@@ -221,7 +212,7 @@ export class CardService {
       if (!findResponsible) {
         throw new NotFoundException('해당 담당자가 존재 하지 않습니다.');
       }
-      // @ts-ignore
+
       await this.responsibleRepository.delete({
         card: { id },
       });
@@ -232,7 +223,6 @@ export class CardService {
       };
     } catch (error) {
       throw error;
-      console.error(error);
     }
   }
 
@@ -257,12 +247,11 @@ export class CardService {
 
   async moveCard(id: number, moveCardDto: MoveCardDto) {
     let newOrder = 0;
-    //이동할 카드 조회
+
     const card = await this.cardRepository.findOne({
       where: { id: id },
     });
 
-    // 이동할 리스트에 해당하는 카드들 찾기
     const cards = await this.cardRepository.find({
       where: { list: { id: moveCardDto.listId } },
       order: { order: 'ASC' },
@@ -274,7 +263,7 @@ export class CardService {
         where: { id: moveCardDto.listId },
       });
 
-      if (!list){
+      if (!list) {
         throw new NotFoundException('존재하지 않는 리스트입니다.');
       }
 
@@ -289,22 +278,17 @@ export class CardService {
       };
     }
 
-    // 첫번째로 옮기는 경우 (앞 값이 없을 떄)
     if (moveCardDto.order === 1) {
       newOrder = cards[0].order / 2;
-    }
-    // 마지막에 삽입하는 경우 [1,2,3,4,5]
-    else if (moveCardDto.order >= cards.length) {
+    } else if (moveCardDto.order >= cards.length) {
       newOrder = cards[cards.length - 1].order + 1;
     } else if (moveCardDto.order > card.order) {
-
       const targetOrder = cards[moveCardDto.order].order;
 
       const preTargetOrder = cards[moveCardDto.order - 1].order;
 
       newOrder = (targetOrder + preTargetOrder) / 2;
     } else {
-
       const targetOrder = cards[moveCardDto.order - 1].order;
 
       const preTargetOrder = cards[moveCardDto.order - 2].order;
@@ -316,7 +300,7 @@ export class CardService {
       where: { id: moveCardDto.listId },
     });
     console.log(list);
-    if (!list){
+    if (!list) {
       throw new NotFoundException('존재하지 않는 리스트입니다.');
     }
 

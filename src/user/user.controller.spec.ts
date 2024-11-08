@@ -4,8 +4,6 @@ import { UserService } from './user.service';
 import { UserEntity } from './entities/user.entity';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { RemoveUserDto } from './dto/remove.dto';
-import { IsString } from 'class-validator';
-import exp from 'constants';
 
 describe('UserController', () => {
   let userController: UserController;
