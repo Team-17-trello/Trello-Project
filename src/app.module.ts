@@ -21,6 +21,8 @@ import { UserEntity } from './user/entities/user.entity';
 import { UserModule } from './user/user.module';
 import { WorkspaceEntity } from './workspace/entities/workspace.entity';
 import { WorkspaceModule } from './workspace/workspace.module';
+import { MemberService } from './member/member.service';
+import { MemberModule } from './member/member.module';
 
 const typeOrmModuleOptions = {
   useFactory: async (configService: ConfigService): Promise<TypeOrmModuleOptions> => ({
@@ -72,6 +74,7 @@ const typeOrmModuleOptions = {
     ChecklistModule,
     ItemModule,
     FileModule,
+    MemberModule,
   ],
   controllers: [],
   providers: [],

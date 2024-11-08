@@ -6,12 +6,16 @@ import { EntityManager, Repository } from 'typeorm';
 import { RemoveUserDto } from './dto/remove.dto';
 import * as bcrypt from 'bcrypt';
 import { compare } from 'bcrypt';
+import { MemberEntity } from '../member/entity/member.entity';
+import { WorkspaceEntity } from '../workspace/entities/workspace.entity';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
+    @InjectRepository(MemberEntity)
+    private readonly memberRepository: Repository<MemberEntity>,
     @InjectEntityManager() private readonly entityManager: EntityManager,
   ) {
   }
@@ -22,13 +26,17 @@ export class UserService {
       where: { id: user.id },
     });
 
-    const isNicknameExists = await this.userRepository.findOne({
-      where: { nickname: userUpdateDto.nickname },
-    });
+    if (userUpdateDto.nickname) {
+      const isNicknameExists = await this.userRepository.findOne({
+        where: { nickname: userUpdateDto.nickname },
+      });
 
-    if (isNicknameExists) {
-      throw new ConflictException('이미 사용 중인 닉네임입니다. 다시 시도해주세요.');
+      if (isNicknameExists) {
+        throw new ConflictException('이미 사용 중인 닉네임입니다. 다시 시도해주세요.');
+      }
     }
+
+
     const updateData: Partial<UserEntity> = {};
 
     if (userUpdateDto.nickname) {
@@ -49,25 +57,44 @@ export class UserService {
   }
 
   async remove(user: UserEntity, removeUserDto: RemoveUserDto) {
-    try {
-      const findUser = await this.userRepository.findOne({
-        where: { id: user.id },
-      });
+    return await this.entityManager.transaction(async (manager) => {
+      try {
+        const findUser = await this.userRepository.findOne({
+          where: { id: user.id },
+        });
+        const findMembers = await this.memberRepository.find({
+          where: { user: { id: user.id } },relations : {workspace : true}
+        });
 
-      if (!(await compare(removeUserDto.password, findUser.password))) {
-        throw new UnauthorizedException('비밀번호가 일치하지 않습니다.');
+        // 멤버가 어드민 일 시 탈퇴 불가
+        findMembers.forEach((member) =>{
+          if(member.isAdmin===true){
+            throw new ConflictException('1개 이상 워크 스페이스에서 관리자 이므로 탈퇴할 수 없습니다.')
+          }
+        })
+
+
+        if (!(await compare(removeUserDto.password, findUser.password))) {
+          throw new UnauthorizedException('비밀번호가 일치하지 않습니다.');
+        }
+
+        await manager.getRepository(UserEntity).softDelete({
+          id: user.id,
+        });
+
+        await manager.getRepository(MemberEntity).delete({
+          user: { id: user.id },
+        });
+
+        return {
+          statusCode: 200,
+          message: '계정이 성공적으로 삭제 되었습니다.',
+        };
+      } catch (error) {
+        console.error(error);
+        throw error;
       }
+    });
 
-      await this.userRepository.softDelete({
-        id: user.id,
-      });
-      return {
-        statusCode: 200,
-        message: '계정이 성공적으로 삭제 되었습니다.',
-      };
-    } catch (error) {
-      console.error(error);
-      throw error;
-    }
   }
 }
