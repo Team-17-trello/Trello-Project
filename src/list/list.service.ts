@@ -101,7 +101,7 @@ export class ListService {
 
     if (updateListDto.order === 1) {
       getOrder = allOrderList[0].order / 2;
-    } else if (updateListDto.order === allOrderList.length) {
+    } else if (updateListDto.order >= allOrderList.length) {
       getOrder = allOrderList[allOrderList.length - 1].order + 1;
     } else if (updateListDto.order > list.order) {
       const targetOrder = allOrderList[updateListDto.order].order;
