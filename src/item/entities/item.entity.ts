@@ -12,6 +12,6 @@ export class itemsEntity {
   @Column({ type: 'boolean', default: false })
   status: boolean;
 
-  //   @ManyToOne(() => Checklist, (checklist) => checklist.items, { onDelete: 'CASCADE' })
-  //   checklist: ChecklistEntity;
+  @ManyToOne(() => ChecklistEntity, (checklist) => checklist.items, { onDelete: 'CASCADE' })
+  checklist: ChecklistEntity;
 }

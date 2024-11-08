@@ -1,12 +1,11 @@
 import { CardEntity } from 'src/card/entities/card.entity';
-import { WorkspaceEntity } from 'src/workspace/entities/workspace.entity';
+import { itemsEntity } from 'src/item/entities/item.entity';
 import {
   Column,
   CreateDateColumn,
   Entity,
-  JoinColumn,
-  ManyToMany,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
@@ -23,9 +22,9 @@ export class ChecklistEntity {
   @CreateDateColumn({ type: 'timestamp', nullable: false })
   createdAt: Date;
 
-  @ManyToOne(() => CardEntity, (card) => card.checklists)
+  @ManyToOne(() => CardEntity, (card) => card.checklists, { onDelete: 'CASCADE' })
   card: CardEntity;
 
-  //   @ManyToOne(() => WorkspaceEntity, (workspace) => workspace.checklists)
-  //   workspace: WorkspaceEntity;
+  @OneToMany(() => itemsEntity, (item) => item.checklist)
+  items: itemsEntity[];
 }

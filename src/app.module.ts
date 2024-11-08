@@ -23,6 +23,7 @@ import { WorkspaceEntity } from './workspace/entities/workspace.entity';
 import { WorkspaceModule } from './workspace/workspace.module';
 
 import { ChecklistEntity } from './checklist/entities/checklist.entity';
+import { itemsEntity } from './item/entities/item.entity';
 
 const typeOrmModuleOptions = {
   useFactory: async (configService: ConfigService): Promise<TypeOrmModuleOptions> => ({
@@ -43,6 +44,7 @@ const typeOrmModuleOptions = {
       WorkspaceEntity,
       ChecklistEntity,
       CommentEntity,
+      itemsEntity,
     ],
     synchronize: configService.get('DB_SYNC'),
     logging: true,

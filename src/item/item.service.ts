@@ -1,28 +1,33 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { CreateItemDto } from './dto/create-item.dto';
 import { UpdateItemDto } from './dto/update-item.dto';
 import { itemsEntity } from './entities/item.entity';
-import { Repository } from 'typeorm';
-import { InjectRepository } from '@nestjs/typeorm';
-import { ItemModule } from './item.module';
+import { ChecklistEntity } from 'src/checklist/entities/checklist.entity';
 
 @Injectable()
 export class ItemService {
   constructor(
     @InjectRepository(itemsEntity)
     private readonly itemRepository: Repository<itemsEntity>,
-    // @InjectRepository(Checklist)
-    // private checklistRepository: Repository<Checklist>
+    @InjectRepository(ChecklistEntity)
+    private checklistRepository: Repository<ChecklistEntity>,
   ) {}
 
   async create(createItemDto: CreateItemDto) {
     const { checklistId, content } = createItemDto;
 
+    const checkList = await this.checklistRepository.findOne({
+      where: { id: checklistId },
+    });
+
     const item = this.itemRepository.create({
       content,
       status: false,
-      //  checklist
+      checklist: checkList,
     });
+
     return this.itemRepository.save(item);
   }
 

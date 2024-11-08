@@ -127,7 +127,7 @@ export class WorkspaceService {
         throw new ConflictException(`유저${userId}가 이미 초대되었습니다.`);
       }
 
-      const createMember = await this.memberRepository.create({
+      const createMember = this.memberRepository.create({
         isAdmin: false,
         user: foundUser,
         workspace: foundWorkspace,
