@@ -1,8 +1,8 @@
 import { ConflictException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserEntity } from './entities/user.entity';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { InjectEntityManager, InjectRepository } from '@nestjs/typeorm';
+import { EntityManager, Repository } from 'typeorm';
 import { RemoveUserDto } from './dto/remove.dto';
 import * as bcrypt from 'bcrypt';
 import { compare } from 'bcrypt';
@@ -12,8 +12,10 @@ export class UserService {
   constructor(
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
+    @InjectEntityManager() private readonly entityManager: EntityManager,
   ) {}
 
+  // TODO : 비밀번호만 변경하는 경우인데 닉네임 중복 예외처리에 걸림
   async update(user: UserEntity, userUpdateDto: UpdateUserDto) {
     const target = await this.userRepository.findOne({
       where: { id: user.id },
@@ -55,11 +57,8 @@ export class UserService {
         throw new UnauthorizedException('비밀번호가 일치하지 않습니다.');
       }
 
-      await this.userRepository.update(findUser.id, {
-        email: null,
-        password: null,
-        nickname: null,
-        deletedAt: new Date(),
+      await this.userRepository.softDelete({
+        id: user.id,
       });
       return {
         statusCode: 200,

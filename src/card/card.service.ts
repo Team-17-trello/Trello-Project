@@ -33,18 +33,18 @@ export class CardService {
       throw new NotFoundException('존재하지 않는 리스트입니다 확인해주세요.');
     }
 
-    const cards = await this.cardRepository.findOne({
+    const cardOrder = await this.cardRepository.findOne({
       where: {
-        list: list,
+        list: { id: list.id },
       },
       order: {
-        order: 'DESC',
+        order: 'desc',
       },
     });
 
-    const newOrder = (cards?.order ?? 0) + 1;
+    const newOrder = (cardOrder?.order ?? 0) + 1;
 
-    const card : CardEntity  = await this.cardRepository.save({
+    const card: CardEntity = await this.cardRepository.save({
       title: createCardDto.title,
       description: createCardDto.description,
       color: createCardDto.color,
@@ -73,7 +73,7 @@ export class CardService {
 
     const cards = await this.cardRepository.find({
       where: {
-        list: list,
+        list: {id : list.id},
       },
       order: {
         order: 'asc',
@@ -93,7 +93,7 @@ export class CardService {
       },
       relations: {
         responsibles: true,
-        // comment : true,
+        comments : true,
         // checkList : true,
         // file : true,
       },
@@ -268,26 +268,57 @@ export class CardService {
       order: { order: 'ASC' },
     });
 
+    if (cards.length === 0) {
+      newOrder = 1;
+      const list = await this.listRepository.findOne({
+        where: { id: moveCardDto.listId },
+      });
+
+      if (!list){
+        throw new NotFoundException('존재하지 않는 리스트입니다.');
+      }
+
+      card.order = newOrder;
+      card.list = list;
+
+      await this.cardRepository.save(card);
+
+      return {
+        status: 200,
+        message: '카드 위치가 변경되었습니다.',
+      };
+    }
+
     // 첫번째로 옮기는 경우 (앞 값이 없을 떄)
     if (moveCardDto.order === 1) {
       newOrder = cards[0].order / 2;
     }
-
     // 마지막에 삽입하는 경우 [1,2,3,4,5]
-    else if (moveCardDto.order === cards.length + 1) {
+    else if (moveCardDto.order >= cards.length) {
       newOrder = cards[cards.length - 1].order + 1;
+    } else if (moveCardDto.order > card.order) {
+
+      const targetOrder = cards[moveCardDto.order].order;
+
+      const preTargetOrder = cards[moveCardDto.order - 1].order;
+
+      newOrder = (targetOrder + preTargetOrder) / 2;
     } else {
-      // 이동할 위치에 있는 카드의 순서값
+
       const targetOrder = cards[moveCardDto.order - 1].order;
 
-      // 이동할 위치 앞에 있는 카드의 순서 값
       const preTargetOrder = cards[moveCardDto.order - 2].order;
 
       newOrder = (targetOrder + preTargetOrder) / 2;
     }
+
     const list = await this.listRepository.findOne({
       where: { id: moveCardDto.listId },
     });
+    console.log(list);
+    if (!list){
+      throw new NotFoundException('존재하지 않는 리스트입니다.');
+    }
 
     card.order = newOrder;
     card.list = list;

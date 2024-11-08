@@ -6,7 +6,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { UserEntity } from './entities/user.entity';
 import { UserInfo } from '../utils/userInfo-decolator';
 
-@Controller('user')
+@Controller('users')
 export class UserController {
   constructor(private readonly userService: UserService) {
   }

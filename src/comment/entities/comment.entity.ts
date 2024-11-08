@@ -28,6 +28,6 @@ export class CommentEntity {
   @UpdateDateColumn({ type: 'timestamp', nullable: true, name: 'updated_at' })
   updatedAt: Date | null;
 
-  @ManyToOne(() => CardEntity, (card) => card.comments)
+  @ManyToOne(() => CardEntity, (card) => card.comments ,{cascade : true})
   card: CardEntity;
 }

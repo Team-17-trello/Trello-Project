@@ -21,9 +21,14 @@ export class BoardService {
     const workspace = await this.workspaceRepository.findOne({
       where: { id: createBoardDto.workspaceId },
     });
-    const board: BoardEntity = this.boardRepository.create({
-      name: createBoardDto.name,
-      description: createBoardDto.description,
+
+    if (!workspace){
+      throw new NotFoundException('존재하지 않는 워크스페이스입니다.');
+    }
+
+    const board : BoardEntity = this.boardRepository.create({
+      name : createBoardDto.name,
+      description : createBoardDto.description,
       backgroundColor: createBoardDto.backgroundColor,
       workspace: workspace,
       userId: user.id,
