@@ -10,7 +10,6 @@ import { Repository } from 'typeorm';
 import { ChecklistEntity } from './entities/checklist.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CardEntity } from 'src/card/entities/card.entity';
-import { CharsetToEncoding } from 'mysql2';
 
 @Injectable()
 export class ChecklistService {

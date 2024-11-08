@@ -106,7 +106,6 @@ export class ListService {
         },
         select: {
           order: true,
-          
         },
         order: {
           order: 'ASC',

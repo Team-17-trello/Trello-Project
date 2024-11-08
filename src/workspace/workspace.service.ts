@@ -73,7 +73,6 @@ export class WorkspaceService {
   async getWorkspaceById(workspaceId: number) {
     try {
       const getOneWorkspace = await this.foundWorkspaceById(workspaceId);
-
       return getOneWorkspace;
     } catch (err) {
       throw err;
@@ -140,7 +139,7 @@ export class WorkspaceService {
     return user;
   }
 
-  //중복 멤버 확인 함수
+
   private async checkDuplicateMember(workspaceId: number, userId: number) {
     const existingMember = await this.memberRepository.findOne({
       where: {
