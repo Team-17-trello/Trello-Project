@@ -32,36 +32,38 @@ export class CommentService {
       });
 
       return {
-        statusCode: 201,
         message: '댓글이 생성되었습니다.',
         comment: comment,
       };
-    } catch (error) {
-      throw error;
+    } catch (err) {
+      throw err;
     }
   }
 
   async update(id: number, user: UserEntity, commentDto: CommentDto) {
-    const comment = await this.commentRepository.findOne({
-      where: { id },
-    });
+    try {
+      const comment = await this.commentRepository.findOne({
+        where: { id },
+      });
 
-    if (!comment) {
-      throw new NotFoundException('해당 댓글이 존재하지 않습니다.');
+      if (!comment) {
+        throw new NotFoundException('해당 댓글이 존재하지 않습니다.');
+      }
+
+      if (comment.userId !== user.id) {
+        throw new UnauthorizedException('댓글 수정 권한이 없습니다.');
+      }
+
+      comment.text = commentDto.text;
+
+      const updatedComment = await this.commentRepository.save(comment);
+
+      return {
+        comment: updatedComment,
+      };
+    } catch (err) {
+      throw err;
     }
-
-    if (comment.userId !== user.id) {
-      throw new UnauthorizedException('댓글 수정 권한이 없습니다.');
-    }
-
-    comment.text = commentDto.text;
-
-    const updatedComment = await this.commentRepository.save(comment);
-
-    return {
-      status: 200,
-      comment: updatedComment,
-    };
   }
 
   async remove(id: number, user: UserEntity) {
@@ -84,8 +86,8 @@ export class CommentService {
       return {
         message: '댓글이 삭제 되었습니다.',
       };
-    } catch (error) {
-      throw error;
+    } catch (err) {
+      throw err;
     }
   }
 }

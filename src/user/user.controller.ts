@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Put, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, HttpCode, HttpStatus, Put, UseGuards } from '@nestjs/common';
 import { UserService } from './user.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { RemoveUserDto } from './dto/remove.dto';
@@ -8,17 +8,18 @@ import { UserInfo } from '../utils/userInfo-decolator';
 
 @Controller('users')
 export class UserController {
-  constructor(private readonly userService: UserService) {
-  }
+  constructor(private readonly userService: UserService) {}
   @UseGuards(AuthGuard('jwt'))
   @Put()
-  update(@UserInfo() user: UserEntity, @Body() userUpdateDto : UpdateUserDto){
+  @HttpCode(HttpStatus.OK)
+  update(@UserInfo() user: UserEntity, @Body() userUpdateDto: UpdateUserDto) {
     return this.userService.update(user, userUpdateDto);
   }
 
   @UseGuards(AuthGuard('jwt'))
   @Delete()
-  remove(@UserInfo() user: UserEntity, @Body() removeUserDto: RemoveUserDto ){
+  @HttpCode(HttpStatus.OK)
+  remove(@UserInfo() user: UserEntity, @Body() removeUserDto: RemoveUserDto) {
     return this.userService.remove(user, removeUserDto);
   }
 }

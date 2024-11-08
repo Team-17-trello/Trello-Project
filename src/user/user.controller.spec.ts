@@ -12,15 +12,15 @@ describe('UserController', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [UserController],
-      providers : [
+      providers: [
         {
-          provide : UserService,
-          useValue : {
+          provide: UserService,
+          useValue: {
             update: jest.fn(),
             remove: jest.fn(),
-          }
-        }
-      ]
+          },
+        },
+      ],
     }).compile();
 
     userController = module.get<UserController>(UserController);
@@ -36,38 +36,30 @@ describe('UserController', () => {
     members: null,
   };
 
-
   describe('update', () => {
-    it('update 메소드를 실행하고 결과를 반환', async ()=>{
-      const updateUserDto : UpdateUserDto ={
+    it('update 메소드를 실행하고 결과를 반환', async () => {
+      const updateUserDto: UpdateUserDto = {
         password: 'test1234',
-        nickname:'test'
-      }
-
-
+        nickname: 'test',
+      };
 
       const spy = jest.spyOn(userService, 'update').mockResolvedValue({
-        statusCode: 200,
-        message: '수정이 완료되었습니다.'
+        message: '수정이 완료되었습니다.',
       });
 
       userController.update(mockUser, updateUserDto);
       expect(spy).toHaveBeenCalledWith(mockUser, updateUserDto);
       expect(spy).toHaveBeenCalledTimes(1);
-
-
-    })
-
-  })
+    });
+  });
 
   describe('remove', () => {
-    it('remove 메소드를 실행하고 결과를 반환', ()=>{
+    it('remove 메소드를 실행하고 결과를 반환', () => {
       const mockRemoveUserDto: RemoveUserDto = {
         password: 'test1234',
       };
 
       const spy = jest.spyOn(userService, 'remove').mockResolvedValue({
-        statusCode: 200,
         message: '계정이 성공적으로 삭제 되었습니다.',
       });
 
@@ -75,8 +67,6 @@ describe('UserController', () => {
 
       expect(spy).toHaveBeenCalledWith(mockUser, mockRemoveUserDto);
       expect(spy).toHaveBeenCalledTimes(1);
-    })
-
-  })
-
+    });
+  });
 });
