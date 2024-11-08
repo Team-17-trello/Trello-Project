@@ -1,4 +1,3 @@
-
 import {
   Body,
   Controller,
@@ -13,7 +12,7 @@ import {
 } from '@nestjs/common';
 
 import { AuthGuard } from '@nestjs/passport';
-import { ApiBearerAuth } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import { UserEntity } from '../user/entities/user.entity';
 import { UserInfo } from '../utils/userInfo-decolator';
@@ -21,12 +20,15 @@ import { CommentService } from './comment.service';
 import { CommentDto } from './dto/comment.dto';
 
 @ApiBearerAuth()
+@ApiTags('코멘트')
 @Controller('comments')
 @UseGuards(AuthGuard('jwt'))
 export class CommentController {
   constructor(private readonly commentService: CommentService) {}
 
   @Post(':cardId')
+  @ApiOperation({ summary: '댓글 작성' })
+  @ApiResponse({ status: 201, description: '댓글이 성공적으로 생성됨', type: CommentDto })
   @HttpCode(HttpStatus.CREATED)
   create(
     @Param('cardId') id: string,
@@ -37,6 +39,8 @@ export class CommentController {
   }
 
   @Patch(':commentId')
+  @ApiOperation({ summary: '댓글 수정' })
+  @ApiResponse({ status: 200, description: '댓글이 성공적으로 수정됨', type: CommentDto })
   @HttpCode(HttpStatus.OK)
   update(
     @Param('commentId') id: string,
@@ -47,6 +51,8 @@ export class CommentController {
   }
 
   @Delete(':commentId')
+  @ApiOperation({ summary: '댓글 삭제' })
+  @ApiResponse({ status: 200, description: '댓글이 성공적으로 삭제됨', type: CommentDto })
   @HttpCode(HttpStatus.OK)
   remove(@Param('commentId') id: string, @UserInfo() user: UserEntity) {
     return this.commentService.remove(+id, user);

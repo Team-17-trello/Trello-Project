@@ -9,12 +9,10 @@ export class MemberService {
   constructor(
     @InjectRepository(MemberEntity)
     private readonly memberRepository: Repository<MemberEntity>,
-  ) {
-  }
+  ) {}
 
   async switch(user: UserEntity, workspaceId: number, userId: number) {
     try {
-
       const myAuth = await this.memberRepository.findOne({
         where: { user: { id: user.id }, workspace: { id: workspaceId } },
       });
@@ -32,7 +30,9 @@ export class MemberService {
       if (user.id === userId) {
         const admins = members.filter((member) => member.isAdmin === true);
         if (admins.length === 1) {
-          throw new ConflictException('해당 워크스페이스의 유일한 admin으로 권한 변경을 할 수 없습니다.');
+          throw new ConflictException(
+            '해당 워크스페이스의 유일한 admin으로 권한 변경을 할 수 없습니다.',
+          );
         }
       }
 
@@ -42,19 +42,14 @@ export class MemberService {
 
       console.log(member);
       let value: boolean;
-      member.isAdmin === true ? value = false : value = true;
+      member.isAdmin === true ? (value = false) : (value = true);
       await this.memberRepository.update({ id: member.id }, { isAdmin: value });
 
       return {
-        status : 200,
-        message : '권한을 변경하였습니다.'
-      }
-
-    } catch (error) {
-      throw error;
-      console.error(error);
-
+        message: '권한을 변경하였습니다.',
+      };
+    } catch (err) {
+      throw err;
     }
-
   }
 }
