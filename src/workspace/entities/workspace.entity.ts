@@ -21,6 +21,9 @@ export class WorkspaceEntity extends BaseEntity {
   @CreateDateColumn({ type: 'timestamp', nullable: true, name: 'createdAt' })
   createdAt: Date;
 
+  @Column({ type: 'int', nullable: false })
+  userId: number;
+
   @OneToMany(() => MemberEntity, (member) => member.workspace)
   members: MemberEntity[];
 
