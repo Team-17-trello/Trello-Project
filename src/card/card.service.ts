@@ -131,7 +131,7 @@ export class CardService {
       if (!card) {
         throw new NotFoundException('해당하는 카드가 없습니다 확인해주세요');
       }
-
+ 
       //카드 수정
       const updateData: Partial<CardEntity> = {};
 

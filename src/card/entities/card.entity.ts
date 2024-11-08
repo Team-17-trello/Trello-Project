@@ -10,6 +10,7 @@ import {
 
 import { ResponsibleEntity } from './responsible.entity';
 import { ListEntity } from '../../list/entities/list.entity';
+import { ChecklistEntity } from '../../checklist/entities/checklist.entity';
 import { WorkspaceEntity } from 'src/workspace/entities/workspace.entity';
 import { CommentEntity } from 'src/comment/entities/comment.entity';
 import { itemsEntity } from 'src/item/entities/item.entity';
@@ -40,19 +41,22 @@ export class CardEntity {
   updatedAt: Date | null;
 
   @Column({ type: 'timestamp', nullable: true, name: 'due_date', default: null })
-  dueDate: Date
+  dueDate: Date;
 
   @Column({ type: 'int', nullable: false })
   userId: number;
 
+  @OneToMany(() => ChecklistEntity, (checklist) => checklist.card)
+  checklists: ChecklistEntity;
+  
+
   @ManyToOne(() => ListEntity, (list) => list.cards)
   list: ListEntity;
-
 
   @OneToMany(() => ResponsibleEntity, (responsibles) => responsibles.card)
   responsibles: ResponsibleEntity[];
 
-  @OneToMany(() =>CommentEntity, (comments) => comments.card)
+  @OneToMany(() => CommentEntity, (comments) => comments.card)
   comments: CommentEntity[];
 
   @ManyToOne(() => WorkspaceEntity, (workspace) => workspace.cards)

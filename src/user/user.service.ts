@@ -13,8 +13,7 @@ export class UserService {
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
     @InjectEntityManager() private readonly entityManager: EntityManager,
-  ) {
-  }
+  ) {}
 
   // TODO : 비밀번호만 변경하는 경우인데 닉네임 중복 예외처리에 걸림
   async update(user: UserEntity, userUpdateDto: UpdateUserDto) {

@@ -1,34 +1,29 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Put, UseGuards } from '@nestjs/common';
 import { ChecklistService } from './checklist.service';
 import { CreateChecklistDto } from './dto/create-checklist.dto';
 import { UpdateChecklistDto } from './dto/update-checklist.dto';
+import { AuthGuard } from '@nestjs/passport';
 
-@Controller('checklist')
+// @UseGuards(AuthGuard('jwt'))
+@Controller('checklists')
 export class ChecklistController {
   constructor(private readonly checklistService: ChecklistService) {}
 
   @Post()
   create(@Body() createChecklistDto: CreateChecklistDto) {
-    return this.checklistService.create(createChecklistDto);
+    return this.checklistService.createChecklist(createChecklistDto);
   }
 
-  @Get()
-  findAll() {
-    return this.checklistService.findAll();
+  @Put(':checklistId')
+  update(
+    @Param('checklistId') checklistId: number,
+    @Body() updateChecklistDto: UpdateChecklistDto,
+  ) {
+    return this.checklistService.updateChecklist(checklistId, updateChecklistDto);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.checklistService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateChecklistDto: UpdateChecklistDto) {
-    return this.checklistService.update(+id, updateChecklistDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.checklistService.remove(+id);
+  @Delete(':checklistId')
+  remove(@Param('checklistId') checklistId: number) {
+    return this.checklistService.removeChecklist(checklistId);
   }
 }

@@ -1,6 +1,7 @@
 import { BoardEntity } from 'src/board/entities/board.entity';
 import { CardEntity } from 'src/card/entities/card.entity';
 import { MemberEntity } from 'src/member/entity/member.entity';
+import { ChecklistEntity } from 'src/checklist/entities/checklist.entity';
 import {
   BaseEntity,
   Column,

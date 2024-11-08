@@ -22,6 +22,8 @@ import { UserModule } from './user/user.module';
 import { WorkspaceEntity } from './workspace/entities/workspace.entity';
 import { WorkspaceModule } from './workspace/workspace.module';
 
+import { ChecklistEntity } from './checklist/entities/checklist.entity';
+
 const typeOrmModuleOptions = {
   useFactory: async (configService: ConfigService): Promise<TypeOrmModuleOptions> => ({
     namingStrategy: new SnakeNamingStrategy(),
@@ -39,6 +41,7 @@ const typeOrmModuleOptions = {
       CardEntity,
       ResponsibleEntity,
       WorkspaceEntity,
+      ChecklistEntity,
       CommentEntity,
     ],
     synchronize: configService.get('DB_SYNC'),
