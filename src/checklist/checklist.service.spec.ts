@@ -27,7 +27,9 @@ describe('ChecklistService', () => {
     }).compile();
 
     service = module.get<ChecklistService>(ChecklistService);
-    checklistRepository = module.get<Repository<ChecklistEntity>>(getRepositoryToken(ChecklistEntity));
+    checklistRepository = module.get<Repository<ChecklistEntity>>(
+      getRepositoryToken(ChecklistEntity),
+    );
   });
 
   it('should be defined', () => {
@@ -45,6 +47,7 @@ describe('ChecklistService', () => {
       checklistName: createChecklistDto.checklistName,
       createdAt: new Date('2024-11-07'),
       card: { id: 1 } as CardEntity,
+      items: null,
     };
 
     // 모킹: create 및 save 메서드를 모의하여 체크리스트 생성 시 예상 결과를 반환하도록 설정
@@ -66,6 +69,7 @@ describe('ChecklistService', () => {
       checklistName: updateChecklistDto.checklistName,
       createdAt: new Date('2024-11-07'),
       card: { id: 1 } as CardEntity,
+      items: null,
     };
 
     // 모킹: findOne, update, 및 save 메서드가 예상한 업데이트 결과를 반환하도록 설정

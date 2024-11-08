@@ -127,5 +127,8 @@ describe('WorkspaceService', () => {
     expect(result).toEqual(workspace);
   });
 
-  it('')
+  it('워크스페이스에 멤버 추가 성공', async () => {
+    
+
+  });
 });

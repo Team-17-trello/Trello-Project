@@ -96,7 +96,6 @@ export class WorkspaceService {
   ): Promise<{ status: number; message: string }> {
     const foundWorkspace = await this.verifyWorkspaceById(workspaceId); //워크스페이스id로 워스크페이스 존재여부 확인
     await this.verifyAdminPrivileges(user, workspaceId); //user가 워크스페이스의 어드민 권한이 있는지 확인
-
     await this.addMembersToWorspace(foundWorkspace, userIds); //해당 워크스페이스에 userIds배열에 있는 모든 유저 추가
     return { status: 201, message: '멤버를 성공적으로 초대했습니다.' };
   }

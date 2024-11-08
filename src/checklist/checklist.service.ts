@@ -50,12 +50,10 @@ export class ChecklistService {
   // 체크리스트 삭제
   async removeChecklist(checklistId: number) {
     await this.verifychecklist(checklistId);
-
     // 체크리스트 삭제
     await this.checklistRepository.delete({
       id: checklistId,
     });
-
     // 삭제 성공 메시지 반환
     return { message: '체크리스트가 삭제 되었습니다.' };
   }
