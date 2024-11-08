@@ -6,15 +6,14 @@ import { CommentEntity } from './entities/comment.entity';
 import { Repository } from 'typeorm';
 import { CardEntity } from '../card/entities/card.entity';
 
-
 @Injectable()
 export class CommentService {
-  constructor(@InjectRepository(CommentEntity)
-              private readonly commentRepository: Repository<CommentEntity>,
-              @InjectRepository(CardEntity)
-              private readonly cardRepository: Repository<CardEntity>,
-  ) {
-  }
+  constructor(
+    @InjectRepository(CommentEntity)
+    private readonly commentRepository: Repository<CommentEntity>,
+    @InjectRepository(CardEntity)
+    private readonly cardRepository: Repository<CardEntity>,
+  ) {}
 
   async create(cardId: number, user: UserEntity, commentDto: CommentDto) {
     try {
@@ -22,12 +21,12 @@ export class CommentService {
       const card = await this.cardRepository.findOne({
         where: { id: cardId },
       });
-      console.log(card)
+      console.log(card);
       if (!card) {
         throw new NotFoundException('해당 카드가 존재하지 않습니다.');
       }
 
-      const comment : CommentEntity = await this.commentRepository.save({
+      const comment: CommentEntity = await this.commentRepository.save({
         text: commentDto.text,
         userId: user.id,
         card: card,
@@ -41,9 +40,7 @@ export class CommentService {
     } catch (error) {
       throw error;
       console.error(error);
-
     }
-
   }
 
   async update(id: number, user: UserEntity, commentDto: CommentDto) {
@@ -67,8 +64,6 @@ export class CommentService {
       status: 200,
       comment: updatedComment,
     };
-
-
   }
 
   async remove(id: number, user: UserEntity) {
@@ -93,13 +88,9 @@ export class CommentService {
         statusCode: 200,
         message: '댓글이 삭제 되었습니다.',
       };
-
     } catch (error) {
       throw error;
       console.error(error);
     }
-
   }
 }
-
-

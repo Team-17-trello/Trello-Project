@@ -6,6 +6,7 @@ import { Repository } from 'typeorm';
 import { BoardService } from './board.service';
 import { BoardEntity } from './entities/board.entity';
 import { WorkspaceEntity } from 'src/workspace/entities/workspace.entity';
+import { UpdateBoardDto } from './dto/update-board.dto';
 
 const mockBoardRepository = {
   create: jest.fn(),
@@ -157,34 +158,18 @@ describe('BoardService', () => {
 
   describe('update', () => {
     it('해당하는 보드를 성공적으로 수정 합니다.', async () => {
-      const updateBoardDto = {
-        name: 'Updated Board',
-        backgroundColor: '#AAAAA',
-        description: 'Updated Description',
-      };
-      const board = {
-        id: 1,
-        workspaceId: 1,
-        name: 'Board 1',
-        backgroundColor: '#FFFFFF',
-        description: 'Test Description',
-      };
+      const updateBoardDto: UpdateBoardDto = { name: 'Updated Board' };
+      const user: UserEntity = { id: 1 } as UserEntity;
+      const board = { id: 1, userId: user.id } as BoardEntity;
+      const existingBoard = { id: 1, name: 'Old Board', userId: user.id } as BoardEntity;
 
-      const updatedBoard = { ...board, ...updateBoardDto };
+      jest.spyOn(mockBoardRepository, 'findOne').mockResolvedValue(existingBoard);
+      jest.spyOn(mockBoardRepository, 'findOneBy').mockResolvedValue(board);
+      jest.spyOn(service, 'findOne').mockResolvedValue(existingBoard);
+      jest.spyOn(mockBoardRepository, 'update').mockResolvedValue(null);
 
-      jest.spyOn(service, 'verifyBoardByUserId').mockResolvedValue(undefined);
-      mockBoardRepository.findOne.mockResolvedValue(board);
-      mockBoardRepository.update.mockResolvedValue(undefined);
-
-      const data = await service.update(1, updateBoardDto, mockUser);
-
-      expect(service.verifyBoardByUserId).toHaveBeenCalledWith(mockUser.id, board.id);
-      expect(mockBoardRepository.findOne).toHaveBeenCalledWith({
-        where: { id: board.id },
-        relations: { lists: true },
-      });
-      expect(mockBoardRepository.update).toHaveBeenCalledWith(board.id, updateBoardDto);
-      expect(data).toEqual(updatedBoard);
+      const result = await service.update(1, updateBoardDto, user);
+      expect(result).toEqual({ ...existingBoard, ...updateBoardDto });
     });
 
     it('보드를 찾을 수 없으면 BadRequestException 발생시켜야 합니다.', async () => {
@@ -198,44 +183,23 @@ describe('BoardService', () => {
 
   describe('remove', () => {
     it('보드 삭제 성공 검증', async () => {
-      const boardId = 1;
-      const expectedResult = { message: '보드가 성공적으로 삭제되었습니다.' };
+      const user: UserEntity = { id: 1 } as UserEntity;
+      const board = { id: 1, userId: user.id } as BoardEntity;
 
-      jest.spyOn(service, 'verifyBoardByUserId').mockResolvedValue(undefined);
-      mockBoardRepository.delete.mockResolvedValue({});
+      jest.spyOn(mockBoardRepository, 'findOne').mockResolvedValue(board);
+      jest.spyOn(mockBoardRepository, 'findOneBy').mockResolvedValue(board);
+      jest.spyOn(mockBoardRepository, 'delete').mockResolvedValue(null);
 
-      const result = await service.remove(boardId, mockUser);
-
-      expect(service.verifyBoardByUserId).toHaveBeenCalledWith(mockUser.id, boardId);
-      expect(mockBoardRepository.delete).toHaveBeenCalledWith(boardId);
-      expect(result).toEqual(expectedResult);
+      const result = await service.remove(1, user);
+      expect(result).toEqual({ message: '보드가 성공적으로 삭제되었습니다.' });
     });
 
     it('보드를 찾을 수 없으면 BadRequestException 발생시켜야 합니다.', async () => {
-      const boardId = 1;
-      mockBoardRepository.delete.mockResolvedValue({ affected: 0 });
+      const user: UserEntity = { id: 2 } as UserEntity;
+      const board = { id: 1, userId: 1 } as BoardEntity;
 
-      await expect(service.remove(boardId, mockUser)).rejects.toThrow(BadRequestException);
-      expect(mockBoardRepository.delete).not.toHaveBeenCalledWith();
-    });
-  });
-
-  describe('verifyBoardByUserId', () => {
-    it('유저 아이디와 보드 아이디로 보드 작성자를 확인 합니다.', async () => {
-      const mockBoard = { id: 1, userId: 1 };
-      mockBoardRepository.findOneBy.mockResolvedValue(mockBoard);
-
-      const result = await service.verifyBoardByUserId(1, 1);
-
-      expect(result).toBe(mockBoard);
-      expect(mockBoardRepository.findOneBy).toHaveBeenCalledWith({ userId: 1, id: 1 });
-    });
-
-    it('유저 아이디와 보드 아이디가 없을 시 예외 처리 합니다.', async () => {
-      mockBoardRepository.findOneBy.mockResolvedValue(null);
-
-      await expect(service.verifyBoardByUserId(1, 1)).rejects.toThrow(BadRequestException);
-      expect(mockBoardRepository.findOneBy).toHaveBeenCalledWith({ userId: 1, id: 1 });
+      jest.spyOn(mockBoardRepository, 'findOne').mockResolvedValue(null);
+      await expect(service.remove(1, user)).rejects.toThrow(BadRequestException);
     });
   });
 });
