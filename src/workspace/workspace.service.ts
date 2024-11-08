@@ -22,18 +22,18 @@ export class WorkspaceService {
     private readonly userRepository: Repository<UserEntity>,
     @InjectRepository(MemberEntity)
     private readonly memberRepository: Repository<MemberEntity>,
-  ) {
-  }
+  ) {}
 
   /**워크스페이스 생성 */
   async workspaceCreate(
     user: UserEntity,
     createWorkspaceDto: CreateWorkspaceDto,
   ): Promise<WorkspaceEntity> {
-    const { workspaceName } = createWorkspaceDto;
-
     // 새로운 워크스페이스 생성
-    const newWorkspace = this.workspaceRepository.create({ workspaceName });
+    const newWorkspace = this.workspaceRepository.create({
+      workspaceName: createWorkspaceDto.workspaceName,
+      userId: user.id,
+    });
 
     try {
       const saveWorkspace = await this.workspaceRepository.save(newWorkspace);
@@ -127,7 +127,7 @@ export class WorkspaceService {
         throw new ConflictException(`유저${userId}가 이미 초대되었습니다.`);
       }
 
-      const createMember = await this.memberRepository.create({
+      const createMember = this.memberRepository.create({
         isAdmin: false,
         user: foundUser,
         workspace: foundWorkspace,
