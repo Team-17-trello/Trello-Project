@@ -22,8 +22,7 @@ export class WorkspaceService {
     private readonly userRepository: Repository<UserEntity>,
     @InjectRepository(MemberEntity)
     private readonly memberRepository: Repository<MemberEntity>,
-  ) {
-  }
+  ) {}
 
   /**워크스페이스 생성 */
   async workspaceCreate(
@@ -32,24 +31,27 @@ export class WorkspaceService {
   ): Promise<WorkspaceEntity> {
     const { workspaceName } = createWorkspaceDto;
 
-    // 새로운 워크스페이스 생성
-    const newWorkspace = this.workspaceRepository.create({ workspaceName });
+    const newWorkspace = await this.workspaceRepository.create({ workspaceName });
 
     try {
       const saveWorkspace = await this.workspaceRepository.save(newWorkspace);
 
-      const createMember = this.memberRepository.create({
-        isAdmin: true,
-        user,
-        workspace: saveWorkspace,
-      });
-
-      await this.memberRepository.save(createMember);
+      await this.addAdminMember(user, saveWorkspace); //<-별도로 만든 함수 사용
 
       return saveWorkspace;
     } catch (error) {
       throw new BadRequestException('워크스페이스 생성 중 오류가 발생했습니다.');
     }
+  }
+
+  //admin 멤버를 추가하는 로직 함수 <- 위의 "워크스페이스 생성" 로직의 가동성과 재사용성 강화했습니다.
+  private async addAdminMember(user: UserEntity, workspace: WorkspaceEntity) {
+    const createMember = await this.memberRepository.create({
+      isAdmin: true,
+      user,
+      workspace,
+    });
+    await this.memberRepository.save(createMember);
   }
 
   /**워크스페이스 전체 조회 */
@@ -92,17 +94,15 @@ export class WorkspaceService {
     workspaceId: number,
     userId: number[],
   ): Promise<{ status: number; message: string }> {
-    // 2. 멤버를 추가하려는 워크스페이스가 DB에 존재하는가?
     const foundWorkspace = await this.workspaceRepository.findOne({
       where: { id: workspaceId },
       relations: ['members'],
     });
-
+ 
     if (!foundWorkspace) {
       throw new NotFoundException(`해당 ID(${workspaceId})의 워크스페이스가 존재하지 않습니다.`);
     }
 
-    // 3. 해당 워크스페이스에 멤버를 추가할 권한이 있는가? (isAdmin 확인)
     const foundAdminMember = await this.memberRepository.findOne({
       where: { workspace: { id: workspaceId }, user: { id: user.id }, isAdmin: true },
     });
@@ -116,7 +116,7 @@ export class WorkspaceService {
       if (!foundUser) {
         throw new NotFoundException(`해당 ID(${userId})의 사용자가 존재하지 않습니다.`);
       }
-
+      // 2. 멤버로 초대된 유저가 중복되는지 확인
       const inviteMember = await this.memberRepository.findOne({
         where: {
           workspace: { id: workspaceId },
@@ -138,7 +138,10 @@ export class WorkspaceService {
     return { status: 201, message: '멤버를 성공적으로 초대했습니다.' };
   }
 
-  async verifyWorkspaceById(workspaceId: number) {
+
+
+  //워크스페이스 존재 여부 확인 함수
+  private async verifyWorkspaceById(workspaceId: number) {
     const workspace = await this.workspaceRepository.findOne({
       where: { id: workspaceId },
       relations: { members: true },
@@ -148,4 +151,13 @@ export class WorkspaceService {
     }
     return workspace;
   }
+
+
+ 
+  // //verifyAdminPrivileges(어드민 권한 확인)함수
+  // private async verifyAdminPrivileges(user: UserEntity, workspaceId: number) {
+    
+  // }
+
+  // private async
 }
