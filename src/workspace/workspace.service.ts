@@ -116,7 +116,6 @@ export class WorkspaceService {
       if (!foundUser) {
         throw new NotFoundException(`해당 ID(${userId})의 사용자가 존재하지 않습니다.`);
       }
-
       const inviteMember = await this.memberRepository.findOne({
         where: {
           workspace: { id: workspaceId },

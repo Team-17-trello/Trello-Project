@@ -1,10 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { CommentController } from './comment.controller';
 import { CommentService } from './comment.service';
-import { assignToken } from '@nestjs/core/middleware/utils';
 import { CommentDto } from './dto/comment.dto';
 import { UserEntity } from '../user/entities/user.entity';
-import { CommentEntity } from './entities/comment.entity';
 
 describe('CommentController', () => {
   let commentController: CommentController

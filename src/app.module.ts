@@ -21,6 +21,8 @@ import { UserEntity } from './user/entities/user.entity';
 import { UserModule } from './user/user.module';
 import { WorkspaceEntity } from './workspace/entities/workspace.entity';
 import { WorkspaceModule } from './workspace/workspace.module';
+import { MemberService } from './member/member.service';
+import { MemberModule } from './member/member.module';
 
 import { ChecklistEntity } from './checklist/entities/checklist.entity';
 import { itemsEntity } from './item/entities/item.entity';
@@ -77,6 +79,7 @@ const typeOrmModuleOptions = {
     ChecklistModule,
     ItemModule,
     FileModule,
+    MemberModule,
   ],
   controllers: [],
   providers: [],
