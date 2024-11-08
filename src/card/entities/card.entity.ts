@@ -48,7 +48,6 @@ export class CardEntity {
 
   @OneToMany(() => ChecklistEntity, (checklist) => checklist.card)
   checklists: ChecklistEntity;
-  
 
   @ManyToOne(() => ListEntity, (list) => list.cards)
   list: ListEntity;
@@ -59,6 +58,6 @@ export class CardEntity {
   @OneToMany(() => CommentEntity, (comments) => comments.card)
   comments: CommentEntity[];
 
-  @ManyToOne(() => WorkspaceEntity, (workspace) => workspace.cards)
+  @ManyToOne(() => WorkspaceEntity, (workspace) => workspace.cards, { onDelete: 'CASCADE' })
   workspace: WorkspaceEntity;
 }
