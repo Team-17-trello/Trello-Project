@@ -69,12 +69,10 @@ describe('CardService', () => {
           dueDate: new Date(),
         }),
       ).rejects.toThrow(NotFoundException);
-
       expect(listRepository.findOne).toHaveBeenCalledWith({
         where: { id: 1 },
         relations: { board: { workspace: true } },
       });
-
       expect(listRepository.findOne).toHaveBeenCalledTimes(1);
     });
 
@@ -136,6 +134,7 @@ describe('CardService', () => {
 
       // 결과가 status 코드 201과 생성한 card 객체를 포함하는지 확인
       expect(result).toEqual({
+        status: 201,
         card: mockCard,
       });
 
@@ -181,6 +180,7 @@ describe('CardService', () => {
 
       // 결과가 status 코드 200과 생성한 card 객체를 포함하는지 확인
       expect(result).toEqual({
+        status: 200,
         cards: mockCards,
       });
 
@@ -216,6 +216,7 @@ describe('CardService', () => {
       const result = await cardService.findOne(1);
 
       expect(result).toEqual({
+        status: 200,
         card: mockCard,
       });
 
@@ -265,6 +266,7 @@ describe('CardService', () => {
 
       const result = await cardService.update(1, mockUpdateCardDto);
       expect(result).toEqual({
+        statusCode: 200,
         message: '성공적으로 카드가 수정되었습니다.',
         updated: updatedCard,
       });
@@ -281,6 +283,7 @@ describe('CardService', () => {
       const result = await cardService.setDueDate(1, mockDueDateDto);
 
       expect(result).toEqual({
+        statusCode: 200,
         message: `마감 기한이 설정 됐습니다. ${mockDueDateDto.dueDate}`,
         dueDate: mockDueDateDto.dueDate,
       });
@@ -312,6 +315,7 @@ describe('CardService', () => {
       const result = await cardService.remove(1);
 
       expect(result).toEqual({
+        status: 200,
         message: '카드가 삭제 되었습니다.',
       });
     });
@@ -345,6 +349,7 @@ describe('CardService', () => {
       const result = await cardService.inviteResponsible(1, mockResponsibleDto);
 
       expect(result).toEqual({
+        stateCode: 201,
         message: '초대가 완료되었습니다.',
         responsible: mockResponsibleDto.responsibles,
       });
@@ -400,6 +405,7 @@ describe('CardService', () => {
       });
 
       expect(result).toEqual({
+        statusCode: 200,
         message: '담당자가 삭제되었습니다.',
       });
     });
