@@ -17,7 +17,7 @@ describe('체크리스트 컨트롤러 테스트', () => {
         {
           provide: ChecklistService,
           useValue: {
-            createCheklist: jest.fn(),
+            createChecklist: jest.fn(),
             findAll: jest.fn(),
             updateChecklist: jest.fn(),
             removeChecklist: jest.fn(),
@@ -40,6 +40,7 @@ describe('체크리스트 컨트롤러 테스트', () => {
       checklistName: 'test',
       createdAt: new Date(),
       card: null,
+      items: null,
     };
     (checklistService.createChecklist as jest.Mock).mockResolvedValue(expectedResult);
     const result = await checklistController.create(createChecklistDto);
@@ -55,13 +56,14 @@ describe('체크리스트 컨트롤러 테스트', () => {
       checklistName: 'test',
       createdAt: new Date(),
       card: null,
+      items: null,
     };
     (checklistService.updateChecklist as jest.Mock).mockResolvedValue(expectedResult);
 
     const result = await checklistController.update(checklistId, updateChecklistDto);
 
     expect(result).toEqual(expectedResult);
-    expect(checklistService.updateChecklist).toHaveBeenCalledWith(updateChecklistDto);
+    expect(checklistService.updateChecklist).toHaveBeenCalledWith(checklistId, updateChecklistDto);
   });
   it('체크리스트 컨트롤러 삭제 테스트', async () => {
     const checklistId = 1;
