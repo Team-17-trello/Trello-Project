@@ -17,7 +17,6 @@ export class CommentService {
 
   async create(cardId: number, user: UserEntity, commentDto: CommentDto) {
     try {
-      // 카드존재 여부 확인
       const card = await this.cardRepository.findOne({
         where: { id: cardId },
       });
@@ -39,7 +38,6 @@ export class CommentService {
       };
     } catch (error) {
       throw error;
-      console.error(error);
     }
   }
 
@@ -68,7 +66,6 @@ export class CommentService {
 
   async remove(id: number, user: UserEntity) {
     try {
-      //댓글 작성자 인지 확인
       const comment = await this.commentRepository.findOne({
         where: { id },
       });
@@ -90,7 +87,6 @@ export class CommentService {
       };
     } catch (error) {
       throw error;
-      console.error(error);
     }
   }
 }

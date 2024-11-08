@@ -6,7 +6,6 @@ import { UserEntity } from 'src/user/entities/user.entity';
 import { UserInfo } from 'src/utils/userInfo-decolator';
 import { AddWorkspaceMemberDto } from './dto/add-workspace-member.dto';
 
-// UseGuards(AuthGuard('jwt'));
 @Controller('workspaces')
 export class WorkspaceController {
   constructor(private readonly workspaceService: WorkspaceService) {}
@@ -30,18 +29,17 @@ export class WorkspaceController {
     return await this.workspaceService.workspaceCreate(user, createWorkspaceDto);
   }
 
-  @UseGuards(AuthGuard('jwt')) // JWT 인증 가드 사용
-  @Put(':workspaceId/members') // workspaceId를 URL 파라미터로 받음
+  @UseGuards(AuthGuard('jwt'))
+  @Put(':workspaceId/members')
   async addWorkspaceMember(
-    @UserInfo() user: UserEntity, // @UserInfo() 데코레이터를 통해 현재 유저 정보 가져오기
-    @Param('workspaceId') workspaceId: number, // URL에서 workspaceId 추출
-    @Body() addWorkspaceMemberDto: AddWorkspaceMemberDto, // DTO를 통해 유저 정보 받기
+    @UserInfo() user: UserEntity,
+    @Param('workspaceId') workspaceId: number,
+    @Body() addWorkspaceMemberDto: AddWorkspaceMemberDto,
   ) {
-    // 서비스의 addWorkspaceMember 메서드 호출
     return await this.workspaceService.addWorkspaceMember(
       user,
       workspaceId,
-      addWorkspaceMemberDto.userId, // DTO에서 userId를 추출
+      addWorkspaceMemberDto.userId,
     );
   }
 }

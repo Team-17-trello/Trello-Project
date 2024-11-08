@@ -68,8 +68,6 @@ export class AuthService {
         throw new UnauthorizedException('비밀 번호가 일치 하지 않습니다.');
       }
 
-      // 로그인 성공 시 토큰
-
       const payload = { email: loginDto.email, sub: findUser.id };
       const token = this.jwtService.sign(payload);
 

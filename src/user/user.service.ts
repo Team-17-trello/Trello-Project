@@ -35,7 +35,6 @@ export class UserService {
       }
     }
 
-
     const updateData: Partial<UserEntity> = {};
 
     if (userUpdateDto.nickname) {
@@ -46,7 +45,6 @@ export class UserService {
       updateData.password = await bcrypt.hash(userUpdateDto.password, 10);
     }
 
-    // 변경된 값이 포함된 객체로 한 번에 업데이트
     await this.userRepository.update(user.id, updateData);
 
     return {
@@ -67,13 +65,13 @@ export class UserService {
           },
         });
 
-        // 멤버가 어드민 일 시 탈퇴 불가
         findMembers.forEach((member) => {
           if (member.isAdmin === true) {
-            throw new ConflictException('1개 이상 워크 스페이스에서 관리자 이므로 탈퇴할 수 없습니다.');
+            throw new ConflictException(
+              '1개 이상 워크 스페이스에서 관리자 이므로 탈퇴할 수 없습니다.',
+            );
           }
         });
-
 
         if (!(await compare(removeUserDto.password, findUser.password))) {
           throw new UnauthorizedException('비밀번호가 일치하지 않습니다.');
@@ -96,6 +94,5 @@ export class UserService {
         throw error;
       }
     });
-
   }
 }

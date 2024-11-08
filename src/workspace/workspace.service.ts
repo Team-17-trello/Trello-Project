@@ -24,12 +24,10 @@ export class WorkspaceService {
     private readonly memberRepository: Repository<MemberEntity>,
   ) {}
 
-  /**워크스페이스 생성 */
   async workspaceCreate(
     user: UserEntity,
     createWorkspaceDto: CreateWorkspaceDto,
   ): Promise<WorkspaceEntity> {
-    // 새로운 워크스페이스 생성
     const newWorkspace = this.workspaceRepository.create({
       workspaceName: createWorkspaceDto.workspaceName,
       userId: user.id,
@@ -52,7 +50,6 @@ export class WorkspaceService {
     }
   }
 
-  /**워크스페이스 전체 조회 */
   async getAllWorkspace(): Promise<WorkspaceEntity[]> {
     const getWorkspace = (await this.workspaceRepository.find()) || [];
 
@@ -63,7 +60,6 @@ export class WorkspaceService {
     return getWorkspace;
   }
 
-  /**워크스페이스 상세 조회 */
   async getWorkspaceById(workspaceId: number) {
     await this.verifyWorkspaceById(workspaceId);
     const getOneWorkspace = await this.workspaceRepository.find({
@@ -86,13 +82,11 @@ export class WorkspaceService {
     return getOneWorkspace;
   }
 
-  /** 워크스페이스 멤버 초대 */
   async addWorkspaceMember(
     user: UserEntity,
     workspaceId: number,
     userId: number[],
   ): Promise<{ status: number; message: string }> {
-    // 2. 멤버를 추가하려는 워크스페이스가 DB에 존재하는가?
     const foundWorkspace = await this.workspaceRepository.findOne({
       where: { id: workspaceId },
       relations: ['members'],
@@ -102,7 +96,6 @@ export class WorkspaceService {
       throw new NotFoundException(`해당 ID(${workspaceId})의 워크스페이스가 존재하지 않습니다.`);
     }
 
-    // 3. 해당 워크스페이스에 멤버를 추가할 권한이 있는가? (isAdmin 확인)
     const foundAdminMember = await this.memberRepository.findOne({
       where: { workspace: { id: workspaceId }, user: { id: user.id }, isAdmin: true },
     });
@@ -111,7 +104,6 @@ export class WorkspaceService {
     }
 
     for (let i = 0; i < userId.length; i++) {
-      // 1. 멤버로 추가하려는 유저가 User 테이블에 존재하는가?
       const foundUser = await this.userRepository.findOne({ where: { id: userId[i] } });
       if (!foundUser) {
         throw new NotFoundException(`해당 ID(${userId})의 사용자가 존재하지 않습니다.`);
