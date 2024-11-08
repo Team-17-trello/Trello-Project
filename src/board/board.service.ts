@@ -22,6 +22,10 @@ export class BoardService {
       where: { id: createBoardDto.workspaceId },
     });
 
+    if (!workspace) {
+      throw new NotFoundException('존재하지 않는 워크스페이스입니다.');
+    }
+
     const board: BoardEntity = this.boardRepository.create({
       name: createBoardDto.name,
       description: createBoardDto.description,
