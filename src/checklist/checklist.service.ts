@@ -37,8 +37,6 @@ export class ChecklistService {
     // 생성된 체크리스트를 저장
     await this.checklistRepository.save(checklist);
 
-    console.log(checklist); // 확인용
-
     return checklist;
   }
 

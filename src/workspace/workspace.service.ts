@@ -30,9 +30,9 @@ export class WorkspaceService {
     createWorkspaceDto: CreateWorkspaceDto,
   ): Promise<WorkspaceEntity> {
     const { workspaceName } = createWorkspaceDto;
-
-    const newWorkspace = await this.workspaceRepository.create({ workspaceName });
-
+    const userId = user.id
+    const newWorkspace = await this.workspaceRepository.create({ workspaceName, userId });
+    
     try {
       const saveWorkspace = await this.workspaceRepository.save(newWorkspace);
 
@@ -92,52 +92,15 @@ export class WorkspaceService {
   async addWorkspaceMember(
     user: UserEntity,
     workspaceId: number,
-    userId: number[],
+    userIds: number[],
   ): Promise<{ status: number; message: string }> {
-    const foundWorkspace = await this.workspaceRepository.findOne({
-      where: { id: workspaceId },
-      relations: ['members'],
-    });
- 
-    if (!foundWorkspace) {
-      throw new NotFoundException(`해당 ID(${workspaceId})의 워크스페이스가 존재하지 않습니다.`);
-    }
+    const foundWorkspace = await this.verifyWorkspaceById(workspaceId) //워크스페이스id로 워스크페이스 존재여부 확인
+    await this.verifyAdminPrivileges(user, workspaceId) //user가 워크스페이스의 어드민 권한이 있는지 확인
 
-    const foundAdminMember = await this.memberRepository.findOne({
-      where: { workspace: { id: workspaceId }, user: { id: user.id }, isAdmin: true },
-    });
-    if (!foundAdminMember) {
-      throw new ForbiddenException(`해당 워크스페이스에 멤버를 추가할 권한이 없습니다.`);
-    }
-
-    for (let i = 0; i < userId.length; i++) {
-      // 1. 멤버로 추가하려는 유저가 User 테이블에 존재하는가?
-      const foundUser = await this.userRepository.findOne({ where: { id: userId[i] } });
-      if (!foundUser) {
-        throw new NotFoundException(`해당 ID(${userId})의 사용자가 존재하지 않습니다.`);
-      }
-      // 2. 멤버로 초대된 유저가 중복되는지 확인
-      const inviteMember = await this.memberRepository.findOne({
-        where: {
-          workspace: { id: workspaceId },
-          user: { id: userId[i] },
-        },
-      });
-      if (inviteMember) {
-        throw new ConflictException(`유저${userId}가 이미 초대되었습니다.`);
-      }
-
-      const createMember = this.memberRepository.create({
-        isAdmin: false,
-        user: foundUser,
-        workspace: foundWorkspace,
-      });
-      await this.memberRepository.save(createMember);
-    }
+    await this.addMembersToWorspace(foundWorkspace, userIds) //해당 워크스페이스에 userIds배열에 있는 모든 유저 추가
 
     return { status: 201, message: '멤버를 성공적으로 초대했습니다.' };
   }
-
 
 
   //워크스페이스 존재 여부 확인 함수
@@ -153,11 +116,56 @@ export class WorkspaceService {
   }
 
 
- 
-  // //verifyAdminPrivileges(어드민 권한 확인)함수
-  // private async verifyAdminPrivileges(user: UserEntity, workspaceId: number) {
-    
-  // }
+  //verifyAdminPrivileges(어드민 권한 확인)함수 
+  //별도의 유틸파일로 이사 예정
+  private async verifyAdminPrivileges(user: UserEntity, workspaceId: number) {
+    const foundAdminMember = await this.memberRepository.findOne({
+      where: { workspace: { id: workspaceId }, user: { id: user.id }, isAdmin: true },
+    });
+    if (!foundAdminMember) {
+      throw new ForbiddenException(`해당 워크스페이스에 멤버를 추가할 권한이 없습니다.`);
+    }
+  }
 
-  // private async
+
+  //멤버 추가 함수
+  private async addMembersToWorspace(workspace: WorkspaceEntity, userIds: number[]) {
+    for (const userId of userIds) {
+      const foundUser = await this.verifyUserById(userId);
+      await this.checkDuplicateMember(workspace.id, userId);
+
+      const newMember = this.memberRepository.create({
+        isAdmin: false,
+        user: foundUser,
+        workspace,
+      });
+      await this.memberRepository.save(newMember);
+    }
+  }
+
+
+
+  //유저 존재 여부 확인 함수
+  private async verifyUserById(userId: number): Promise<UserEntity> {
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+    if(!user) {
+      throw new NotFoundException(`ID(${userId})의 사용자가 존재하지 않습니다.`)
+    }
+    return user;
+  }
+
+
+
+  //중복 멤버 확인 함수
+  private async checkDuplicateMember(workspaceId: number, userId: number) {
+    const existingMember = await this.memberRepository.findOne({
+      where: {
+        workspace: { id: workspaceId },
+        user: { id: userId },
+      },
+    });
+    if (existingMember) {
+      throw new ConflictException(`유저(${userId})가 이미 초대되었습니다.`);
+    }
+  }
 }
