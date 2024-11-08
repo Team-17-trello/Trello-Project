@@ -66,7 +66,9 @@ export class BoardService {
   }
 
   async update(id: number, updateBoardDto: UpdateBoardDto, user: UserEntity): Promise<BoardEntity> {
-    await this.verifyBoardByUserId(user.id, id);
+    await this.verifyBoardByUserId(user.id);
+
+    await this.authorityBoardByUserIdBoardId(user.id, id);
 
     const existingBoard = await this.findOne(id);
 
@@ -76,17 +78,31 @@ export class BoardService {
   }
 
   async remove(id: number, user: UserEntity): Promise<{ message: string }> {
-    await this.verifyBoardByUserId(user.id, id);
+    await this.verifyBoardByUserId(user.id);
+
+    await this.authorityBoardByUserIdBoardId(user.id, id);
 
     await this.boardRepository.delete(id);
 
     return { message: '보드가 성공적으로 삭제되었습니다.' };
   }
 
-  async verifyBoardByUserId(userId: number, boardId: number) {
+  private async verifyBoardByUserId(userId: number) {
+    const board = await this.boardRepository.findOne({
+      where: { userId: userId },
+    });
+
+    if (_.isNil(board)) {
+      throw new BadRequestException('보드가 존재하지 않습니다.');
+    }
+
+    return board;
+  }
+
+  private async authorityBoardByUserIdBoardId(userId: number, boardId: number) {
     const board = await this.boardRepository.findOneBy({ userId: userId, id: boardId });
     if (_.isNil(board)) {
-      throw new BadRequestException('해당 보드가 없거나, 해당 유저가 생성한 보드가 아닙니다.');
+      throw new BadRequestException('해당 유저는 보드에 대한 권한이 없습니다.');
     }
     return board;
   }
