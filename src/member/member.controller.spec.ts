@@ -1,18 +1,53 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { MemberController } from './member.controller';
+import { MemberService } from './member.service';
+import { UserService } from '../user/user.service';
+import { UserEntity } from '../user/entities/user.entity';
 
 describe('MemberController', () => {
-  let controller: MemberController;
+  let memberController: MemberController;
+  let memberService: MemberService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [MemberController],
+      providers: [
+        {
+          provide: MemberService,
+          useValue: {
+            switch: jest.fn(),
+          },
+        },
+      ],
     }).compile();
 
-    controller = module.get<MemberController>(MemberController);
+    memberController = module.get<MemberController>(MemberController);
+    memberService = module.get<MemberService>(MemberService);
   });
 
-  it('should be defined', () => {
-    expect(controller).toBeDefined();
+  const user: UserEntity = {
+    id: 1,
+    email: 'test@test.com',
+    password: 'test1234',
+    nickname: 'tester',
+    createdAt: new Date(),
+    deletedAt: null,
+    members: null,
+  };
+
+  const workspaceId = '1';
+
+
+  describe('switch', () => {
+    it('switch 메소드를 실행하고 결과를 반환',  () => {
+      const spy = jest.spyOn(memberService, 'switch').mockResolvedValue({
+        status: 200,
+        message: '권한을 변경하였습니다.',
+      });
+
+      memberController.switch(user, workspaceId, user.id + '');
+      expect(spy).toHaveBeenCalledWith(user, +workspaceId, user.id);
+      expect(spy).toHaveBeenCalledTimes(1);
+    });
   });
 });

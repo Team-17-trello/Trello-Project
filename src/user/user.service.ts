@@ -63,15 +63,17 @@ export class UserService {
           where: { id: user.id },
         });
         const findMembers = await this.memberRepository.find({
-          where: { user: { id: user.id } },relations : {workspace : true}
+          where: {
+            user: { id: user.id },
+          },
         });
 
         // 멤버가 어드민 일 시 탈퇴 불가
-        findMembers.forEach((member) =>{
-          if(member.isAdmin===true){
-            throw new ConflictException('1개 이상 워크 스페이스에서 관리자 이므로 탈퇴할 수 없습니다.')
+        findMembers.forEach((member) => {
+          if (member.isAdmin === true) {
+            throw new ConflictException('1개 이상 워크 스페이스에서 관리자 이므로 탈퇴할 수 없습니다.');
           }
-        })
+        });
 
 
         if (!(await compare(removeUserDto.password, findUser.password))) {

@@ -45,6 +45,10 @@ export class MemberService {
       member.isAdmin === true ? value = false : value = true;
       await this.memberRepository.update({ id: member.id }, { isAdmin: value });
 
+      return {
+        status : 200,
+        message : '권한을 변경하였습니다.'
+      }
 
     } catch (error) {
       throw error;
