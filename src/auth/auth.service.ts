@@ -21,38 +21,42 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
   async signup(signUpDto: SignupDto) {
-    const user = await this.userRepository.findOne({
-      where: {
+    try {
+      const user = await this.userRepository.findOne({
+        where: {
+          email: signUpDto.email,
+        },
+      });
+      if (user) {
+        throw new ConflictException('이미 사용중인 이메일입니다. 다시 시도 해주세요');
+      }
+
+      if (signUpDto.password !== signUpDto.confirmedPassword) {
+        throw new BadRequestException('비밀번호가 일치하지 않습니다. 확인해주세요.');
+      }
+
+      const isNicknameExists = await this.userRepository.findOne({
+        where: {
+          nickname: signUpDto.nickname,
+        },
+      });
+
+      if (isNicknameExists) {
+        throw new ConflictException('이미 사용중인 닉네임입니다. 다시 시도 해주세요');
+      }
+
+      const hashedPassword = await bcrypt.hash(signUpDto.password, 10);
+
+      await this.userRepository.save({
         email: signUpDto.email,
-      },
-    });
-    if (user) {
-      throw new ConflictException('이미 사용중인 이메일입니다. 다시 시도 해주세요');
-    }
-
-    if (signUpDto.password !== signUpDto.confirmedPassword) {
-      throw new BadRequestException('비밀번호가 일치하지 않습니다. 확인해주세요.');
-    }
-
-    const isNicknameExists = await this.userRepository.findOne({
-      where: {
+        password: hashedPassword,
         nickname: signUpDto.nickname,
-      },
-    });
+      });
 
-    if (isNicknameExists) {
-      throw new ConflictException('이미 사용중인 닉네임입니다. 다시 시도 해주세요');
+      return { message: '회원가입에 성공했습니다!' };
+    } catch (err) {
+      throw err;
     }
-
-    const hashedPassword = await bcrypt.hash(signUpDto.password, 10);
-
-    await this.userRepository.save({
-      email: signUpDto.email,
-      password: hashedPassword,
-      nickname: signUpDto.nickname,
-    });
-
-    return { message: '회원가입에 성공했습니다!' };
   }
 
   async login(loginDto: LoginDto) {
@@ -72,12 +76,10 @@ export class AuthService {
       const token = this.jwtService.sign(payload);
 
       return {
-        statusCode: 200,
         access_token: token,
       };
-    } catch (error) {
-      console.error(error);
-      throw error;
+    } catch (err) {
+      throw err;
     }
   }
 }

@@ -3,6 +3,8 @@ import { UserService } from './user.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository, UpdateResult } from 'typeorm';
 import { UserEntity } from './entities/user.entity';
+import { MemberEntity } from 'src/member/entity/member.entity';
+import { EntityManager } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { ConflictException, UnauthorizedException } from '@nestjs/common';
 import mock = jest.mock;
@@ -12,26 +14,42 @@ jest.mock('bcrypt');
 describe('UserService', () => {
   let userService: UserService;
   let userRepository: Repository<UserEntity>;
+  let memberRepository: Repository<MemberEntity>;
+  let mockEntityManager: Partial<EntityManager>;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [UserService,
+      providers: [
+        UserService,
         {
           provide: getRepositoryToken(UserEntity),
           useValue: {
             findOne: jest.fn(),
             update: jest.fn(),
           },
-        }],
+        },
+
+        {
+          provide: getRepositoryToken(MemberEntity),
+          useValue: {
+            find: jest.fn(),
+            delete: jest.fn(),
+          },
+        },
+
+        {
+          provide: EntityManager,
+          useValue: mockEntityManager,
+        },
+      ],
     }).compile();
 
     userService = module.get<UserService>(UserService);
     userRepository = module.get<Repository<UserEntity>>(getRepositoryToken(UserEntity));
+    memberRepository = module.get<Repository<MemberEntity>>(getRepositoryToken(MemberEntity));
   });
 
-
   describe('update', () => {
-
     it('변경할 닉네임이 중복되면 ConflictException 던짐', async () => {
       jest.spyOn(userRepository, 'findOne').mockResolvedValueOnce({
         id: 1,
@@ -51,13 +69,17 @@ describe('UserService', () => {
         nickname: mockUpdateDto.nickname,
       } as UserEntity);
 
-      await expect(userService.update({
-          id: 1,
-          email: 'test@test.com',
-          password: 'test1234',
-          nickname: 'tester',
-        } as UserEntity, mockUpdateDto,
-      )).rejects.toThrow(ConflictException);
+      await expect(
+        userService.update(
+          {
+            id: 1,
+            email: 'test@test.com',
+            password: 'test1234',
+            nickname: 'tester',
+          } as UserEntity,
+          mockUpdateDto,
+        ),
+      ).rejects.toThrow(ConflictException);
     });
 
     it('변경에 성공하면 변경한 user 객체를 리턴', async () => {
@@ -74,23 +96,25 @@ describe('UserService', () => {
       };
       jest.spyOn(bcrypt, 'hash').mockResolvedValueOnce('hashedNewPassword' as never);
 
-
       // 업데이트 결과를 모킹하여 저장
       const saveSpy = jest.spyOn(userRepository, 'update').mockResolvedValueOnce({
         affected: 2,
       } as UpdateResult);
 
       // 업데이트 실행 및 결과 검증
-      const result = await userService.update({
-        id: 1,
-        email: 'test@test.com',
-        password: 'test1234',
-        nickname: 'tester',
-      } as UserEntity, mockUpdateDto);
+      const result = await userService.update(
+        {
+          id: 1,
+          email: 'test@test.com',
+          password: 'test1234',
+          nickname: 'tester',
+        } as UserEntity,
+        mockUpdateDto,
+      );
 
       // 반환된 결과가 예상과 일치하는지 확인
       expect(result).toEqual({
-        affected: 2,
+        message: '수정이 완료되었습니다.',
       });
 
       // bcrypt.hash가 한 번 호출되었는지 확인
@@ -105,24 +129,27 @@ describe('UserService', () => {
     });
 
     describe('remove', () => {
-
-      it('비밀 번호가 일치 하지 않으면 UnauthorizedException 던짐', async () => {
+      it('비밀번호가 일치하지 않으면 UnauthorizedException을 던진다', async () => {
         jest.spyOn(userRepository, 'findOne').mockResolvedValueOnce({
           id: 1,
           email: 'test@test.com',
-          password: await bcrypt.hash('wrongPassword', 10),
+          password: await bcrypt.hash('correctPassword', 10),
         } as UserEntity);
 
-        await expect(userService.remove({
-          id: 1,
-          email: 'test@test.com',
-          password: await bcrypt.hash('wrongPassword', 10),
-          nickname: 'tester',
-        } as UserEntity, {
-          password: 'test1234',
-        })).rejects.toThrow(UnauthorizedException);
-
-
+        (bcrypt.compare as jest.Mock).mockResolvedValue(false);
+        await expect(
+          userService.remove(
+            {
+              id: 1,
+              email: 'test@test.com',
+              password: 'wrongPassword',
+              nickname: 'tester',
+            } as UserEntity,
+            {
+              password: 'wrongPassword',
+            },
+          ),
+        ).rejects.toThrow(UnauthorizedException);
       });
 
       it('비밀 번호 인증 성공 시 회원 탈퇴 성공', async () => {
@@ -135,14 +162,16 @@ describe('UserService', () => {
 
         const updateSpy = jest.spyOn(userRepository, 'update').mockResolvedValueOnce(undefined);
 
-        const result = await userService.remove({
-          id: 1,
-          email: 'test@test.com',
-          password: 'test1234',
-        } as UserEntity, { password: await bcrypt.hash('wrongPassword', 10) });
+        const result = await userService.remove(
+          {
+            id: 1,
+            email: 'test@test.com',
+            password: 'test1234',
+          } as UserEntity,
+          { password: await bcrypt.hash('wrongPassword', 10) },
+        );
 
         expect(result).toEqual({
-          statusCode: 200,
           message: '계정이 성공적으로 삭제 되었습니다.',
         });
 
@@ -152,7 +181,6 @@ describe('UserService', () => {
           nickname: null,
           deletedAt: new Date(),
         });
-
       });
     });
   });

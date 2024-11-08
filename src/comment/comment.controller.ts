@@ -1,6 +1,20 @@
-import { Body, Controller, Delete, Param, Patch, Post, UseGuards } from '@nestjs/common';
+
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  Patch,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
+
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth } from '@nestjs/swagger';
+
 import { UserEntity } from '../user/entities/user.entity';
 import { UserInfo } from '../utils/userInfo-decolator';
 import { CommentService } from './comment.service';
@@ -13,6 +27,7 @@ export class CommentController {
   constructor(private readonly commentService: CommentService) {}
 
   @Post(':cardId')
+  @HttpCode(HttpStatus.CREATED)
   create(
     @Param('cardId') id: string,
     @UserInfo() user: UserEntity,
@@ -22,6 +37,7 @@ export class CommentController {
   }
 
   @Patch(':commentId')
+  @HttpCode(HttpStatus.OK)
   update(
     @Param('commentId') id: string,
     @UserInfo() user: UserEntity,
@@ -31,6 +47,7 @@ export class CommentController {
   }
 
   @Delete(':commentId')
+  @HttpCode(HttpStatus.OK)
   remove(@Param('commentId') id: string, @UserInfo() user: UserEntity) {
     return this.commentService.remove(+id, user);
   }

@@ -5,15 +5,15 @@ import { CommentDto } from './dto/comment.dto';
 import { UserEntity } from '../user/entities/user.entity';
 
 describe('CommentController', () => {
-  let commentController: CommentController
-  let commentService: jest.Mocked<CommentService>
+  let commentController: CommentController;
+  let commentService: jest.Mocked<CommentService>;
 
   beforeEach(async () => {
     const mockCommentService = {
       create: jest.fn(),
       update: jest.fn(),
       remove: jest.fn(),
-    }
+    };
 
     const module: TestingModule = await Test.createTestingModule({
       controllers: [CommentController],
@@ -26,8 +26,7 @@ describe('CommentController', () => {
     }).compile();
 
     commentController = module.get<CommentController>(CommentController);
-    commentService = module.get<CommentService>(CommentService) as jest.Mocked<CommentService>
-
+    commentService = module.get<CommentService>(CommentService) as jest.Mocked<CommentService>;
   });
 
   it('should be defined', () => {
@@ -41,16 +40,14 @@ describe('CommentController', () => {
       const mockCardId = '1';
 
       const mockResult = {
-        statusCode: 201,
         comment: { id: 1, text: 'Test comment', userId: 1 },
       };
       commentService.create.mockResolvedValue(mockResult as any);
       const result = await commentController.create(mockCardId, mockUser, mockCommentDto);
       expect(commentService.create).toHaveBeenCalledWith(1, mockUser, mockCommentDto);
       expect(result).toEqual(mockResult);
-
-    })
-  })
+    });
+  });
 
   describe('update', () => {
     it('댓글 수정 메소드를 호출하고 결과를 반환', async () => {
@@ -58,7 +55,6 @@ describe('CommentController', () => {
       const mockUser: UserEntity = { id: 1 } as UserEntity;
       const mockCommentId = '1';
       const mockResult = {
-        statusCode: 200,
         comment: { id: 1, text: 'Updated comment', userId: 1 },
       };
 
@@ -69,13 +65,11 @@ describe('CommentController', () => {
     });
 
     describe('remove', () => {
-      it('카드 제거 메소드를 호출하고 결과를 반환', async () => {
+      it('댓글 제거 메소드를 호출하고 결과를 반환', async () => {
         const mockUser: UserEntity = { id: 1 } as UserEntity;
         const mockCommentId = '1';
 
-        const mockResult = {
-          statusCode: 200,
-        };
+        const mockResult = { message: '댓글이 삭제 되었습니다.' };
 
         commentService.remove.mockResolvedValue(mockResult as any);
         const result = await commentController.remove(mockCommentId, mockUser);
@@ -83,6 +77,5 @@ describe('CommentController', () => {
         expect(result).toEqual(mockResult);
       });
     });
-  })
-
-})
+  });
+});

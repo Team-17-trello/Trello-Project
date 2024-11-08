@@ -21,36 +21,39 @@ export class UserService {
 
   // TODO : 비밀번호만 변경하는 경우인데 닉네임 중복 예외처리에 걸림
   async update(user: UserEntity, userUpdateDto: UpdateUserDto) {
-    const target = await this.userRepository.findOne({
-      where: { id: user.id },
-    });
-
-    if (userUpdateDto.nickname) {
-      const isNicknameExists = await this.userRepository.findOne({
-        where: { nickname: userUpdateDto.nickname },
+    try {
+      const target = await this.userRepository.findOne({
+        where: { id: user.id },
       });
 
-      if (isNicknameExists) {
-        throw new ConflictException('이미 사용 중인 닉네임입니다. 다시 시도해주세요.');
+      if (userUpdateDto.nickname) {
+        const isNicknameExists = await this.userRepository.findOne({
+          where: { nickname: userUpdateDto.nickname },
+        });
+
+        if (isNicknameExists) {
+          throw new ConflictException('이미 사용 중인 닉네임입니다. 다시 시도해주세요.');
+        }
       }
+
+      const updateData: Partial<UserEntity> = {};
+
+      if (userUpdateDto.nickname) {
+        updateData.nickname = userUpdateDto.nickname;
+      }
+
+      if (userUpdateDto.password) {
+        updateData.password = await bcrypt.hash(userUpdateDto.password, 10);
+      }
+
+      await this.userRepository.update(user.id, updateData);
+
+      return {
+        message: '수정이 완료되었습니다.',
+      };
+    } catch (err) {
+      throw err;
     }
-
-    const updateData: Partial<UserEntity> = {};
-
-    if (userUpdateDto.nickname) {
-      updateData.nickname = userUpdateDto.nickname;
-    }
-
-    if (userUpdateDto.password) {
-      updateData.password = await bcrypt.hash(userUpdateDto.password, 10);
-    }
-
-    await this.userRepository.update(user.id, updateData);
-
-    return {
-      statusCode: 200,
-      message: '수정이 완료되었습니다.',
-    };
   }
 
   async remove(user: UserEntity, removeUserDto: RemoveUserDto) {
@@ -86,12 +89,10 @@ export class UserService {
         });
 
         return {
-          statusCode: 200,
           message: '계정이 성공적으로 삭제 되었습니다.',
         };
-      } catch (error) {
-        console.error(error);
-        throw error;
+      } catch (err) {
+        throw err;
       }
     });
   }
