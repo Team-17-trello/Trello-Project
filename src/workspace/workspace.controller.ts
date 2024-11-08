@@ -1,4 +1,15 @@
-import { Body, Controller, Get, Param, Post, Put, Query, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  Post,
+  Put,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { WorkspaceService } from './workspace.service';
 import { CreateWorkspaceDto } from './dto/create-workspace.dto';
 import { AuthGuard } from '@nestjs/passport';
@@ -6,23 +17,26 @@ import { UserEntity } from 'src/user/entities/user.entity';
 import { UserInfo } from 'src/utils/userInfo-decolator';
 import { AddWorkspaceMemberDto } from './dto/add-workspace-member.dto';
 
-// UseGuards(AuthGuard('jwt'));
+UseGuards(AuthGuard('jwt'));
 @Controller('workspaces')
 export class WorkspaceController {
   constructor(private readonly workspaceService: WorkspaceService) {}
 
   @Get(':workspaceId')
+  @HttpCode(HttpStatus.OK)
   async findOne(@Param('workspaceId') workspaceId: number) {
     return await this.workspaceService.getWorkspaceById(workspaceId);
   }
 
   @Get()
+  @HttpCode(HttpStatus.OK)
   async findAll() {
     return await this.workspaceService.getAllWorkspace();
   }
 
   @UseGuards(AuthGuard('jwt'))
   @Post()
+  @HttpCode(HttpStatus.CREATED)
   async workspaceCreate(
     @UserInfo() user: UserEntity,
     @Body() createWorkspaceDto: CreateWorkspaceDto,
@@ -30,18 +44,18 @@ export class WorkspaceController {
     return await this.workspaceService.workspaceCreate(user, createWorkspaceDto);
   }
 
-  @UseGuards(AuthGuard('jwt')) // JWT 인증 가드 사용
-  @Put(':workspaceId/members') // workspaceId를 URL 파라미터로 받음
+  @UseGuards(AuthGuard('jwt'))
+  @Put(':workspaceId/members')
+  @HttpCode(HttpStatus.OK)
   async addWorkspaceMember(
-    @UserInfo() user: UserEntity, // @UserInfo() 데코레이터를 통해 현재 유저 정보 가져오기
-    @Param('workspaceId') workspaceId: number, // URL에서 workspaceId 추출
-    @Body() addWorkspaceMemberDto: AddWorkspaceMemberDto, // DTO를 통해 유저 정보 받기
+    @UserInfo() user: UserEntity,
+    @Param('workspaceId') workspaceId: number,
+    @Body() addWorkspaceMemberDto: AddWorkspaceMemberDto,
   ) {
-    // 서비스의 addWorkspaceMember 메서드 호출
     return await this.workspaceService.addWorkspaceMember(
       user,
       workspaceId,
-      addWorkspaceMemberDto.userId, // DTO에서 userId를 추출
+      addWorkspaceMemberDto.userId,
     );
   }
 }

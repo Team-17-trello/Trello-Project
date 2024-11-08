@@ -10,7 +10,6 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-
 @Entity({ name: 'workspaces' })
 export class WorkspaceEntity extends BaseEntity {
   @PrimaryGeneratedColumn()
