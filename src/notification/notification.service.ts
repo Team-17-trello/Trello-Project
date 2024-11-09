@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { RedisService } from '@liaoliaots/nestjs-redis';
 import Redis from 'ioredis';
+import { UserEntity } from 'src/user/entities/user.entity';
 
 @Injectable()
 export class NotificationService {
@@ -25,12 +26,21 @@ export class NotificationService {
   }
 
   // 스트림에서 알림 가져오기(알림 읽기)
-  async getNotifications(userId: number, lastId = '$'): Promise<any[]> {
-    const streamKey = `notifications:user:${userId}`;
-    const messages = await this.redisClient.xrange(streamKey, lastId, '+');
-    return messages.map(([id, fields]) => ({
-      id,
-      ...Object.fromEntries(fields),
-    }));
+  async getNotifications(user: UserEntity): Promise<any[]> {
+    try {
+      const streamKey = `notifications:user:${user.id}`;
+      const messages = await this.redisClient.xrange(streamKey, '-', '+');
+
+      void this.removeNotifications(user);
+
+      return messages;
+    } catch (err) {
+      throw err;
+    }
+  }
+
+  async removeNotifications(user: UserEntity) {
+    const streamKey = `notifications:user:${user.id}`;
+    await this.redisClient.del(streamKey);
   }
 }
