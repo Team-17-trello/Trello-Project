@@ -17,9 +17,10 @@ import { UserInfo } from 'src/utils/userInfo-decolator';
 import { BoardService } from './board.service';
 import { CreateBoardDto } from './dto/create-board.dto';
 import { UpdateBoardDto } from './dto/update-board.dto';
+import { MemberGuard } from '../guard/members.guard';
 
 @Controller('boards')
-@UseGuards(AuthGuard('jwt'))
+@UseGuards(MemberGuard)
 export class BoardController {
   constructor(private readonly boardService: BoardService) {}
 

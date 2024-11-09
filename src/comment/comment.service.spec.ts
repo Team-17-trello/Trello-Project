@@ -65,7 +65,9 @@ describe('CommentService', () => {
       dueDate: new Date(),
       responsibles: null,
       comments: null,
-      workspace: null
+      workspace: null,
+      checklists: null,
+      files : null,
     };
 
     const mockCommentDto: CommentDto = {

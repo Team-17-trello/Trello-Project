@@ -11,15 +11,15 @@ import {
   Put,
   UseGuards,
 } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
 import { CreateListDto } from './dto/create-list.dto';
 import { UpdateListDto } from './dto/update-list.dto';
 import { ListService } from './list.service';
 import { UserInfo } from 'src/utils/userInfo-decolator';
 import { UserEntity } from 'src/user/entities/user.entity';
+import { MemberGuard } from '../guard/members.guard';
 
 @Controller('lists')
-@UseGuards(AuthGuard('jwt'))
+@UseGuards(MemberGuard)
 export class ListController {
   constructor(private readonly listService: ListService) {}
 

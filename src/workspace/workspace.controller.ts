@@ -5,12 +5,14 @@ import { AuthGuard } from '@nestjs/passport';
 import { UserEntity } from 'src/user/entities/user.entity';
 import { UserInfo } from 'src/utils/userInfo-decolator';
 import { AddWorkspaceMemberDto } from './dto/add-workspace-member.dto';
+import { MemberGuard } from '../guard/members.guard';
 
 // UseGuards(AuthGuard('jwt'));
 @Controller('workspaces')
 export class WorkspaceController {
   constructor(private readonly workspaceService: WorkspaceService) {}
 
+  @UseGuards(MemberGuard)
   @Get(':workspaceId')
   async findOne(@Param('workspaceId') workspaceId: number) {
     return await this.workspaceService.getWorkspaceById(workspaceId);
@@ -30,7 +32,7 @@ export class WorkspaceController {
     return await this.workspaceService.workspaceCreate(user, createWorkspaceDto);
   }
 
-  @UseGuards(AuthGuard('jwt')) // JWT 인증 가드 사용
+  @UseGuards(MemberGuard) // 해당 워크스페이스 멤버인지 확인
   @Put(':workspaceId/members') // workspaceId를 URL 파라미터로 받음
   async addWorkspaceMember(
     @UserInfo() user: UserEntity, // @UserInfo() 데코레이터를 통해 현재 유저 정보 가져오기

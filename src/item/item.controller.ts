@@ -1,7 +1,10 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
 import { ItemService } from './item.service';
 import { CreateItemDto } from './dto/create-item.dto';
 import { UpdateItemDto } from './dto/update-item.dto';
+import { MemberGuard } from '../guard/members.guard';
+
+@UseGuards(MemberGuard)
 @Controller('items')
 export class ItemController {
   constructor(private readonly itemService: ItemService) {}

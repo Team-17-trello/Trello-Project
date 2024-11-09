@@ -40,6 +40,7 @@ describe('체크리스트 컨트롤러 테스트', () => {
       checklistName: 'test',
       createdAt: new Date(),
       card: null,
+      items : null
     };
     (checklistService.createChecklist as jest.Mock).mockResolvedValue(expectedResult);
     const result = await checklistController.create(createChecklistDto);
@@ -55,6 +56,7 @@ describe('체크리스트 컨트롤러 테스트', () => {
       checklistName: 'test',
       createdAt: new Date(),
       card: null,
+      items: null,
     };
     (checklistService.updateChecklist as jest.Mock).mockResolvedValue(expectedResult);
 

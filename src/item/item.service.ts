@@ -3,14 +3,14 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateItemDto } from './dto/create-item.dto';
 import { UpdateItemDto } from './dto/update-item.dto';
-import { itemsEntity } from './entities/item.entity';
+import { ItemEntity } from './entities/item.entity';
 import { ChecklistEntity } from 'src/checklist/entities/checklist.entity';
 
 @Injectable()
 export class ItemService {
   constructor(
-    @InjectRepository(itemsEntity)
-    private readonly itemRepository: Repository<itemsEntity>,
+    @InjectRepository(ItemEntity)
+    private readonly itemRepository: Repository<ItemEntity>,
     @InjectRepository(ChecklistEntity)
     private checklistRepository: Repository<ChecklistEntity>,
   ) {}

@@ -13,7 +13,7 @@ import { ListEntity } from '../../list/entities/list.entity';
 import { ChecklistEntity } from '../../checklist/entities/checklist.entity';
 import { WorkspaceEntity } from 'src/workspace/entities/workspace.entity';
 import { CommentEntity } from 'src/comment/entities/comment.entity';
-import { itemsEntity } from 'src/item/entities/item.entity';
+import { FileEntity } from '../../file/entities/file.entity';
 
 @Entity({
   name: 'cards',
@@ -61,4 +61,7 @@ export class CardEntity {
 
   @ManyToOne(() => WorkspaceEntity, (workspace) => workspace.cards)
   workspace: WorkspaceEntity;
+
+  @OneToMany(() => FileEntity, (files) => files.card)
+  files: FileEntity[];
 }

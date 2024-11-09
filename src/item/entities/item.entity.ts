@@ -2,7 +2,7 @@ import { ChecklistEntity } from 'src/checklist/entities/checklist.entity';
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity({ name: 'items' })
-export class itemsEntity {
+export class ItemEntity {
   @PrimaryGeneratedColumn()
   id: number;
 

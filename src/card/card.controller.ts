@@ -8,8 +8,9 @@ import { MoveCardDto } from './dto/move-card.dto';
 import { UserInfo } from '../utils/userInfo-decolator';
 import { AuthGuard } from '@nestjs/passport';
 import { UserEntity } from '../user/entities/user.entity';
+import { MemberGuard } from '../guard/members.guard';
 
-@UseGuards(AuthGuard('jwt'))
+@UseGuards(MemberGuard)
 @Controller('cards')
 export class CardController {
   constructor(private readonly cardService: CardService) {}

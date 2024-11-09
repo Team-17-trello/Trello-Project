@@ -25,7 +25,8 @@ import { MemberService } from './member/member.service';
 import { MemberModule } from './member/member.module';
 
 import { ChecklistEntity } from './checklist/entities/checklist.entity';
-import { itemsEntity } from './item/entities/item.entity';
+import { ItemEntity } from './item/entities/item.entity';
+import { FileEntity } from './file/entities/file.entity';
 
 const typeOrmModuleOptions = {
   useFactory: async (configService: ConfigService): Promise<TypeOrmModuleOptions> => ({
@@ -46,7 +47,8 @@ const typeOrmModuleOptions = {
       WorkspaceEntity,
       ChecklistEntity,
       CommentEntity,
-      itemsEntity,
+      ItemEntity,
+      FileEntity,
     ],
     synchronize: configService.get('DB_SYNC'),
     logging: true,
