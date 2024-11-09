@@ -92,7 +92,6 @@ export class CardService {
   }
 
   async findOne(cardId: number) {
-
     try {
       const card = await this.cardRepository.findOne({
         where: {
@@ -101,7 +100,7 @@ export class CardService {
         relations: {
           responsibles: true,
           comments: true,
-          //checkList : true,
+          checkList: true,
           // file : true,
         },
       });
