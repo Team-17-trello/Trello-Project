@@ -4,17 +4,14 @@ import { v4 as uuidv4 } from 'uuid';
 import { SignupDto } from '../dto/signup.dto';
 import { Code } from 'typeorm';
 import { SendEmailDto } from '../dto/sendEmail.dto';
+import { RedisService } from 'src/redis/redis.service';
 
 @Injectable()
 export class MailService {
   constructor(
     private readonly mailerService: MailerService,
+    private readonly redisService: RedisService,
   ) {}
-
-  //  1. 클라이언트가 인증번호 요청시 인증번호 발송
-  //        ㄴ레디스에 저장
-  //  2. 클라이언트가 회원가입 요청시 이메일로 발송했던 인증번와 레이스에 저장해둔 인증번호 비교
-  //  3. 비교한 인증번호 일치하면 회원가입 성공
 
   async sendEmail(sendEmail: SendEmailDto) {
     const code = await this.createVerificationCode();
@@ -22,22 +19,17 @@ export class MailService {
       from: process.env.EMAIL_USER,
       to: sendEmail.email,
       subject: '이메일 인증 코드',
-      text: `인증코드 = ${code}`,
+      text: `인증번호 : ${code}`,
     });
-    // await this.redis.save()-
+
+    await this.redisService.set(sendEmail.email, code, 3600);
   }
 
-  
-  private async redisa() {
-    const redis = {}
-
-    
-    
-  }
+  //레디스에서 인증번호 저장 메서드 만들어주면 그거 사용
+  //회원가입 로직에 if(레디스인증번호 !== body.인증번호){ '인증번호가 일치하지 않습니다' } <- 추가
 
   private createVerificationCode() {
     const code = uuidv4().slice(0, 6);
-    console.log(code);
     return code;
   }
 }

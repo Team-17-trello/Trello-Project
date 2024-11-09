@@ -27,6 +27,7 @@ import { MemberModule } from './member/member.module';
 import { ChecklistEntity } from './checklist/entities/checklist.entity';
 import { itemsEntity } from './item/entities/item.entity';
 import { MailModule } from './auth/email/email.module';
+import { RedisModule } from './redis/redis.module';
 
 const typeOrmModuleOptions = {
   useFactory: async (configService: ConfigService): Promise<TypeOrmModuleOptions> => ({
@@ -82,6 +83,7 @@ const typeOrmModuleOptions = {
     FileModule,
     MemberModule,
     MailModule,
+    RedisModule,
   ],
   controllers: [],
   providers: [],
