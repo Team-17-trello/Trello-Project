@@ -1,34 +1,32 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Post, UploadedFile, UseInterceptors, Get, Query, Res, UseGuards } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { FileService } from './file.service';
-import { CreateFileDto } from './dto/create-file.dto';
-import { UpdateFileDto } from './dto/update-file.dto';
+import { UserInfo } from '../utils/userInfo-decolator';
+import { UserEntity } from '../user/entities/user.entity';
+import { Response } from 'express';
+import { MemberGuard } from '../guard/members.guard';
 
-@Controller('file')
+@UseGuards(MemberGuard)
+@Controller('attachments')
 export class FileController {
   constructor(private readonly fileService: FileService) {}
 
+  // 파일 업로드
   @Post()
-  create(@Body() createFileDto: CreateFileDto) {
-    return this.fileService.create(createFileDto);
+  @UseInterceptors(FileInterceptor('file'))  // 'file' 필드로 업로드된 파일을 처리
+  async uploadFile(
+    @UploadedFile() file: Express.Multer.File,
+    @UserInfo() user: UserEntity  // 유저 정보 가져오기
+  ) {
+    return this.fileService.attachFile(file, user);  // 파일 첨부 서비스 호출
   }
 
-  @Get()
-  findAll() {
-    return this.fileService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.fileService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateFileDto: UpdateFileDto) {
-    return this.fileService.update(+id, updateFileDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.fileService.remove(+id);
+  // 파일 다운로드
+  @Get('download')
+  async downloadFile(
+    @Query('fileId') fileId: number,  // 파일 ID 파라미터로 받기
+    @Res() res: Response
+  ) {
+    return this.fileService.downloadFile(fileId, res);  // 파일 다운로드 서비스 호출
   }
 }
