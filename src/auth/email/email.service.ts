@@ -25,8 +25,15 @@ export class MailService {
     await this.redisService.set(sendEmail.email, code, 3600);
   }
 
-  //레디스에서 인증번호 저장 메서드 만들어주면 그거 사용
-  //회원가입 로직에 if(레디스인증번호 !== body.인증번호){ '인증번호가 일치하지 않습니다' } <- 추가
+  async sendMemberEmail(email: string) {
+    await this.mailerService.sendMail({
+      from: process.env.EMAIL_USER,
+      to: email,
+      subject: '멤버를 초대합니다.',
+      html: `<p>Please click the following link to your email address:</p>
+             <p> <a href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQoM3eKwT27-FeFY_teH1iBqwreeOqs3MhgOQ&s">Verify email</a></p>`,
+    });
+  }
 
   private createVerificationCode() {
     const code = uuidv4().slice(0, 6);

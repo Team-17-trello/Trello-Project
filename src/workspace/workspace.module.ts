@@ -5,10 +5,11 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { WorkspaceEntity } from './entities/workspace.entity';
 import { UserEntity } from 'src/user/entities/user.entity';
 import { MemberEntity } from 'src/member/entity/member.entity';
+import { MailService } from 'src/auth/email/email.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([WorkspaceEntity, UserEntity, MemberEntity])],
-  providers: [WorkspaceService],
+  providers: [WorkspaceService, MailService],
   controllers: [WorkspaceController],
 })
 export class WorkspaceModule {}
