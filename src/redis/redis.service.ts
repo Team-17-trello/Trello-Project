@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { RedisClientType } from 'redis';  // Redis 클라이언트 타입
+import { RedisClientType } from 'redis'; // Redis 클라이언트 타입
 
 @Injectable()
 export class RedisService {
@@ -10,21 +10,22 @@ export class RedisService {
     if (!this.client) {
       throw new Error('Redis client is not connected');
     }
-    await this.client.setEx(key, expiration, value);  // setEx 사용
+    await this.client.setEx(key, expiration, value); // setEx 사용
   }
 
   // 저장된 인증번호 가져오기
-  async get(key: string): Promise<string | null> {
+  async get(email: string): Promise<string | null> {
     if (!this.client) {
       throw new Error('Redis client is not connected');
     }
-    return this.client.get(key);  // get 사용
+
+    return this.client.get(email); // get 사용
   }
 
   // Redis 연결 종료
   async close() {
     if (this.client) {
-      await this.client.quit();  // 연결 종료
+      await this.client.quit(); // 연결 종료
     }
   }
 }

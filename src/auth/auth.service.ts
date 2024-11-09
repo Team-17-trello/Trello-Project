@@ -7,11 +7,13 @@ import {
 import { SignupDto } from './dto/signup.dto';
 import { LoginDto } from './dto/login.dto';
 import { UserEntity } from '../user/entities/user.entity';
-import { Repository } from 'typeorm';
+import { Code, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
 import { compare } from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
+import { RedisService } from 'src/redis/redis.service';
+import { sign } from 'crypto';
 
 @Injectable()
 export class AuthService {
@@ -19,9 +21,17 @@ export class AuthService {
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
     private readonly jwtService: JwtService,
+    private readonly redisService: RedisService,
   ) {}
   async signup(signUpDto: SignupDto) {
+    const email = signUpDto.email;
+    const code = signUpDto.code;
     try {
+      const checkCode = await this.verifyCode(email, code);
+      if (checkCode === false) {
+        throw new BadRequestException('인증 코드가 일치 하지 않습니다.');
+      }
+
       const user = await this.userRepository.findOne({
         where: {
           email: signUpDto.email,
@@ -82,4 +92,17 @@ export class AuthService {
       throw err;
     }
   }
+
+  private async verifyCode(email, code) {
+    const storedCode = await this.redisService.get(email);
+    
+    return storedCode === code;
+  }
 }
+
+//바디 이메일,code
+//레디스에서 이메일 찾아
+// 찾은 이메일에서 code를 뽑음
+// 뽑은코드랑 바디.code랑 일치하는지 비교
+// JTy48Q3LflcpXIBMCjkl3al9q2FmOJ5h
+// redis-16517.c340.ap-northeast-2-1.ec2.redns.redis-cloud.com
