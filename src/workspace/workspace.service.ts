@@ -14,9 +14,6 @@ import _ from 'lodash';
 import { MemberEntity } from 'src/member/entity/member.entity';
 import { UserEntity } from 'src/user/entities/user.entity';
 import { MailService } from '../auth/email/email.service';
-import { emit } from 'process';
-import { string } from 'joi';
-
 
 @Injectable()
 export class WorkspaceService {
@@ -116,10 +113,9 @@ export class WorkspaceService {
         where: { id },
         select: { email: true },
       });
-      const email = foundEmailByUserId.email
+      const email = foundEmailByUserId.email;
       //찾은 이메일로 메일발송
-      await this.mailerService.sendMemberEmail(email)
-      
+      await this.mailerService.sendMemberEmail(email);
     }
   }
 
