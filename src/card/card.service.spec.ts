@@ -118,7 +118,8 @@ describe('CardService', () => {
         dueDate: null,
         responsibles: null,
         comments: null,
-        checkList: null,
+        checklists: null,
+        files : null
       };
 
       jest.spyOn(cardRepository, 'save').mockResolvedValueOnce(mockCard);

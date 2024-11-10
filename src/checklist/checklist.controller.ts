@@ -15,11 +15,12 @@ import { ChecklistService } from './checklist.service';
 import { CreateChecklistDto } from './dto/create-checklist.dto';
 import { UpdateChecklistDto } from './dto/update-checklist.dto';
 import { AuthGuard } from '@nestjs/passport';
+import { MemberGuard } from '../guard/members.guard';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 @ApiBearerAuth()
 @ApiTags('체크리스트')
-@UseGuards(AuthGuard('jwt'))
+@UseGuards(MemberGuard)
 @Controller('checklists')
 export class ChecklistController {
   constructor(private readonly checklistService: ChecklistService) {}

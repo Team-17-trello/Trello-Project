@@ -10,19 +10,18 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
-
-import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-
 import { UserEntity } from '../user/entities/user.entity';
 import { UserInfo } from '../utils/userInfo-decolator';
 import { CommentService } from './comment.service';
 import { CommentDto } from './dto/comment.dto';
+import { MemberGuard } from '../guard/members.guard';
+
 
 @ApiBearerAuth()
 @ApiTags('코멘트')
 @Controller('comments')
-@UseGuards(AuthGuard('jwt'))
+@UseGuards(MemberGuard)
 export class CommentController {
   constructor(private readonly commentService: CommentService) {}
 

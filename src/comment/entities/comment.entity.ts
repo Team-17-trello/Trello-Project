@@ -6,7 +6,6 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { ListEntity } from '../../list/entities/list.entity';
 import { CardEntity } from '../../card/entities/card.entity';
 
 @Entity({
