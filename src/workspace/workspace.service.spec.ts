@@ -7,20 +7,28 @@ import { BadRequestException, ForbiddenException } from '@nestjs/common';
 import { UserEntity } from 'src/user/entities/user.entity';
 import { MemberEntity } from 'src/member/entity/member.entity';
 import { MailService } from 'src/auth/email/email.service';
+import { MailOptions } from 'nodemailer/lib/json-transport';
+import { RedisService } from '@liaoliaots/nestjs-redis';
+import { MailerService } from '@nestjs-modules/mailer';
 
 jest.mock('src/auth/email/email.service');
 
 describe('WorkspaceService', () => {
   let workspaceService: WorkspaceService;
-  let workspaceRepository;
-  let userRepository;
-  let memberRepository;
-  let mailerService: MailService;
+  let workspaceRepository: Repository<WorkspaceEntity>;
+  let userRepository: Repository<UserEntity>;
+  let memberRepository: Repository<MemberEntity>;
+  let mailerService: MailerService;
+  let mailService: MailService;
+  let redisService: RedisService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         WorkspaceService,
+        MailService,
+        MailerService,
+        RedisService,
         {
           provide: getRepositoryToken(WorkspaceEntity),
           useValue: {
@@ -56,10 +64,14 @@ describe('WorkspaceService', () => {
     }).compile();
 
     workspaceService = module.get<WorkspaceService>(WorkspaceService);
-    workspaceRepository = module.get(getRepositoryToken(WorkspaceEntity));
-    userRepository = module.get(getRepositoryToken(UserEntity));
-    memberRepository = module.get(getRepositoryToken(MemberEntity));
-    mailerService = module.get<MailService>(MailService);
+    redisService = module.get<RedisService>(RedisService);
+    mailerService = module.get<MailerService>(MailerService);
+    mailService = module.get<MailService>(MailService);
+    workspaceRepository = module.get<Repository<WorkspaceEntity>>(
+      getRepositoryToken(WorkspaceEntity),
+    );
+    memberRepository = module.get<Repository<MemberEntity>>(getRepositoryToken(MemberEntity));
+    userRepository = module.get<Repository<UserEntity>>(getRepositoryToken(UserEntity)); // 모킹된 리포지토리 가져오기
   });
 
   it('워크스페이스 생성 테스트', async () => {
@@ -109,7 +121,7 @@ describe('WorkspaceService', () => {
 
   it('워크스페이스 조회 테스트', async () => {
     const workspace = [{ id: 1, workspaceName: 'test', craetedAt: new Date() }];
-    workspaceRepository.find.mockResolvedValue(workspace);
+    workspaceRepository.find = jest.fn().mockResolvedValue(workspace);
 
     const result = await workspaceService.getAllWorkspace();
     console.log(result);
@@ -118,7 +130,7 @@ describe('WorkspaceService', () => {
   });
 
   it('워크스페이스 조회 실패 테스트', async () => {
-    workspaceRepository.find.mockResolvedValue([]);
+    workspaceRepository.find = jest.fn().mockResolvedValue([]);
 
     await expect(workspaceService.getAllWorkspace()).rejects.toThrow(BadRequestException);
   });
@@ -190,12 +202,12 @@ describe('WorkspaceService', () => {
     memberRepository.create = jest.fn().mockResolvedValue(newMember);
     memberRepository.save = jest.fn().mockResolvedValue(newMember);
 
-    mailerService.sendEmail = jest.fn().mockRejectedValue('Test');
+    mailerService.sendMail = jest.fn().mockRejectedValue('Test');
 
     const result = await workspaceService.addWorkspaceMember(user, workspaceId, userIds);
 
-    expect(mailerService.sendMemberEmail).toHaveBeenCalledWith('test@test.com');
-    expect(mailerService.sendMemberEmail).toHaveBeenCalledTimes(1);
+    expect(mailService.sendMemberEmail).toHaveBeenCalledWith('test@test.com');
+    expect(mailService.sendMemberEmail).toHaveBeenCalledTimes(1);
     expect(result).toEqual(message);
   });
 });

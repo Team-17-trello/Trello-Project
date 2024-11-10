@@ -14,7 +14,6 @@ import { ItemEntity } from '../item/entities/item.entity';
 import { NotificationService } from 'src/notification/notification.service';
 import { NotificationModule } from 'src/notification/notification.module';
 import { UserEntity } from 'src/user/entities/user.entity';
-import { RedisService } from '@liaoliaots/nestjs-redis';
 
 @Module({
   imports: [
