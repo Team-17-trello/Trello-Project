@@ -22,7 +22,7 @@ export class ChecklistEntity {
   @CreateDateColumn({ type: 'timestamp', nullable: false })
   createdAt: Date;
 
-  @ManyToOne(() => CardEntity, (card) => card.checkList, { onDelete: 'CASCADE' })
+  @ManyToOne(() => CardEntity, (card) => card.checklists, { onDelete: 'CASCADE' })
   card: CardEntity;
 
   @OneToMany(() => ItemEntity, (item) => item.checklist)

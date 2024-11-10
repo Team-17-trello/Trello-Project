@@ -7,7 +7,7 @@ import {
   Param,
   Delete,
   HttpCode,
-  HttpStatus,
+  HttpStatus, UseGuards,
 } from '@nestjs/common';
 import { ItemService } from './item.service';
 import { CreateItemDto } from './dto/create-item.dto';

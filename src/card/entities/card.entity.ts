@@ -46,19 +46,20 @@ export class CardEntity {
   @Column({ type: 'int', nullable: false })
   userId: number;
 
+  @OneToMany(() => ChecklistEntity, (checklist) => checklist.card)
+  checklists: ChecklistEntity;
+  
+
   @ManyToOne(() => ListEntity, (list) => list.cards)
   list: ListEntity;
 
-  @OneToMany(() => ResponsibleEntity, (responsible) => responsible.card)
+  @OneToMany(() => ResponsibleEntity, (responsibles) => responsibles.card)
   responsibles: ResponsibleEntity[];
 
-  @OneToMany(() => CommentEntity, (comment) => comment.card)
+  @OneToMany(() => CommentEntity, (comments) => comments.card)
   comments: CommentEntity[];
 
-  @OneToMany(() => ChecklistEntity, (checkList) => checkList.card)
-  checkList: ChecklistEntity[];
-
-  @ManyToOne(() => WorkspaceEntity, (workspace) => workspace.cards, { onDelete: 'CASCADE' })
+  @ManyToOne(() => WorkspaceEntity, (workspace) => workspace.cards)
   workspace: WorkspaceEntity;
 
   @OneToMany(() => FileEntity, (files) => files.card)
