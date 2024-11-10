@@ -27,7 +27,7 @@ import { MailService } from 'src/auth/email/email.service';
       ItemEntity,
     ]),
   ],
-  providers: [WorkspaceService],
-  controllers: [WorkspaceController, MailService],
+  providers: [WorkspaceService, MailService],
+  controllers: [WorkspaceController],
 })
 export class WorkspaceModule {}

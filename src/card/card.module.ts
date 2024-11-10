@@ -33,6 +33,6 @@ import { RedisService } from '@liaoliaots/nestjs-redis';
     ]),
   ],
   controllers: [CardController],
-  providers: [CardService, NotificationService, RedisService],
+  providers: [CardService, NotificationService],
 })
 export class CardModule {}
