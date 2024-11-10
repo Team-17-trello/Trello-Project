@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ItemService } from './item.service';
-import { itemsEntity } from './entities/item.entity';
+import { ItemEntity } from './entities/item.entity';
 import { Repository } from 'typeorm';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { CreateItemDto } from './dto/create-item.dto';
@@ -9,7 +9,7 @@ import { ChecklistEntity } from 'src/checklist/entities/checklist.entity';
 
 describe('ItemService', () => {
   let service: ItemService;
-  let repository: Repository<itemsEntity>;
+  let repository: Repository<ItemEntity>;
 
   const mockItemRepository = {
     create: jest.fn(),
@@ -28,7 +28,7 @@ describe('ItemService', () => {
       providers: [
         ItemService,
         {
-          provide: getRepositoryToken(itemsEntity),
+          provide: getRepositoryToken(ItemEntity),
           useValue: mockItemRepository,
         },
         {
@@ -39,7 +39,7 @@ describe('ItemService', () => {
     }).compile();
 
     service = module.get<ItemService>(ItemService);
-    repository = module.get<Repository<itemsEntity>>(getRepositoryToken(itemsEntity));
+    repository = module.get<Repository<ItemEntity>>(getRepositoryToken(ItemEntity));
   });
 
   afterEach(() => {

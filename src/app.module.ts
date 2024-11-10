@@ -24,11 +24,13 @@ import { WorkspaceModule } from './workspace/workspace.module';
 import { MemberService } from './member/member.service';
 import { MemberModule } from './member/member.module';
 import { ChecklistEntity } from './checklist/entities/checklist.entity';
-import { itemsEntity } from './item/entities/item.entity';
+import { ItemEntity } from './item/entities/item.entity';
+import { FileEntity } from './file/entities/file.entity';
 import { RedisModule } from '@liaoliaots/nestjs-redis';
 import { NotificationService } from './notification/notification.service';
 import { NotificationController } from './notification/notification.controller';
 import { NotificationModule } from './notification/notification.module';
+
 
 const typeOrmModuleOptions = {
   useFactory: async (configService: ConfigService): Promise<TypeOrmModuleOptions> => ({
@@ -49,7 +51,8 @@ const typeOrmModuleOptions = {
       WorkspaceEntity,
       ChecklistEntity,
       CommentEntity,
-      itemsEntity,
+      ItemEntity,
+      FileEntity,
     ],
     synchronize: configService.get<boolean>('DB_SYNC'),
     logging: true,

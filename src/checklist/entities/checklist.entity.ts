@@ -1,5 +1,5 @@
 import { CardEntity } from 'src/card/entities/card.entity';
-import { itemsEntity } from 'src/item/entities/item.entity';
+import { ItemEntity } from 'src/item/entities/item.entity';
 import {
   Column,
   CreateDateColumn,
@@ -25,6 +25,6 @@ export class ChecklistEntity {
   @ManyToOne(() => CardEntity, (card) => card.checkList, { onDelete: 'CASCADE' })
   card: CardEntity;
 
-  @OneToMany(() => itemsEntity, (item) => item.checklist)
-  items: itemsEntity[];
+  @OneToMany(() => ItemEntity, (item) => item.checklist)
+  items: ItemEntity[];
 }

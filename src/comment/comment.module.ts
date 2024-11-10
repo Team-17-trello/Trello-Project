@@ -4,13 +4,18 @@ import { CommentService } from './comment.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CommentEntity } from './entities/comment.entity';
 import { CardEntity } from 'src/card/entities/card.entity';
+import { WorkspaceEntity } from '../workspace/entities/workspace.entity';
+import { BoardEntity } from '../board/entities/board.entity';
+import { ListEntity } from '../list/entities/list.entity';
+import { ChecklistEntity } from '../checklist/entities/checklist.entity';
+import { ItemEntity } from '../item/entities/item.entity';
 import { NotificationModule } from 'src/notification/notification.module';
 import { NotificationService } from 'src/notification/notification.service';
 import { ResponsibleEntity } from 'src/card/entities/responsible.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([CommentEntity, CardEntity, ResponsibleEntity, NotificationModule]),
+    TypeOrmModule.forFeature([CommentEntity, CardEntity, WorkspaceEntity, BoardEntity, ListEntity, ChecklistEntity, ItemEntity]),
   ],
   controllers: [CommentController],
   providers: [CommentService, NotificationService],

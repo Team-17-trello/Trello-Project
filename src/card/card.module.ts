@@ -5,12 +5,18 @@ import { CardEntity } from './entities/card.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ListEntity } from 'src/list/entities/list.entity';
 import { ResponsibleEntity } from './entities/responsible.entity';
+import { WorkspaceEntity } from '../workspace/entities/workspace.entity';
+import { BoardEntity } from '../board/entities/board.entity';
+import { MemberEntity } from '../member/entity/member.entity';
+import { CommentEntity } from '../comment/entities/comment.entity';
+import { ChecklistEntity } from '../checklist/entities/checklist.entity';
+import { ItemEntity } from '../item/entities/item.entity';
 import { NotificationService } from 'src/notification/notification.service';
 import { NotificationModule } from 'src/notification/notification.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([CardEntity, ListEntity, ResponsibleEntity, NotificationModule]),
+    TypeOrmModule.forFeature([CardEntity, ListEntity, ResponsibleEntity, WorkspaceEntity, BoardEntity, MemberEntity, CommentEntity, ChecklistEntity, ItemEntity]),
   ],
   controllers: [CardController],
   providers: [CardService, NotificationService],

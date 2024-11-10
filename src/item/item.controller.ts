@@ -13,7 +13,9 @@ import { ItemService } from './item.service';
 import { CreateItemDto } from './dto/create-item.dto';
 import { UpdateItemDto } from './dto/update-item.dto';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { MemberGuard } from '../guard/members.guard';
 
+@UseGuards(MemberGuard)
 @ApiBearerAuth()
 @ApiTags('체크 리스트 아이템')
 @Controller('items')
