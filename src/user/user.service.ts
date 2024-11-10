@@ -62,11 +62,12 @@ export class UserService {
         const findUser = await this.userRepository.findOne({
           where: { id: user.id },
         });
-        const findMembers = await this.memberRepository.find({
-          where: {
-            user: { id: user.id },
-          },
-        });
+        const findMembers =
+          (await this.memberRepository.find({
+            where: {
+              user: { id: user.id },
+            },
+          })) || [];
 
         findMembers.forEach((member) => {
           if (member.isAdmin === true) {
