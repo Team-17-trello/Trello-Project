@@ -6,6 +6,10 @@ import { Repository } from 'typeorm';
 import { BadRequestException } from '@nestjs/common';
 import { UserEntity } from 'src/user/entities/user.entity';
 import { MemberEntity } from 'src/member/entity/member.entity';
+import { MailService } from 'src/auth/email/email.service';
+import { MailOptions } from 'nodemailer/lib/json-transport';
+import { RedisService } from '@liaoliaots/nestjs-redis';
+import { MailerService } from '@nestjs-modules/mailer';
 
 describe('WorkspaceService', () => {
   const mockRepository = {
@@ -20,6 +24,10 @@ describe('WorkspaceService', () => {
   let workspaceRepository: Repository<WorkspaceEntity>;
   let userRepository: Repository<UserEntity>;
   let memberRepository: Repository<MemberEntity>;
+  let mailerService: MailerService;
+  let mailService: MailService;
+  let redisService: RedisService;
+
   beforeEach(async () => {
     jest.clearAllMocks();
 
@@ -31,6 +39,9 @@ describe('WorkspaceService', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         WorkspaceService,
+        MailService,
+        MailerService,
+        RedisService,
         {
           provide: getRepositoryToken(WorkspaceEntity),
           useValue: mockRepository,
@@ -53,6 +64,9 @@ describe('WorkspaceService', () => {
     }).compile();
 
     workspaceService = module.get<WorkspaceService>(WorkspaceService);
+    redisService = module.get<RedisService>(RedisService);
+    mailerService = module.get<MailerService>(MailerService);
+    mailService = module.get<MailService>(MailService);
     workspaceRepository = module.get<Repository<WorkspaceEntity>>(
       getRepositoryToken(WorkspaceEntity),
     );

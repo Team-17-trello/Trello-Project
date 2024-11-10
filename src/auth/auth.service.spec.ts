@@ -6,13 +6,25 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
+import { RedisService } from '@liaoliaots/nestjs-redis';
 
 jest.mock('bcrypt');
+
+jest.mock('redis', () => ({
+  createClient: jest.fn(() => mockRedisClient),
+}));
+
+const mockRedisClient = {
+  get: jest.fn().mockResolvedValue('mockedCode'),
+  set: jest.fn().mockResolvedValue('OK'),
+};
 
 describe('AuthService', () => {
   let authService: AuthService;
   let userRepository: Repository<UserEntity>;
   let jwtService: JwtService;
+  let redisService: RedisService;
+  let mockRedisClient: any;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -31,16 +43,38 @@ describe('AuthService', () => {
             sign: jest.fn(),
           },
         },
+        {
+          provide: RedisService,
+          useValue: {
+            get: jest.fn(),
+          },
+        },
       ],
     }).compile();
 
     authService = module.get<AuthService>(AuthService);
     userRepository = module.get<Repository<UserEntity>>(getRepositoryToken(UserEntity));
     jwtService = module.get<JwtService>(JwtService);
+    redisService = module.get<RedisService>(RedisService);
   });
 
   describe('signup', () => {
+    it('인증 코드가 일치 하지 않으면 BadRequestException 반환한다', async () => {
+      jest.spyOn(authService as any, 'verifyCode').mockResolvedValue(false);
+
+      const signUpDto = {
+        email: 'didthfls2@naver.com',
+        password: 'sorin1234',
+        confirmedPassword: 'sorin12345',
+        nickname: 'sorin',
+        code: '123456',
+      };
+      await expect(authService.signup(signUpDto)).rejects.toThrow(BadRequestException);
+    });
+
     it('유저가 이미 존재하면 ConflictException 던진다.', async () => {
+      jest.spyOn(authService as any, 'verifyCode').mockResolvedValue(true);
+
       // 유저가 이미 존재하는 상황을 Mock
       jest.spyOn(userRepository, 'findOne').mockResolvedValueOnce(new UserEntity());
 
@@ -51,11 +85,13 @@ describe('AuthService', () => {
           password: 'test1234',
           confirmedPassword: 'test1234',
           nickname: 'tester',
+          code: null,
         }),
       ).rejects.toThrow(ConflictException);
     });
 
     it('비밀번호가 비밀번호 확인과 일치 하지 않으면 회원가입에 실패해야함', async () => {
+      jest.spyOn(authService as any, 'verifyCode').mockResolvedValue(true);
       jest.spyOn(userRepository, 'findOne').mockResolvedValueOnce(null);
 
       await expect(
@@ -64,11 +100,13 @@ describe('AuthService', () => {
           password: 'sorin1234',
           confirmedPassword: 'sorin12345',
           nickname: 'sorin',
+          code: null,
         }),
       ).rejects.toThrow(BadRequestException);
     });
 
     it('닉네임이 유일하지 않으면 회원가입에 실패해야함', async () => {
+      jest.spyOn(authService as any, 'verifyCode').mockResolvedValue(true);
       jest.spyOn(userRepository, 'findOne').mockResolvedValueOnce(null);
 
       // 비밀번호 일치 확인
@@ -81,22 +119,30 @@ describe('AuthService', () => {
           password: 'sorin1234',
           confirmedPassword: 'sorin1234',
           nickname: 'sorin',
+          code: null,
         }),
       ).rejects.toThrow(ConflictException);
     });
 
     it('유저가 성공적으로 생성되면 "회원가입이 성공했습니다!" 메시지를 반환한다.', async () => {
+      jest.spyOn(authService as any, 'verifyCode').mockResolvedValue(true);
       jest.spyOn(userRepository, 'findOne').mockResolvedValueOnce(null);
       (bcrypt.hash as jest.Mock).mockResolvedValue('hashedPassword');
-      const saveSpy = jest.spyOn(userRepository, 'save').mockResolvedValueOnce({ id: 1 } as never); // 저장 모킹
+
+      const saveSpy = jest.spyOn(userRepository, 'save').mockResolvedValueOnce({
+        id: 1,
+        email: 'test@test.com',
+        password: 'hashedPassword',
+        nickname: 'tester',
+      } as UserEntity);
 
       const result = await authService.signup({
         email: 'test@test.com',
         password: 'test1234',
         confirmedPassword: 'test1234',
         nickname: 'tester',
+        code: '111111',
       });
-
       expect(result).toEqual({ message: '회원가입에 성공했습니다!' });
       expect(bcrypt.hash).toHaveBeenCalledWith('test1234', 10);
       expect(saveSpy).toHaveBeenCalledTimes(1);
