@@ -48,7 +48,6 @@ export class CardEntity {
 
   @OneToMany(() => ChecklistEntity, (checklist) => checklist.card)
   checklists: ChecklistEntity;
-  
 
   @ManyToOne(() => ListEntity, (list) => list.cards)
   list: ListEntity;
