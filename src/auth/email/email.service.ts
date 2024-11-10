@@ -4,13 +4,13 @@ import { v4 as uuidv4 } from 'uuid';
 import { SignupDto } from '../dto/signup.dto';
 import { Code } from 'typeorm';
 import { SendEmailDto } from '../dto/sendEmail.dto';
-import { RedisService } from 'src/redis/redis.service';
+// import { RedisService } from 'src/redis/redis.service';
 
 @Injectable()
 export class MailService {
   constructor(
     private readonly mailerService: MailerService,
-    private readonly redisService: RedisService,
+    // private readonly redisService: RedisService,
   ) {}
 
   async sendEmail(sendEmail: SendEmailDto) {
@@ -22,7 +22,7 @@ export class MailService {
       text: `인증번호 : ${code}`,
     });
 
-    await this.redisService.set(sendEmail.email, code, 3600);
+    // await this.redisService.set(sendEmail.email, code, 3600);
   }
 
   async sendMemberEmail(email: string) {
