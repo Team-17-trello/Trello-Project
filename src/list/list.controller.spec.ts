@@ -6,6 +6,7 @@ import { UpdateListDto } from './dto/update-list.dto';
 import { ListEntity } from './entities/list.entity';
 import { ListController } from './list.controller';
 import { ListService } from './list.service';
+import { MemberGuard } from 'src/guard/members.guard';
 
 describe('ListController', () => {
   let listController: ListController;
@@ -29,7 +30,10 @@ describe('ListController', () => {
           },
         },
       ],
-    }).compile();
+    })
+      .overrideGuard(MemberGuard)
+      .useValue({})
+      .compile();
 
     listController = module.get<ListController>(ListController);
     listService = module.get<ListService>(ListService);

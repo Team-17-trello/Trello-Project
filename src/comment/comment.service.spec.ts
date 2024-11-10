@@ -7,16 +7,29 @@ import { Repository } from 'typeorm';
 import { NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { UserEntity } from '../user/entities/user.entity';
 import { CommentDto } from './dto/comment.dto';
+import { NotificationService } from 'src/notification/notification.service';
+import { RedisService } from '@liaoliaots/nestjs-redis';
+import { ResponsibleEntity } from 'src/card/entities/responsible.entity';
 
 describe('CommentService', () => {
   let commentService: CommentService;
   let cardRepository: Repository<CardEntity>;
   let commentRepository: Repository<CommentEntity>;
+  let responsibleRepository: Repository<ResponsibleEntity>;
+  let notificationService: NotificationService;
+  let userRepository: Repository<UserEntity>;
+  let redisService: RedisService;
+  let mockRedisClient: any;
+
+  mockRedisClient = {
+    xadd: jest.fn(),
+  };
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         CommentService,
+        NotificationService,
         {
           provide: getRepositoryToken(CardEntity),
           useValue: {
@@ -31,12 +44,39 @@ describe('CommentService', () => {
             delete: jest.fn(),
           },
         },
+        {
+          provide: getRepositoryToken(UserEntity),
+          useValue: {
+            findOne: jest.fn(),
+          },
+        },
+        {
+          provide: RedisService,
+          useValue: {
+            getOrThrow: jest.fn(),
+          },
+        },
+        {
+          provide: getRepositoryToken(ResponsibleEntity),
+          useValue: {
+            findOne: jest.fn(),
+            save: jest.fn(),
+            delete: jest.fn(),
+            find: jest.fn(),
+          },
+        },
       ],
     }).compile();
 
     commentService = module.get<CommentService>(CommentService);
     cardRepository = module.get<Repository<CardEntity>>(getRepositoryToken(CardEntity));
     commentRepository = module.get<Repository<CommentEntity>>(getRepositoryToken(CommentEntity));
+    notificationService = module.get<NotificationService>(NotificationService);
+    redisService = module.get<RedisService>(RedisService);
+    responsibleRepository = module.get<Repository<ResponsibleEntity>>(
+      getRepositoryToken(ResponsibleEntity),
+    );
+    userRepository = module.get<Repository<UserEntity>>(getRepositoryToken(UserEntity));
   });
 
   describe('creat comment', () => {
@@ -64,7 +104,7 @@ describe('CommentService', () => {
       comments: null,
       workspace: null,
       checklists: null,
-      files : null,
+      files: null,
     };
 
     const mockCommentDto: CommentDto = {
@@ -89,10 +129,21 @@ describe('CommentService', () => {
     it('댓글 생성 시 생성된 댓글 반환', async () => {
       jest.spyOn(cardRepository, 'findOne').mockResolvedValue(mockCard);
       jest.spyOn(commentRepository, 'save').mockResolvedValue(mockComment);
+      jest
+        .spyOn(responsibleRepository, 'find')
+        .mockResolvedValue([{ id: 1, userId: 1, card: mockCard } as ResponsibleEntity]);
+      jest.spyOn(notificationService, 'sendNotification').mockResolvedValue('notification-id');
+
+      const result = await commentService.create(mockCard.id, mockUser, mockCommentDto);
+
       expect(await commentService.create(mockCard.id, mockUser, mockCommentDto)).toEqual({
         message: '댓글이 생성되었습니다.',
         comment: mockComment,
       });
+      expect(responsibleRepository.find).toHaveBeenCalledWith({
+        where: { card: { id: mockCard.id } },
+      });
+      expect(mockCommentDto);
     });
   });
 

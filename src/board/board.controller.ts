@@ -17,9 +17,8 @@ import { UserInfo } from 'src/utils/userInfo-decolator';
 import { BoardService } from './board.service';
 import { CreateBoardDto } from './dto/create-board.dto';
 import { UpdateBoardDto } from './dto/update-board.dto';
-import { MemberGuard } from '../guard/members.guard';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-
+import { MemberGuard } from 'src/guard/members.guard';
 
 @ApiBearerAuth()
 @ApiTags('보드')

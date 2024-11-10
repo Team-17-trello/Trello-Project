@@ -13,12 +13,26 @@ import { ChecklistEntity } from '../checklist/entities/checklist.entity';
 import { ItemEntity } from '../item/entities/item.entity';
 import { NotificationService } from 'src/notification/notification.service';
 import { NotificationModule } from 'src/notification/notification.module';
+import { UserEntity } from 'src/user/entities/user.entity';
+import { RedisService } from '@liaoliaots/nestjs-redis';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([CardEntity, ListEntity, ResponsibleEntity, WorkspaceEntity, BoardEntity, MemberEntity, CommentEntity, ChecklistEntity, ItemEntity]),
+    TypeOrmModule.forFeature([
+      UserEntity,
+      CardEntity,
+      ListEntity,
+      ResponsibleEntity,
+      WorkspaceEntity,
+      BoardEntity,
+      MemberEntity,
+      CommentEntity,
+      ChecklistEntity,
+      ItemEntity,
+      NotificationModule,
+    ]),
   ],
   controllers: [CardController],
-  providers: [CardService, NotificationService],
+  providers: [CardService, NotificationService, RedisService],
 })
 export class CardModule {}

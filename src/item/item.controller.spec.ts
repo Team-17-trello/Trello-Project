@@ -3,6 +3,7 @@ import { ItemController } from './item.controller';
 import { ItemService } from './item.service';
 import { CreateItemDto } from './dto/create-item.dto';
 import { UpdateItemDto } from './dto/update-item.dto';
+import { MemberGuard } from 'src/guard/members.guard';
 
 describe('ItemController', () => {
   let itemController: ItemController;
@@ -21,7 +22,10 @@ describe('ItemController', () => {
           },
         },
       ],
-    }).compile();
+    })
+      .overrideGuard(MemberGuard)
+      .useValue({})
+      .compile();
 
     itemController = module.get<ItemController>(ItemController);
     itemService = module.get<ItemService>(ItemService);

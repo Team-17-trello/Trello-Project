@@ -107,6 +107,6 @@ const typeOrmModuleOptions = {
     NotificationModule,
   ],
   controllers: [NotificationController],
-  providers: [NotificationService],
+  providers: [],
 })
 export class AppModule {}

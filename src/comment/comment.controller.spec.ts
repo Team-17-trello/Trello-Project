@@ -3,6 +3,7 @@ import { CommentController } from './comment.controller';
 import { CommentService } from './comment.service';
 import { CommentDto } from './dto/comment.dto';
 import { UserEntity } from '../user/entities/user.entity';
+import { MemberGuard } from 'src/guard/members.guard';
 
 describe('CommentController', () => {
   let commentController: CommentController;
@@ -23,7 +24,10 @@ describe('CommentController', () => {
           useValue: mockCommentService,
         },
       ],
-    }).compile();
+    })
+      .overrideGuard(MemberGuard)
+      .useValue({})
+      .compile();
 
     commentController = module.get<CommentController>(CommentController);
     commentService = module.get<CommentService>(CommentService) as jest.Mocked<CommentService>;
