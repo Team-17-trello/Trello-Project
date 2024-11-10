@@ -5,7 +5,11 @@ import { UserInfo } from '../utils/userInfo-decolator';
 import { UserEntity } from '../user/entities/user.entity';
 import { Response } from 'express';
 import { MemberGuard } from '../guard/members.guard';
+import { CreateFileDto } from './dto/create-file.dto';
+import { UpdateFileDto } from './dto/update-file.dto';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
+@ApiBearerAuth()
 @UseGuards(MemberGuard)
 @Controller('attachments')
 export class FileController {

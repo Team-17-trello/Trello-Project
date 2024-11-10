@@ -9,10 +9,15 @@ import { BoardEntity } from '../board/entities/board.entity';
 import { ListEntity } from '../list/entities/list.entity';
 import { ChecklistEntity } from '../checklist/entities/checklist.entity';
 import { ItemEntity } from '../item/entities/item.entity';
+import { NotificationModule } from 'src/notification/notification.module';
+import { NotificationService } from 'src/notification/notification.service';
+import { ResponsibleEntity } from 'src/card/entities/responsible.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([CommentEntity, CardEntity, WorkspaceEntity, BoardEntity, ListEntity, ChecklistEntity, ItemEntity])],
+  imports: [
+    TypeOrmModule.forFeature([CommentEntity, CardEntity, WorkspaceEntity, BoardEntity, ListEntity, ChecklistEntity, ItemEntity]),
+  ],
   controllers: [CommentController],
-  providers: [CommentService],
+  providers: [CommentService, NotificationService],
 })
 export class CommentModule {}

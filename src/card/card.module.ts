@@ -11,10 +11,14 @@ import { MemberEntity } from '../member/entity/member.entity';
 import { CommentEntity } from '../comment/entities/comment.entity';
 import { ChecklistEntity } from '../checklist/entities/checklist.entity';
 import { ItemEntity } from '../item/entities/item.entity';
+import { NotificationService } from 'src/notification/notification.service';
+import { NotificationModule } from 'src/notification/notification.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([CardEntity, ListEntity, ResponsibleEntity, WorkspaceEntity, BoardEntity, MemberEntity, CommentEntity, ChecklistEntity, ItemEntity])],
+  imports: [
+    TypeOrmModule.forFeature([CardEntity, ListEntity, ResponsibleEntity, WorkspaceEntity, BoardEntity, MemberEntity, CommentEntity, ChecklistEntity, ItemEntity]),
+  ],
   controllers: [CardController],
-  providers: [CardService],
+  providers: [CardService, NotificationService],
 })
 export class CardModule {}

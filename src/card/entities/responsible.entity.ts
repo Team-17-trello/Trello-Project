@@ -21,6 +21,6 @@ export class ResponsibleEntity {
   @Column({ type: 'int', nullable: false, name: 'user_id' })
   userId: number;
 
-  @ManyToOne(() => CardEntity, (card) => card.responsibles, {cascade : true})
+  @ManyToOne(() => CardEntity, (card) => card.responsibles, { onDelete: 'CASCADE' })
   card: CardEntity;
 }

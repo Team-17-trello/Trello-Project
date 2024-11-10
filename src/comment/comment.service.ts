@@ -5,75 +5,84 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { CommentEntity } from './entities/comment.entity';
 import { Repository } from 'typeorm';
 import { CardEntity } from '../card/entities/card.entity';
-
-
+import { NotificationService } from 'src/notification/notification.service';
+import { ResponsibleEntity } from 'src/card/entities/responsible.entity';
 @Injectable()
 export class CommentService {
-  constructor(@InjectRepository(CommentEntity)
-              private readonly commentRepository: Repository<CommentEntity>,
-              @InjectRepository(CardEntity)
-              private readonly cardRepository: Repository<CardEntity>,
-  ) {
-  }
+  constructor(
+    @InjectRepository(CommentEntity)
+    private readonly commentRepository: Repository<CommentEntity>,
+    @InjectRepository(CardEntity)
+    private readonly cardRepository: Repository<CardEntity>,
+    @InjectRepository(ResponsibleEntity)
+    private readonly responsibleRepository: Repository<ResponsibleEntity>,
+    private readonly notificationService: NotificationService,
+  ) {}
 
   async create(cardId: number, user: UserEntity, commentDto: CommentDto) {
     try {
-      // 카드존재 여부 확인
       const card = await this.cardRepository.findOne({
         where: { id: cardId },
       });
-      console.log(card)
+      console.log(card);
       if (!card) {
         throw new NotFoundException('해당 카드가 존재하지 않습니다.');
       }
 
-      const comment : CommentEntity = await this.commentRepository.save({
+      const comment: CommentEntity = await this.commentRepository.save({
         text: commentDto.text,
         userId: user.id,
         card: card,
       });
 
+      const responsibles = await this.responsibleRepository.find({
+        where: { card: { id: cardId } },
+      });
+
+      await Promise.all(
+        responsibles.map((responsible) => {
+          const message = `${responsible.userId}님 카드에 댓글이 달렸습니다.`;
+          return this.notificationService.sendNotification(responsible.userId, message);
+        }),
+      );
+
       return {
-        statusCode: 201,
         message: '댓글이 생성되었습니다.',
         comment: comment,
       };
-    } catch (error) {
-      throw error;
-      console.error(error);
-
+    } catch (err) {
+      throw err;
     }
-
   }
 
   async update(id: number, user: UserEntity, commentDto: CommentDto) {
-    const comment = await this.commentRepository.findOne({
-      where: { id },
-    });
+    try {
+      const comment = await this.commentRepository.findOne({
+        where: { id },
+      });
 
-    if (!comment) {
-      throw new NotFoundException('해당 댓글이 존재하지 않습니다.');
+      if (!comment) {
+        throw new NotFoundException('해당 댓글이 존재하지 않습니다.');
+      }
+
+      if (comment.userId !== user.id) {
+        throw new UnauthorizedException('댓글 수정 권한이 없습니다.');
+      }
+
+      comment.text = commentDto.text;
+
+      const updatedComment = await this.commentRepository.save(comment);
+
+      return {
+        comment: updatedComment,
+      };
+    } catch (err) {
+      throw err;
     }
-
-    if (comment.userId !== user.id) {
-      throw new UnauthorizedException('댓글 수정 권한이 없습니다.');
-    }
-
-    comment.text = commentDto.text;
-
-    const updatedComment = await this.commentRepository.save(comment);
-
-    return {
-      status: 200,
-      comment: updatedComment,
-    };
-
-
   }
 
   async remove(id: number, user: UserEntity) {
     try {
-      //댓글 작성자 인지 확인
       const comment = await this.commentRepository.findOne({
         where: { id },
       });
@@ -90,16 +99,10 @@ export class CommentService {
       });
 
       return {
-        statusCode: 200,
         message: '댓글이 삭제 되었습니다.',
       };
-
-    } catch (error) {
-      throw error;
-      console.error(error);
+    } catch (err) {
+      throw err;
     }
-
   }
 }
-
-
