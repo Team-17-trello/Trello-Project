@@ -5,6 +5,8 @@ import { CreateBoardDto } from './dto/create-board.dto';
 import { UpdateBoardDto } from './dto/update-board.dto';
 import { BoardEntity } from 'src/board/entities/board.entity';
 import { UserEntity } from 'src/user/entities/user.entity';
+import { MemberGuard } from 'src/guard/members.guard';
+import { AuthGuard } from '@nestjs/passport';
 
 describe('BoardController', () => {
   let boardController: BoardController;
@@ -31,7 +33,10 @@ describe('BoardController', () => {
           },
         },
       ],
-    }).compile();
+    })
+      .overrideGuard(MemberGuard)
+      .useValue({})
+      .compile();
 
     boardController = module.get<BoardController>(BoardController);
     boardService = module.get<BoardService>(BoardService);

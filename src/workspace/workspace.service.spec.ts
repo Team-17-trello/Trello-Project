@@ -17,13 +17,11 @@ describe('WorkspaceService', () => {
   };
 
   let workspaceService: WorkspaceService;
-  let workspaceRepository: Repository<WorkspaceEntity>; // 모킹된 리포지토리
+  let workspaceRepository: Repository<WorkspaceEntity>;
   let userRepository: Repository<UserEntity>;
   let memberRepository: Repository<MemberEntity>;
   beforeEach(async () => {
     jest.clearAllMocks();
-
-    // 모킹된 리포지토리 생성
 
     const mockworkspace: WorkspaceEntity = {
       id: 1,
@@ -35,7 +33,7 @@ describe('WorkspaceService', () => {
         WorkspaceService,
         {
           provide: getRepositoryToken(WorkspaceEntity),
-          useValue: mockRepository, // 모킹된 리포지토리 사용
+          useValue: mockRepository,
         },
         {
           provide: getRepositoryToken(UserEntity),
@@ -54,7 +52,6 @@ describe('WorkspaceService', () => {
       ],
     }).compile();
 
-    // 서비스와 모킹된 리포지토리 가져오기
     workspaceService = module.get<WorkspaceService>(WorkspaceService);
     workspaceRepository = module.get<Repository<WorkspaceEntity>>(
       getRepositoryToken(WorkspaceEntity),
@@ -125,54 +122,32 @@ describe('WorkspaceService', () => {
   });
 
   it('워크스페이스 상세 조회 테스트', async () => {
-    const workspace = [
-      {
-        id: 1,
-        workspaceName: 'Test한다잉',
-        createdAt: '2024-11-08T06:04:17.590Z',
-        members: [
-          {
-            isAdmin: true,
-            user: {
-              id: 1,
-              nickname: 'test',
-            },
+    const workspace = {
+      id: 1,
+      workspaceName: 'Test한다잉',
+      createdAt: '2024-11-08T06:04:17.590Z',
+      members: [
+        {
+          isAdmin: true,
+          user: {
+            id: 1,
+            nickname: 'test',
           },
-        ],
-      },
-    ];
+        },
+      ],
+    };
 
-    workspaceRepository.find = jest.fn().mockResolvedValue(workspace);
-    
-    workspaceRepository.findOne = jest.fn().mockResolvedValue([workspace])
-
-
+    mockRepository.findOne.mockResolvedValue(workspace);
 
     const result = await workspaceService.getWorkspaceById(1);
 
-    const expectedQuery = {
-      where: { id: 1 },
-      relations: { members: { user: true } },
-      select: {
-        id: true,
-        workspaceName: true,
-        createdAt: true,
-        members: {
-          isAdmin: true,
-          user: {
-            id: true,
-            nickname: true,
-          },
-        },
-      },
-    };
-
-    expect(workspaceRepository.find).toHaveBeenCalledWith(expectedQuery);
-
     expect(result).toEqual(workspace);
+    expect(mockRepository.findOne).toHaveBeenCalledWith({
+      where: { id: 1 },
+      relations: { members: true },
+    });
   });
 
-  //workspace에
   it('멤버가 성공적으로 초대 되었는가', async () => {
     const user: UserEntity = {
       id: 1,

@@ -5,6 +5,7 @@ import { CreateChecklistDto } from './dto/create-checklist.dto';
 import { ChecklistEntity } from './entities/checklist.entity';
 import { UpdateChecklistDto } from './dto/update-checklist.dto';
 import { DeleteResult } from 'typeorm';
+import { MemberGuard } from 'src/guard/members.guard';
 
 describe('체크리스트 컨트롤러 테스트', () => {
   let checklistController: ChecklistController;
@@ -24,7 +25,10 @@ describe('체크리스트 컨트롤러 테스트', () => {
           },
         },
       ],
-    }).compile();
+    })
+      .overrideGuard(MemberGuard)
+      .useValue({})
+      .compile();
 
     checklistController = module.get<ChecklistController>(ChecklistController);
     checklistService = module.get<ChecklistService>(ChecklistService);

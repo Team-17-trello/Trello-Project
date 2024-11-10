@@ -1,20 +1,20 @@
 import { PrimaryGeneratedColumn, Column, Entity, ManyToOne } from 'typeorm';
 import { CardEntity } from '../../card/entities/card.entity';
 
-@Entity()
+@Entity({ name: 'files' })
 export class FileEntity {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn({ unsigned: true })
   id: number;
 
-  @Column()
+  @Column({ type: 'varchar' })
   fileName: string;
 
-  @Column()
+  @Column({ type: 'varchar' })
   filePath: string;
 
-  @Column()
+  @Column({ type: 'int' })
   fileSize: number;
 
-  @ManyToOne(() => CardEntity, (card) => card.files ,{cascade : true})
+  @ManyToOne(() => CardEntity, (card) => card.files, { cascade: true })
   card: CardEntity;
 }

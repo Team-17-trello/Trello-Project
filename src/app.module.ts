@@ -31,7 +31,6 @@ import { NotificationService } from './notification/notification.service';
 import { NotificationController } from './notification/notification.controller';
 import { NotificationModule } from './notification/notification.module';
 
-
 const typeOrmModuleOptions = {
   useFactory: async (configService: ConfigService): Promise<TypeOrmModuleOptions> => ({
     namingStrategy: new SnakeNamingStrategy(),
@@ -104,6 +103,6 @@ const typeOrmModuleOptions = {
     NotificationModule,
   ],
   controllers: [NotificationController],
-  providers: [NotificationService],
+  providers: [],
 })
 export class AppModule {}

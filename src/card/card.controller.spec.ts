@@ -8,6 +8,7 @@ import { DueDateDto } from './dto/duedate.dto';
 import { UpdateCardDto } from './dto/update-card.dto';
 import { ResponsibleDto } from './dto/responsible.dto';
 import { MoveCardDto } from './dto/move-card.dto';
+import { MemberGuard } from 'src/guard/members.guard';
 
 describe('CardController', () => {
   let cardController: CardController;
@@ -32,7 +33,10 @@ describe('CardController', () => {
           },
         },
       ],
-    }).compile();
+    })
+      .overrideGuard(MemberGuard)
+      .useValue({})
+      .compile();
 
     cardController = module.get<CardController>(CardController);
     cardService = module.get<CardService>(CardService);
@@ -53,7 +57,7 @@ describe('CardController', () => {
     comments: null,
     workspace: null,
     checklists: null,
-    files : null
+    files: null,
   };
 
   const mockUser: UserEntity = {

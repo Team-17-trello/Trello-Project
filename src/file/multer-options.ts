@@ -8,4 +8,5 @@ export const multerOptions = {
       callback(null, `${Date.now()}-${file.originalname}`);
     },
   }),
+  limits: { fileSize: 30 * 1024 * 1024 }, //30MB 제한
 };

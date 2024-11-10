@@ -12,12 +12,25 @@ import { ItemEntity } from '../item/entities/item.entity';
 import { NotificationModule } from 'src/notification/notification.module';
 import { NotificationService } from 'src/notification/notification.service';
 import { ResponsibleEntity } from 'src/card/entities/responsible.entity';
+import { UserEntity } from 'src/user/entities/user.entity';
+import { RedisService } from '@liaoliaots/nestjs-redis';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([CommentEntity, CardEntity, WorkspaceEntity, BoardEntity, ListEntity, ChecklistEntity, ItemEntity]),
+    TypeOrmModule.forFeature([
+      UserEntity,
+      CommentEntity,
+      CardEntity,
+      WorkspaceEntity,
+      BoardEntity,
+      ListEntity,
+      ChecklistEntity,
+      ItemEntity,
+      NotificationModule,
+      ResponsibleEntity,
+    ]),
   ],
   controllers: [CommentController],
-  providers: [CommentService, NotificationService],
+  providers: [CommentService, NotificationService, RedisService],
 })
 export class CommentModule {}

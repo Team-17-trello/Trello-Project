@@ -12,7 +12,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
 import { compare } from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
-import { RedisService } from '@liaoliaots/nestjs-redis';
 
 @Injectable()
 export class AuthService {
@@ -20,7 +19,6 @@ export class AuthService {
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
     private readonly jwtService: JwtService,
-    private readonly redisService: RedisService,
   ) {}
   async signup(signUpDto: SignupDto) {
     try {
@@ -76,9 +74,6 @@ export class AuthService {
 
       const payload = { email: loginDto.email, sub: findUser.id };
       const token = this.jwtService.sign(payload);
-
-      const client = this.redisService.getOrThrow();
-      await client.set('key', token);
 
       return {
         access_token: token,

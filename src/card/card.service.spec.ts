@@ -10,17 +10,28 @@ import { CreateCardDto } from './dto/create-card.dto';
 import { ListEntity } from '../list/entities/list.entity';
 import { WorkspaceEntity } from 'src/workspace/entities/workspace.entity';
 import { BoardEntity } from 'src/board/entities/board.entity';
+import { NotificationService } from 'src/notification/notification.service';
+import { RedisService } from '@liaoliaots/nestjs-redis';
 
 describe('CardService', () => {
   let cardService: CardService;
   let cardRepository: Repository<CardEntity>;
   let responsibleRepository: Repository<ResponsibleEntity>;
   let listRepository: Repository<ListEntity>;
+  let notificationService: NotificationService;
+  let userRepository: Repository<UserEntity>;
+  let redisService: RedisService;
+  let mockRedisClient: any;
+
+  mockRedisClient = {
+    xadd: jest.fn(),
+  };
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         CardService,
+        NotificationService,
         {
           provide: getRepositoryToken(CardEntity),
           useValue: {
@@ -45,15 +56,31 @@ describe('CardService', () => {
             delete: jest.fn(),
           },
         },
+
+        {
+          provide: getRepositoryToken(UserEntity),
+          useValue: {
+            findOne: jest.fn(),
+          },
+        },
+        {
+          provide: RedisService,
+          useValue: {
+            getOrThrow: jest.fn(),
+          },
+        },
       ],
     }).compile();
 
     cardService = module.get<CardService>(CardService);
+    notificationService = module.get<NotificationService>(NotificationService);
     cardRepository = module.get<Repository<CardEntity>>(getRepositoryToken(CardEntity));
     listRepository = module.get<Repository<ListEntity>>(getRepositoryToken(ListEntity));
     responsibleRepository = module.get<Repository<ResponsibleEntity>>(
       getRepositoryToken(ResponsibleEntity),
     );
+    redisService = module.get<RedisService>(RedisService);
+    userRepository = module.get<Repository<UserEntity>>(getRepositoryToken(UserEntity));
   });
 
   describe('create Card', () => {
@@ -119,7 +146,7 @@ describe('CardService', () => {
         responsibles: null,
         comments: null,
         checklists: null,
-        files : null
+        files: null,
       };
 
       jest.spyOn(cardRepository, 'save').mockResolvedValueOnce(mockCard);
@@ -203,7 +230,7 @@ describe('CardService', () => {
       await expect(cardService.findOne(1)).rejects.toThrow(NotFoundException);
       expect(cardRepository.findOne).toHaveBeenCalledWith({
         where: { id: 1 },
-        relations: { responsibles: true, comments: true, checkList: true },
+        relations: { responsibles: true, comments: true, checklists: true },
       });
       expect(cardRepository.findOne).toHaveBeenCalledTimes(1);
     });
@@ -222,7 +249,7 @@ describe('CardService', () => {
 
       expect(cardRepository.findOne).toHaveBeenCalledWith({
         where: { id: 1 },
-        relations: { responsibles: true, comments: true, checkList: true },
+        relations: { responsibles: true, comments: true, checklists: true },
       });
       expect(cardRepository.findOne).toHaveBeenCalledTimes(1);
     });
@@ -327,7 +354,7 @@ describe('CardService', () => {
       );
     });
 
-    it('담당자 초대 성공 시 결과 반환 ', async () => {
+    it('담당자 초대 성공 시 결과 반환 및 알림 전송 확인', async () => {
       const mockCard = {
         id: 1,
         title: 'original title',
@@ -336,15 +363,35 @@ describe('CardService', () => {
         order: 1,
         dueDate: new Date(),
         userId: 1,
-      };
+      } as CardEntity;
 
       const mockResponsibleDto = { responsibles: [1, 2] };
 
-      jest.spyOn(cardRepository, 'findOne').mockResolvedValue(mockCard as CardEntity);
-      jest.spyOn(responsibleRepository, 'save').mockResolvedValue(undefined);
+      jest.spyOn(cardRepository, 'findOne').mockResolvedValue(mockCard);
+      jest.spyOn(responsibleRepository, 'save').mockResolvedValue(null);
+      jest.spyOn(notificationService, 'sendNotification').mockResolvedValue('notification-id');
 
       const result = await cardService.inviteResponsible(1, mockResponsibleDto);
 
+      expect(responsibleRepository.save).toHaveBeenCalledTimes(
+        mockResponsibleDto.responsibles.length,
+      );
+      mockResponsibleDto.responsibles.forEach((responsible) => {
+        expect(responsibleRepository.save).toHaveBeenCalledWith({
+          card: { id: 1 },
+          userId: responsible,
+        });
+      });
+
+      expect(notificationService.sendNotification).toHaveBeenCalledTimes(
+        mockResponsibleDto.responsibles.length,
+      );
+      mockResponsibleDto.responsibles.forEach((responsible) => {
+        expect(notificationService.sendNotification).toHaveBeenCalledWith(
+          responsible,
+          `${responsible}님 초대메세지가 도착했습니다.`,
+        );
+      });
       expect(result).toEqual({
         message: '초대가 완료되었습니다.',
         responsible: mockResponsibleDto.responsibles,
