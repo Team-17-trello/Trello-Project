@@ -5,7 +5,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { CommentEntity } from './entities/comment.entity';
 import { Repository } from 'typeorm';
 import { CardEntity } from '../card/entities/card.entity';
-
+import { NotificationService } from 'src/notification/notification.service';
+import { ResponsibleEntity } from 'src/card/entities/responsible.entity';
 @Injectable()
 export class CommentService {
   constructor(
@@ -13,6 +14,9 @@ export class CommentService {
     private readonly commentRepository: Repository<CommentEntity>,
     @InjectRepository(CardEntity)
     private readonly cardRepository: Repository<CardEntity>,
+    @InjectRepository(ResponsibleEntity)
+    private readonly responsibleRepository: Repository<ResponsibleEntity>,
+    private readonly notificationService: NotificationService,
   ) {}
 
   async create(cardId: number, user: UserEntity, commentDto: CommentDto) {
@@ -30,6 +34,17 @@ export class CommentService {
         userId: user.id,
         card: card,
       });
+
+      const responsibles = await this.responsibleRepository.find({
+        where: { card: { id: cardId } },
+      });
+
+      await Promise.all(
+        responsibles.map((responsible) => {
+          const message = `${responsible.userId}님 카드에 댓글이 달렸습니다.`;
+          return this.notificationService.sendNotification(responsible.userId, message);
+        }),
+      );
 
       return {
         message: '댓글이 생성되었습니다.',

@@ -23,11 +23,13 @@ import { WorkspaceEntity } from './workspace/entities/workspace.entity';
 import { WorkspaceModule } from './workspace/workspace.module';
 import { MemberService } from './member/member.service';
 import { MemberModule } from './member/member.module';
-
 import { ChecklistEntity } from './checklist/entities/checklist.entity';
 import { itemsEntity } from './item/entities/item.entity';
 import { MailModule } from './auth/email/email.module';
-import { RedisModule } from './redis/redis.module';
+import { RedisModule } from '@liaoliaots/nestjs-redis';
+import { NotificationService } from './notification/notification.service';
+import { NotificationController } from './notification/notification.controller';
+import { NotificationModule } from './notification/notification.module';
 
 const typeOrmModuleOptions = {
   useFactory: async (configService: ConfigService): Promise<TypeOrmModuleOptions> => ({
@@ -36,7 +38,7 @@ const typeOrmModuleOptions = {
     username: configService.get('DB_USERNAME'),
     password: configService.get('DB_PASSWORD'),
     host: configService.get('DB_HOST'),
-    port: configService.get('DB_PORT'),
+    port: configService.get<number>('DB_PORT'),
     database: configService.get('DB_NAME'),
     entities: [
       BoardEntity,
@@ -50,7 +52,7 @@ const typeOrmModuleOptions = {
       CommentEntity,
       itemsEntity,
     ],
-    synchronize: configService.get('DB_SYNC'),
+    synchronize: configService.get<boolean>('DB_SYNC'),
     logging: true,
   }),
   inject: [ConfigService],
@@ -68,7 +70,22 @@ const typeOrmModuleOptions = {
         DB_PORT: Joi.number().required(),
         DB_NAME: Joi.string().required(),
         DB_SYNC: Joi.boolean().required(),
+        REDIS_HOST: Joi.string().required(),
+        REDIS_PORT: Joi.number().required(),
+        REDIS_PASSWORD: Joi.string().required(),
       }),
+    }),
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
+    RedisModule.forRoot({
+      readyLog: true,
+      errorLog: true,
+      config: {
+        host: process.env.REDIS_HOST,
+        port: parseInt(process.env.REDIS_PORT, 10),
+        password: process.env.REDIS_PASSWORD,
+      },
     }),
     TypeOrmModule.forRootAsync(typeOrmModuleOptions),
     AuthModule,
@@ -84,8 +101,9 @@ const typeOrmModuleOptions = {
     MemberModule,
     MailModule,
     RedisModule,
+    NotificationModule,
   ],
-  controllers: [],
-  providers: [],
+  controllers: [NotificationController],
+  providers: [NotificationService],
 })
 export class AppModule {}

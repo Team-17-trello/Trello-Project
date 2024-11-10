@@ -10,6 +10,7 @@ import { UserEntity } from '../user/entities/user.entity';
 import { ResponsibleEntity } from './entities/responsible.entity';
 import { ListEntity } from '../list/entities/list.entity';
 import { MoveCardDto } from './dto/move-card.dto';
+import { NotificationService } from 'src/notification/notification.service';
 
 @Injectable()
 export class CardService {
@@ -20,6 +21,7 @@ export class CardService {
     private readonly listRepository: Repository<ListEntity>,
     @InjectRepository(ResponsibleEntity)
     private readonly responsibleRepository: Repository<ResponsibleEntity>,
+    private readonly notificationService: NotificationService,
   ) {}
 
   async create(user: UserEntity, createCardDto: CreateCardDto) {
@@ -92,7 +94,6 @@ export class CardService {
   }
 
   async findOne(cardId: number) {
-
     try {
       const card = await this.cardRepository.findOne({
         where: {
@@ -101,7 +102,7 @@ export class CardService {
         relations: {
           responsibles: true,
           comments: true,
-          //checkList : true,
+          checkList: true,
           // file : true,
         },
       });
@@ -184,12 +185,21 @@ export class CardService {
         throw new NotFoundException('해당하는 카드가 없습니다 확인해주세요');
       }
 
-      responsibleDto.responsibles.map(async (responsible) => {
-        await this.responsibleRepository.save({
-          card: { id: cardId },
-          userId: responsible,
-        });
-      });
+      await Promise.all(
+        responsibleDto.responsibles.map((responsible) =>
+          this.responsibleRepository.save({
+            card: { id: cardId },
+            userId: responsible,
+          }),
+        ),
+      );
+
+      await Promise.all(
+        responsibleDto.responsibles.map((responsible) => {
+          const message = `${responsible}님 초대메세지가 도착했습니다.`;
+          return this.notificationService.sendNotification(responsible, message);
+        }),
+      );
 
       return {
         message: '초대가 완료되었습니다.',

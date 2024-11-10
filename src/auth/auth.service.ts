@@ -12,20 +12,25 @@ import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
 import { compare } from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
-import { RedisService } from 'src/redis/redis.service';
-import { sign } from 'crypto';
+import { RedisService } from '@liaoliaots/nestjs-redis';
 
 @Injectable()
 export class AuthService {
+  private readonly redisClient;
+
   constructor(
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
     private readonly jwtService: JwtService,
     private readonly redisService: RedisService,
-  ) {}
+  ) {
+    this.redisClient = this.redisService.getOrThrow();
+  }
+
   async signup(signUpDto: SignupDto) {
     const email = signUpDto.email;
     const code = signUpDto.code;
+
     try {
       const checkCode = await this.verifyCode(email, code);
       if (checkCode === false) {
@@ -85,6 +90,9 @@ export class AuthService {
       const payload = { email: loginDto.email, sub: findUser.id };
       const token = this.jwtService.sign(payload);
 
+      const client = this.redisService.getOrThrow();
+      await client.set('key', token);
+
       return {
         access_token: token,
       };
@@ -93,16 +101,16 @@ export class AuthService {
     }
   }
 
-  private async verifyCode(email, code) {
-    const storedCode = await this.redisService.get(email);
-    
+  private async verifyCode(email: string, code: string) {
+    const storedCode = await this.get(email);
     return storedCode === code;
   }
-}
 
-//바디 이메일,code
-//레디스에서 이메일 찾아
-// 찾은 이메일에서 code를 뽑음
-// 뽑은코드랑 바디.code랑 일치하는지 비교
-// JTy48Q3LflcpXIBMCjkl3al9q2FmOJ5h
-// redis-16517.c340.ap-northeast-2-1.ec2.redns.redis-cloud.com
+  private async get(email: string): Promise<string | null> {
+    const code = await this.redisClient.get(email);
+    if (!this.redisClient) {
+      throw new Error('Redis client is not connected');
+    }
+    return code;
+  }
+}

@@ -1,17 +1,18 @@
 import { Injectable } from '@nestjs/common';
 import { MailerService } from '@nestjs-modules/mailer';
 import { v4 as uuidv4 } from 'uuid';
-import { SignupDto } from '../dto/signup.dto';
-import { Code } from 'typeorm';
 import { SendEmailDto } from '../dto/sendEmail.dto';
-// import { RedisService } from 'src/redis/redis.service';
+import { RedisService } from '@liaoliaots/nestjs-redis';
 
 @Injectable()
 export class MailService {
+  private readonly redisClient;
   constructor(
     private readonly mailerService: MailerService,
-    // private readonly redisService: RedisService,
-  ) {}
+    private readonly redisService: RedisService,
+  ) {
+    this.redisClient = this.redisService.getOrThrow();
+  }
 
   async sendEmail(sendEmail: SendEmailDto) {
     const code = await this.createVerificationCode();
@@ -22,7 +23,8 @@ export class MailService {
       text: `인증번호 : ${code}`,
     });
 
-    // await this.redisService.set(sendEmail.email, code, 3600);
+    await this.set(sendEmail.email, code, 3600);
+    return { message: `${sendEmail.email}로 인증번호가 전송되었습니다.` };
   }
 
   async sendMemberEmail(email: string) {
@@ -38,5 +40,12 @@ export class MailService {
   private createVerificationCode() {
     const code = uuidv4().slice(0, 6);
     return code;
+  }
+
+  private async set(key: string, value: string, expiration: number): Promise<void> {
+    if (!this.redisClient) {
+      throw new Error('Redis client is not connected');
+    }
+    await this.redisClient.set(key, value, 'EX', expiration);
   }
 }
