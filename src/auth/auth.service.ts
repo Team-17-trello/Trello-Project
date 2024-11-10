@@ -7,7 +7,7 @@ import {
 import { SignupDto } from './dto/signup.dto';
 import { LoginDto } from './dto/login.dto';
 import { UserEntity } from '../user/entities/user.entity';
-import { Repository } from 'typeorm';
+import { Code, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
 import { compare } from 'bcrypt';
@@ -15,13 +15,23 @@ import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
+  private readonly redisClient;
+
   constructor(
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
     private readonly jwtService: JwtService,
   ) {}
   async signup(signUpDto: SignupDto) {
+    const email = signUpDto.email;
+    const code = signUpDto.code;
+
     try {
+      const checkCode = await this.verifyCode(email, code);
+      if (checkCode === false) {
+        throw new BadRequestException('인증 코드가 일치 하지 않습니다.');
+      }
+
       const user = await this.userRepository.findOne({
         where: {
           email: signUpDto.email,
@@ -81,5 +91,18 @@ export class AuthService {
     } catch (err) {
       throw err;
     }
+  }
+
+  private async verifyCode(email: string, code: string) {
+    const storedCode = await this.get(email);
+    return storedCode === code;
+  }
+
+  private async get(email: string): Promise<string | null> {
+    const code = await this.redisClient.get(email);
+    if (!this.redisClient) {
+      throw new Error('Redis client is not connected');
+    }
+    return code;
   }
 }

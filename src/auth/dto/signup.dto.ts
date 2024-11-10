@@ -7,10 +7,6 @@ export class SignupDto {
   @IsNotEmpty({ message: '이메일을 입력해주세요' })
   email: string;
 
-  // @IsNumber()
-  // @IsNotEmpty({ message: '메일로 발송된 인증 번호를 입력해주세요.' })
-  // authNumber: number;
-
   @ApiProperty({ description: '유저 비밀번호', example: 'password123' })
   @IsString()
   @Length(8, 16, { message: '비밀번호는 8자 이상이며 16글자 이하만 가능합니다.' })
@@ -26,4 +22,8 @@ export class SignupDto {
   @IsString()
   @IsNotEmpty({ message: '닉네임을 입력해주세요.' })
   nickname: string;
+
+  @IsString()
+  @IsNotEmpty({ message: '인증 코드를 입력해주세요.' })
+  code: string;
 }

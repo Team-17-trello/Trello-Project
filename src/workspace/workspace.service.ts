@@ -13,6 +13,7 @@ import { CreateWorkspaceDto } from './dto/create-workspace.dto';
 import _ from 'lodash';
 import { MemberEntity } from 'src/member/entity/member.entity';
 import { UserEntity } from 'src/user/entities/user.entity';
+import { MailService } from '../auth/email/email.service';
 
 @Injectable()
 export class WorkspaceService {
@@ -23,6 +24,7 @@ export class WorkspaceService {
     private readonly userRepository: Repository<UserEntity>,
     @InjectRepository(MemberEntity)
     private readonly memberRepository: Repository<MemberEntity>,
+    private readonly mailerService: MailService,
   ) {}
 
   async workspaceCreate(
@@ -90,10 +92,30 @@ export class WorkspaceService {
         return null;
       }
       await this.verifyAdminPrivileges(user, workspaceId);
-      await this.addMembersToWorspace(foundWorkspace, userIds);
+      const inviteMember = await this.addMembersToWorspace(foundWorkspace, userIds);
+
+      await this.sendInvetationEmail(userIds);
+
       return { message: '멤버를 성공적으로 초대했습니다.' };
     } catch (err) {
       throw err;
+    }
+  }
+
+  // 멤버 초대를 할때 메일로 알림 메일이 보내지는 기능
+  // 인자값 members.[user.id] ,
+  // user 테이블에 userId : email
+  // email 로 링크 발송 (링크 내용 : ${workspaceId}초대 되었습니다.)
+  private async sendInvetationEmail(userIds: number[]) {
+    for (const id of userIds) {
+      //이메일 찾기 로직
+      const foundEmailByUserId = await this.userRepository.findOne({
+        where: { id },
+        select: { email: true },
+      });
+      const email = foundEmailByUserId.email;
+      //찾은 이메일로 메일발송
+      await this.mailerService.sendMemberEmail(email);
     }
   }
 
@@ -128,6 +150,8 @@ export class WorkspaceService {
         workspace,
       });
       await this.memberRepository.save(newMember);
+
+      return newMember;
     }
   }
 
@@ -139,7 +163,6 @@ export class WorkspaceService {
     return user;
   }
 
-
   private async checkDuplicateMember(workspaceId: number, userId: number) {
     const existingMember = await this.memberRepository.findOne({
       where: {
@@ -147,8 +170,8 @@ export class WorkspaceService {
         user: { id: userId },
       },
     });
-    if (existingMember) {
-      throw new ConflictException(`유저(${userId})가 이미 초대되었습니다.`);
-    }
+    // if (existingMember) {
+    //   throw new ConflictException(`유저(${userId})가 이미 초대되었습니다.`);
+    // }
   }
 }

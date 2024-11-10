@@ -33,6 +33,7 @@ describe('AuthController', () => {
         password: 'texttext11',
         confirmedPassword: 'texttext11',
         nickname: 'texter',
+        code: null,
       };
 
       const mockResult = { message: '회원가입에 성공했습니다!' };
