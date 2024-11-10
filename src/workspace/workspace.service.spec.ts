@@ -3,61 +3,63 @@ import { WorkspaceService } from './workspace.service';
 import { WorkspaceEntity } from './entities/workspace.entity';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { BadRequestException } from '@nestjs/common';
+import { BadRequestException, ForbiddenException } from '@nestjs/common';
 import { UserEntity } from 'src/user/entities/user.entity';
 import { MemberEntity } from 'src/member/entity/member.entity';
+import { MailService } from 'src/auth/email/email.service';
+
+jest.mock('src/auth/email/email.service');
 
 describe('WorkspaceService', () => {
-  const mockRepository = {
-    create: jest.fn(),
-    save: jest.fn(),
-    find: jest.fn(),
-    findOne: jest.fn(),
-    findOneBy: jest.fn(),
-  };
-
   let workspaceService: WorkspaceService;
-  let workspaceRepository: Repository<WorkspaceEntity>;
-  let userRepository: Repository<UserEntity>;
-  let memberRepository: Repository<MemberEntity>;
+  let workspaceRepository;
+  let userRepository;
+  let memberRepository;
+  let mailerService: MailService;
+
   beforeEach(async () => {
-    jest.clearAllMocks();
-
-    const mockworkspace: WorkspaceEntity = {
-      id: 1,
-      workspaceName: 'Test workspace',
-    } as WorkspaceEntity;
-
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         WorkspaceService,
         {
           provide: getRepositoryToken(WorkspaceEntity),
-          useValue: mockRepository,
+          useValue: {
+            find: jest.fn(),
+            findOne: jest.fn(),
+            create: jest.fn(),
+            save: jest.fn(),
+          },
         },
         {
           provide: getRepositoryToken(UserEntity),
           useValue: {
             findOne: jest.fn(),
-            save: jest.fn(),
           },
         },
         {
           provide: getRepositoryToken(MemberEntity),
           useValue: {
+            findOne: jest.fn(),
             create: jest.fn(),
             save: jest.fn(),
+            sendMail: jest.fn(),
+          },
+        },
+        {
+          provide: MailService,
+          useValue: {
+            sendInvitationEmail: jest.fn().mockResolvedValue('이메일이 정상적으로 보내졌습니다.'),
+            sendMemberEmail: jest.fn(),
           },
         },
       ],
     }).compile();
 
     workspaceService = module.get<WorkspaceService>(WorkspaceService);
-    workspaceRepository = module.get<Repository<WorkspaceEntity>>(
-      getRepositoryToken(WorkspaceEntity),
-    );
-    memberRepository = module.get<Repository<MemberEntity>>(getRepositoryToken(MemberEntity));
-    userRepository = module.get<Repository<UserEntity>>(getRepositoryToken(UserEntity)); // 모킹된 리포지토리 가져오기
+    workspaceRepository = module.get(getRepositoryToken(WorkspaceEntity));
+    userRepository = module.get(getRepositoryToken(UserEntity));
+    memberRepository = module.get(getRepositoryToken(MemberEntity));
+    mailerService = module.get<MailService>(MailService);
   });
 
   it('워크스페이스 생성 테스트', async () => {
@@ -107,7 +109,7 @@ describe('WorkspaceService', () => {
 
   it('워크스페이스 조회 테스트', async () => {
     const workspace = [{ id: 1, workspaceName: 'test', craetedAt: new Date() }];
-    mockRepository.find.mockResolvedValue(workspace);
+    workspaceRepository.find.mockResolvedValue(workspace);
 
     const result = await workspaceService.getAllWorkspace();
     console.log(result);
@@ -116,36 +118,34 @@ describe('WorkspaceService', () => {
   });
 
   it('워크스페이스 조회 실패 테스트', async () => {
-    mockRepository.find.mockResolvedValue([]);
+    workspaceRepository.find.mockResolvedValue([]);
 
     await expect(workspaceService.getAllWorkspace()).rejects.toThrow(BadRequestException);
   });
 
   it('워크스페이스 상세 조회 테스트', async () => {
-    const workspace = {
-      id: 1,
-      workspaceName: 'Test한다잉',
-      createdAt: '2024-11-08T06:04:17.590Z',
-      members: [
-        {
+    const expectedQuery = {
+      where: { id: 1 },
+      relations: ['members', 'members.user'],
+      select: {
+        id: true,
+        workspaceName: true,
+        createdAt: true,
+        members: {
           isAdmin: true,
           user: {
-            id: 1,
-            nickname: 'test',
+            id: true,
+            nickname: true,
           },
         },
-      ],
+      },
     };
-
-    mockRepository.findOne.mockResolvedValue(workspace);
+    const workspaceId: number = 1;
+    workspaceRepository.findOne = jest.fn().mockResolvedValue(expectedQuery);
 
     const result = await workspaceService.getWorkspaceById(1);
 
-    expect(result).toEqual(workspace);
-    expect(mockRepository.findOne).toHaveBeenCalledWith({
-      where: { id: 1 },
-      relations: { members: true },
-    });
+    expect(result).toEqual(expectedQuery);
   });
 
   it('멤버가 성공적으로 초대 되었는가', async () => {
@@ -183,17 +183,19 @@ describe('WorkspaceService', () => {
 
     const message = { message: '멤버를 성공적으로 초대했습니다.' };
 
-    memberRepository.findOne = jest
-      .fn()
-      .mockResolvedValueOnce({ id: 1, isAdmin: true })
-      .mockResolvedValueOnce(null);
+    memberRepository.findOne = jest.fn().mockResolvedValueOnce({ id: 1, isAdmin: true });
 
+    workspaceRepository.findOne = jest.fn().mockResolvedValue(workspace);
     userRepository.findOne = jest.fn().mockResolvedValue(user);
     memberRepository.create = jest.fn().mockResolvedValue(newMember);
     memberRepository.save = jest.fn().mockResolvedValue(newMember);
 
+    mailerService.sendEmail = jest.fn().mockRejectedValue('Test');
+
     const result = await workspaceService.addWorkspaceMember(user, workspaceId, userIds);
 
+    expect(mailerService.sendMemberEmail).toHaveBeenCalledWith('test@test.com');
+    expect(mailerService.sendMemberEmail).toHaveBeenCalledTimes(1);
     expect(result).toEqual(message);
   });
 });
