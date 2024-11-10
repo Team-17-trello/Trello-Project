@@ -27,14 +27,15 @@ describe('ChecklistService', () => {
     }).compile();
 
     service = module.get<ChecklistService>(ChecklistService);
-    checklistRepository = module.get<Repository<ChecklistEntity>>(getRepositoryToken(ChecklistEntity));
+    checklistRepository = module.get<Repository<ChecklistEntity>>(
+      getRepositoryToken(ChecklistEntity),
+    );
   });
 
   it('should be defined', () => {
     expect(service).toBeDefined();
   });
 
-  // 체크리스트 생성 테스트
   it('체크리스트 생성하고 생성된 데이터가 리턴되어야 함', async () => {
     const createChecklistDto = {
       cardId: 1,
@@ -45,10 +46,9 @@ describe('ChecklistService', () => {
       checklistName: createChecklistDto.checklistName,
       createdAt: new Date('2024-11-07'),
       card: { id: 1 } as CardEntity,
-      items : null
+      items: null,
     };
 
-    // 모킹: create 및 save 메서드를 모의하여 체크리스트 생성 시 예상 결과를 반환하도록 설정
     jest.spyOn(checklistRepository, 'create').mockReturnValue(expectedChecklist);
     jest.spyOn(checklistRepository, 'save').mockResolvedValue(expectedChecklist);
 
@@ -56,7 +56,6 @@ describe('ChecklistService', () => {
     expect(result).toEqual(expectedChecklist);
   });
 
-  // 체크리스트 업데이트 테스트
   it('체크리스트 이름이 업데이트 되어야 함', async () => {
     const checklistId = 1;
     const updateChecklistDto = {
@@ -70,7 +69,6 @@ describe('ChecklistService', () => {
       items: null,
     };
 
-    // 모킹: findOne, update, 및 save 메서드가 예상한 업데이트 결과를 반환하도록 설정
     jest.spyOn(checklistRepository, 'findOne').mockResolvedValue(expectedUpdatedChecklist);
     jest.spyOn(checklistRepository, 'update').mockResolvedValue(undefined);
     jest.spyOn(checklistRepository, 'findOne').mockResolvedValue(expectedUpdatedChecklist);
@@ -79,12 +77,10 @@ describe('ChecklistService', () => {
     expect(result).toEqual(expectedUpdatedChecklist);
   });
 
-  // 체크리스트 삭제 테스트
   it('체크리스트가 삭제되어야 함', async () => {
     const checklistId = 1;
     const expectedMessage = { message: '체크리스트가 삭제 되었습니다.' };
 
-    // 모킹: findOne 및 delete 메서드가 올바른 값 및 메시지를 반환하도록 설정
     jest.spyOn(checklistRepository, 'findOne').mockResolvedValue({} as ChecklistEntity);
     jest.spyOn(checklistRepository, 'delete').mockResolvedValue(undefined);
 

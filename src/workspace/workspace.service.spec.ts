@@ -73,13 +73,20 @@ describe('WorkspaceService', () => {
       deletedAt: null,
       members: [],
     };
+
     const createWorkspaceDto = { workspaceName: 'test workspace' };
-    const newWorkspace = { id: 1, workspaceName: 'test workspace', createdAt: new Date() };
+    const newWorkspace = {
+      id: 1,
+      workspaceName: 'test workspace',
+      userId: user.id,
+      createdAt: new Date(),
+    };
     const createMember = {
       isAdmin: true,
       user,
       workspace: newWorkspace,
     };
+
     workspaceRepository.create = jest.fn().mockReturnValue(newWorkspace);
     workspaceRepository.save = jest.fn().mockResolvedValue(newWorkspace);
     memberRepository.create = jest.fn().mockReturnValue(createMember);
@@ -87,7 +94,10 @@ describe('WorkspaceService', () => {
 
     const result = await workspaceService.workspaceCreate(user, createWorkspaceDto);
 
-    expect(workspaceRepository.create).toHaveBeenCalledWith(createWorkspaceDto);
+    expect(workspaceRepository.create).toHaveBeenCalledWith({
+      workspaceName: createWorkspaceDto.workspaceName,
+      userId: user.id,
+    });
     expect(workspaceRepository.save).toHaveBeenCalledWith(newWorkspace);
     expect(memberRepository.create).toHaveBeenCalledWith({
       isAdmin: true,
@@ -115,17 +125,100 @@ describe('WorkspaceService', () => {
   });
 
   it('워크스페이스 상세 조회 테스트', async () => {
-    const workspace = { id: 1, workspaceName: 'test', createdAt: new Date(), members: [] };
+    const workspace = [
+      {
+        id: 1,
+        workspaceName: 'Test한다잉',
+        createdAt: '2024-11-08T06:04:17.590Z',
+        members: [
+          {
+            isAdmin: true,
+            user: {
+              id: 1,
+              nickname: 'test',
+            },
+          },
+        ],
+      },
+    ];
 
-    workspaceRepository.findOne = jest.fn().mockResolvedValue(workspace);
+    workspaceRepository.find = jest.fn().mockResolvedValue(workspace);
+    
+    workspaceRepository.findOne = jest.fn().mockResolvedValue([workspace])
+
+
 
     const result = await workspaceService.getWorkspaceById(1);
-    expect(workspaceRepository.findOne).toHaveBeenCalledWith({
+
+    const expectedQuery = {
       where: { id: 1 },
-      relations: { members: true },
-    });
+      relations: { members: { user: true } },
+      select: {
+        id: true,
+        workspaceName: true,
+        createdAt: true,
+        members: {
+          isAdmin: true,
+          user: {
+            id: true,
+            nickname: true,
+          },
+        },
+      },
+    };
+
+    expect(workspaceRepository.find).toHaveBeenCalledWith(expectedQuery);
+
     expect(result).toEqual(workspace);
   });
 
-  it('워크스페이스에 멤버 추가 성공', async () => {});
+  //workspace에
+  it('멤버가 성공적으로 초대 되었는가', async () => {
+    const user: UserEntity = {
+      id: 1,
+      email: 'test@test.com',
+      password: 'aaaa4321',
+      nickname: '테스터',
+      createdAt: new Date(),
+      deletedAt: new Date(),
+      members: [],
+    };
+
+    const workspaceId = 1;
+
+    const userIds = [2];
+
+    const workspace = {
+      id: 1,
+      workspaceName: 'test Workspace',
+      createdAt: new Date(),
+      userId: 1,
+      members: [],
+      boards: [],
+      cards: [],
+    } as WorkspaceEntity;
+
+    const newMember: MemberEntity = {
+      id: 2,
+      createdAt: new Date(),
+      isAdmin: false,
+      workspace,
+      user,
+    };
+
+    const message = { message: '멤버를 성공적으로 초대했습니다.' };
+
+    memberRepository.findOne = jest
+      .fn()
+      .mockResolvedValueOnce({ id: 1, isAdmin: true })
+      .mockResolvedValueOnce(null);
+
+    userRepository.findOne = jest.fn().mockResolvedValue(user);
+    memberRepository.create = jest.fn().mockResolvedValue(newMember);
+    memberRepository.save = jest.fn().mockResolvedValue(newMember);
+
+    const result = await workspaceService.addWorkspaceMember(user, workspaceId, userIds);
+
+    expect(result).toEqual(message);
+  });
 });

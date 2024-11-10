@@ -10,9 +10,8 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-
 @Entity({ name: 'workspaces' })
-export class WorkspaceEntity extends BaseEntity {
+export class WorkspaceEntity {
   @PrimaryGeneratedColumn()
   id: number;
 

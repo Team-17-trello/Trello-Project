@@ -16,37 +16,49 @@ export class ItemService {
   ) {}
 
   async create(createItemDto: CreateItemDto) {
-    const { checklistId, content } = createItemDto;
+    try {
+      const { checklistId, content } = createItemDto;
 
-    const checkList = await this.checklistRepository.findOne({
-      where: { id: checklistId },
-    });
+      const checkList = await this.checklistRepository.findOne({
+        where: { id: checklistId },
+      });
 
-    const item = this.itemRepository.create({
-      content,
-      status: false,
-      checklist: checkList,
-    });
+      const item = this.itemRepository.create({
+        content,
+        status: false,
+        checklist: checkList,
+      });
 
-    return this.itemRepository.save(item);
+      return this.itemRepository.save(item);
+    } catch (err) {
+      throw err;
+    }
   }
 
   async update(id: number, updateItemDto: UpdateItemDto) {
-    await this.itemRepository.update(id, updateItemDto);
+    try {
+      await this.itemRepository.update(id, updateItemDto);
 
-    const updatedItem = await this.itemRepository.findOne({ where: { id } });
+      const updatedItem = await this.itemRepository.findOne({ where: { id } });
 
-    return {
-      updatedItem,
-      message: '아이템이 성공적으로 업데이트되었습니다.',
-    };
+      return {
+        updatedItem,
+        message: '아이템이 성공적으로 업데이트되었습니다.',
+      };
+    } catch (err) {
+      throw err;
+    }
   }
 
   async remove(itemId: number) {
-    await this.itemRepository.delete({
-      id: itemId,
-    });
+    try {
+      await this.itemRepository.delete({
+        id: itemId,
+      });
 
-    return { message: '체크 리스트 항목이 성공적으로 삭제 되었습니다.' };
+      return { message: '체크 리스트 항목이 성공적으로 삭제 되었습니다.' };
+    } catch (err) {
+      throw err;
+    }
   }
 }

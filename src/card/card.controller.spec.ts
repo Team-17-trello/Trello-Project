@@ -97,7 +97,6 @@ describe('CardController', () => {
       };
 
       const spy = jest.spyOn(cardService, 'create').mockResolvedValue({
-        status: 201,
         card: mockCard,
       });
 
@@ -112,7 +111,6 @@ describe('CardController', () => {
       const mockListId = '1';
 
       const spy = jest.spyOn(cardService, 'findAll').mockResolvedValue({
-        status: 200,
         cards: mockCards,
       });
 
@@ -127,7 +125,6 @@ describe('CardController', () => {
       const mockCardId = '1';
 
       const spy = jest.spyOn(cardService, 'findOne').mockResolvedValue({
-        status: 200,
         card: mockCard,
       });
 
@@ -147,7 +144,6 @@ describe('CardController', () => {
       };
 
       const spy = jest.spyOn(cardService, 'update').mockResolvedValue({
-        statusCode: 200,
         message: '성공적으로 카드가 수정되었습니다.',
         updated: mockCard,
       });
@@ -163,7 +159,6 @@ describe('CardController', () => {
       const mockCardId = '1';
 
       const spy = jest.spyOn(cardService, 'remove').mockResolvedValue({
-        status: 200,
         message: '카드가 삭제 되었습니다.',
       });
 
@@ -181,7 +176,6 @@ describe('CardController', () => {
       };
 
       const spy = jest.spyOn(cardService, 'setDueDate').mockResolvedValue({
-        statusCode: 200,
         message: `마감 기한이 설정 됐습니다. ${mockDueDateDto.dueDate}`,
         dueDate: mockDueDateDto.dueDate,
       });
@@ -201,7 +195,6 @@ describe('CardController', () => {
       };
 
       const spy = jest.spyOn(cardService, 'inviteResponsible').mockResolvedValue({
-        stateCode: 201,
         message: '초대가 완료되었습니다.',
         responsible: mockResponsibleDto.responsibles,
       });
@@ -219,7 +212,6 @@ describe('CardController', () => {
       const mockResponsibleId = '1';
 
       const spy = jest.spyOn(cardService, 'removeResponsible').mockResolvedValue({
-        statusCode: 200,
         message: '담당자가 삭제되었습니다.',
       });
 
@@ -239,7 +231,6 @@ describe('CardController', () => {
       };
 
       const spy = jest.spyOn(cardService, 'moveCard').mockResolvedValue({
-        status: 200,
         message: '카드 위치가 변경되었습니다.',
       });
 
