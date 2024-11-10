@@ -17,7 +17,26 @@ describe('UserService', () => {
   let memberRepository: Repository<MemberEntity>;
   let mockEntityManager: Partial<EntityManager>;
 
+  const mockUser = {
+    id: 1,
+    email: 'test@test.com',
+    password: '',
+    nickname: 'tester',
+    createdAt: new Date(),
+    deletedAt: null,
+    members: [],
+  };
+
   beforeEach(async () => {
+    mockUser.password = await bcrypt.hash('TestPassword', 10);
+
+    mockEntityManager = {
+      transaction: jest.fn().mockImplementation((callback) => callback(mockEntityManager)),
+      getRepository: jest.fn().mockReturnThis(),
+      softDelete: jest.fn().mockResolvedValue({}),
+      delete: jest.fn().mockResolvedValue({}),
+    };
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         UserService,
@@ -26,6 +45,8 @@ describe('UserService', () => {
           useValue: {
             findOne: jest.fn(),
             update: jest.fn(),
+            softDelete: jest.fn(),
+            delete: jest.fn(),
           },
         },
 
@@ -129,14 +150,20 @@ describe('UserService', () => {
     });
 
     describe('remove', () => {
+      const mockmembers: MemberEntity[] = [
+        { id: 1, isAdmin: true, user: mockUser, workspace: null, createdAt: new Date() },
+      ];
+
       it('비밀번호가 일치하지 않으면 UnauthorizedException을 던진다', async () => {
+        (bcrypt.compare as jest.Mock).mockResolvedValue(false);
+
         jest.spyOn(userRepository, 'findOne').mockResolvedValueOnce({
           id: 1,
           email: 'test@test.com',
           password: await bcrypt.hash('correctPassword', 10),
+          nickname: 'teaster',
         } as UserEntity);
 
-        (bcrypt.compare as jest.Mock).mockResolvedValue(false);
         await expect(
           userService.remove(
             {
@@ -152,35 +179,53 @@ describe('UserService', () => {
         ).rejects.toThrow(UnauthorizedException);
       });
 
-      it('비밀 번호 인증 성공 시 회원 탈퇴 성공', async () => {
-        jest.spyOn(userRepository, 'findOne').mockResolvedValueOnce({
-          id: 1,
-          email: 'test@test.com',
-          password: await bcrypt.hash('wrongPassword', 10),
-        } as UserEntity);
+      it('1개 이상 워크 스페이스에서 관리자일 시 ConflictEcxeption 반환', async () => {
+        //find 하고 findOne 모킹 , bcrypt 모킹
+        jest.spyOn(userRepository, 'findOne').mockResolvedValue(mockUser);
+        jest.spyOn(memberRepository, 'find').mockResolvedValue(mockmembers);
         (bcrypt.compare as jest.Mock).mockResolvedValue(true);
 
-        const updateSpy = jest.spyOn(userRepository, 'update').mockResolvedValueOnce(undefined);
+        await expect(
+          userService.remove(
+            {
+              id: 1,
+              email: 'Test@example.com',
+              password: '123123',
+              nickname: 'mungSoon',
+            } as UserEntity,
+            { password: '123123' },
+          ),
+        ).rejects.toThrow(ConflictException);
 
-        const result = await userService.remove(
-          {
-            id: 1,
-            email: 'test@test.com',
-            password: 'test1234',
-          } as UserEntity,
-          { password: await bcrypt.hash('wrongPassword', 10) },
-        );
+        expect(memberRepository.find).toHaveBeenCalled();
+      });
 
+      it('비밀 번호 인증 성공 시 회원 탈퇴 성공', async () => {
+        (bcrypt.compare as jest.Mock).mockResolvedValue(true);
+
+        const mockRemoveUserDto = { password: 'TestPaswword' };
+
+        jest.spyOn(userRepository, 'findOne').mockResolvedValueOnce(mockUser);
+        jest.spyOn(memberRepository, 'find').mockResolvedValueOnce([]);
+
+        const softDeleteSpy = jest
+          .spyOn(mockEntityManager.getRepository(UserEntity), 'softDelete')
+          .mockResolvedValue(undefined);
+
+        const deleteSpy = jest
+          .spyOn(mockEntityManager.getRepository(MemberEntity), 'delete')
+          .mockResolvedValue(undefined);
+
+        const result = await userService.remove(mockUser as UserEntity, mockRemoveUserDto);
+
+        //같은지 확인.
         expect(result).toEqual({
           message: '계정이 성공적으로 삭제 되었습니다.',
         });
 
-        expect(updateSpy).toHaveBeenCalledWith(1, {
-          email: null,
-          password: null,
-          nickname: null,
-          deletedAt: new Date(),
-        });
+        //expect 2개 소프트 딜리트, 딜리트
+        expect(softDeleteSpy).toHaveBeenCalledWith({ id: mockUser.id });
+        expect(deleteSpy).toHaveBeenCalledWith({ user: { id: mockUser.id } });
       });
     });
   });

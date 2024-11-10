@@ -31,6 +31,6 @@ import { RedisService } from '@liaoliaots/nestjs-redis';
     ]),
   ],
   controllers: [CommentController],
-  providers: [CommentService, NotificationService, RedisService],
+  providers: [CommentService, NotificationService],
 })
 export class CommentModule {}
