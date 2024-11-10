@@ -8,9 +8,10 @@ import { WorkspaceEntity } from '../workspace/entities/workspace.entity';
 import { BoardEntity } from '../board/entities/board.entity';
 import { ListEntity } from '../list/entities/list.entity';
 import { CommentEntity } from '../comment/entities/comment.entity';
+import { ItemEntity } from '../item/entities/item.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([ChecklistEntity, CardEntity, WorkspaceEntity, BoardEntity, ListEntity, CommentEntity])],
+  imports: [TypeOrmModule.forFeature([ChecklistEntity, CardEntity, WorkspaceEntity, BoardEntity, ListEntity, CommentEntity, ItemEntity])],
   controllers: [ChecklistController],
   providers: [ChecklistService],
 })

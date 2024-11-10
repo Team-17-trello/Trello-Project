@@ -9,9 +9,11 @@ import { WorkspaceEntity } from '../workspace/entities/workspace.entity';
 import { BoardEntity } from '../board/entities/board.entity';
 import { MemberEntity } from '../member/entity/member.entity';
 import { CommentEntity } from '../comment/entities/comment.entity';
+import { ChecklistEntity } from '../checklist/entities/checklist.entity';
+import { ItemEntity } from '../item/entities/item.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([CardEntity, ListEntity, ResponsibleEntity, WorkspaceEntity, BoardEntity, MemberEntity, CommentEntity])],
+  imports: [TypeOrmModule.forFeature([CardEntity, ListEntity, ResponsibleEntity, WorkspaceEntity, BoardEntity, MemberEntity, CommentEntity, ChecklistEntity, ItemEntity])],
   controllers: [CardController],
   providers: [CardService],
 })
