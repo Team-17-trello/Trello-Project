@@ -8,7 +8,6 @@ import { UserEntity } from 'src/user/entities/user.entity';
 import { MemberEntity } from 'src/member/entity/member.entity';
 import { MailService } from 'src/auth/email/email.service';
 import { MailOptions } from 'nodemailer/lib/json-transport';
-import { RedisService } from '@liaoliaots/nestjs-redis';
 import { MailerService } from '@nestjs-modules/mailer';
 
 jest.mock('src/auth/email/email.service');
@@ -18,17 +17,12 @@ describe('WorkspaceService', () => {
   let workspaceRepository: Repository<WorkspaceEntity>;
   let userRepository: Repository<UserEntity>;
   let memberRepository: Repository<MemberEntity>;
-  let mailerService: MailerService;
   let mailService: MailService;
-  let redisService: RedisService;
-
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         WorkspaceService,
         MailService,
-        MailerService,
-        RedisService,
         {
           provide: getRepositoryToken(WorkspaceEntity),
           useValue: {
@@ -64,8 +58,6 @@ describe('WorkspaceService', () => {
     }).compile();
 
     workspaceService = module.get<WorkspaceService>(WorkspaceService);
-    redisService = module.get<RedisService>(RedisService);
-    mailerService = module.get<MailerService>(MailerService);
     mailService = module.get<MailService>(MailService);
     workspaceRepository = module.get<Repository<WorkspaceEntity>>(
       getRepositoryToken(WorkspaceEntity),
@@ -202,7 +194,7 @@ describe('WorkspaceService', () => {
     memberRepository.create = jest.fn().mockResolvedValue(newMember);
     memberRepository.save = jest.fn().mockResolvedValue(newMember);
 
-    mailerService.sendMail = jest.fn().mockRejectedValue('Test');
+    mailService.sendEmail = jest.fn().mockRejectedValue('Test');
 
     const result = await workspaceService.addWorkspaceMember(user, workspaceId, userIds);
 

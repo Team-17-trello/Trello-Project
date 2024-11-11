@@ -72,6 +72,8 @@ export class CardService {
         where: { id: listId },
       });
 
+      console.log(list);
+
       if (!list) {
         throw new NotFoundException('존재하지 않는 리스트입니다 확인해주세요.');
       }
