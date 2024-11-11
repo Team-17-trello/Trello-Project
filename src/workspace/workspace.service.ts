@@ -88,9 +88,9 @@ export class WorkspaceService {
   ): Promise<{ message: string }> {
     try {
       const foundWorkspace = await this.foundWorkspaceById(workspaceId);
-      if (foundWorkspace === null) {
-        return null;
-      }
+      // if (foundWorkspace === null) {
+      //   return null;
+      // }
       await this.verifyAdminPrivileges(user, workspaceId);
       const inviteMember = await this.addMembersToWorspace(foundWorkspace, userIds);
 
@@ -101,20 +101,13 @@ export class WorkspaceService {
       throw err;
     }
   }
-
-  // 멤버 초대를 할때 메일로 알림 메일이 보내지는 기능
-  // 인자값 members.[user.id] ,
-  // user 테이블에 userId : email
-  // email 로 링크 발송 (링크 내용 : ${workspaceId}초대 되었습니다.)
   private async sendInvetationEmail(userIds: number[]) {
     for (const id of userIds) {
-      //이메일 찾기 로직
       const foundEmailByUserId = await this.userRepository.findOne({
         where: { id },
         select: { email: true },
       });
       const email = foundEmailByUserId.email;
-      //찾은 이메일로 메일발송
       await this.mailerService.sendMemberEmail(email);
     }
   }
@@ -134,6 +127,7 @@ export class WorkspaceService {
     const foundAdminMember = await this.memberRepository.findOne({
       where: { workspace: { id: workspaceId }, user: { id: user.id }, isAdmin: true },
     });
+    
     if (!foundAdminMember) {
       throw new ForbiddenException(`해당 워크스페이스에 멤버를 추가할 권한이 없습니다.`);
     }
@@ -170,8 +164,8 @@ export class WorkspaceService {
         user: { id: userId },
       },
     });
-    // if (existingMember) {
-    //   throw new ConflictException(`유저(${userId})가 이미 초대되었습니다.`);
-    // }
+    if (existingMember) {
+      throw new ConflictException(`유저(${userId})가 이미 초대되었습니다.`);
+    }
   }
 }
