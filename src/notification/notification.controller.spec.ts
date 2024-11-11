@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { NotificationController } from './notification.controller';
 import { NotificationService } from './notification.service';
 import { UserEntity } from 'src/user/entities/user.entity';
+import { MemberGuard } from 'src/guard/members.guard';
 
 describe('NotificationController', () => {
   let notificationController: NotificationController;
@@ -30,7 +31,10 @@ describe('NotificationController', () => {
           useValue: mockNotificationService,
         },
       ],
-    }).compile();
+    })
+      .overrideGuard(MemberGuard)
+      .useValue({})
+      .compile();
 
     notificationController = module.get<NotificationController>(NotificationController);
     notificationService = module.get<NotificationService>(NotificationService);

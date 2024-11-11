@@ -1,24 +1,22 @@
 import {
   Controller,
-  Post,
-  UploadedFile,
-  UseInterceptors,
   Get,
-  Query,
-  Res,
-  UseGuards,
   HttpCode,
   HttpStatus,
+  Post,
+  Query,
+  Res,
+  UploadedFile,
+  UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { FileService } from './file.service';
-import { UserInfo } from '../utils/userInfo-decolator';
-import { UserEntity } from '../user/entities/user.entity';
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
 import { MemberGuard } from '../guard/members.guard';
-import { CreateFileDto } from './dto/create-file.dto';
-import { UpdateFileDto } from './dto/update-file.dto';
-import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { UserEntity } from '../user/entities/user.entity';
+import { UserInfo } from '../utils/userInfo-decolator';
+import { FileService } from './file.service';
 
 @ApiBearerAuth()
 @ApiTags('파일')
