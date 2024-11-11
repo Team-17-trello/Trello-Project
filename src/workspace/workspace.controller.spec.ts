@@ -1,12 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { MemberGuard } from 'src/guard/members.guard';
+import { UserEntity } from 'src/user/entities/user.entity';
+import { AddWorkspaceMemberDto } from './dto/add-workspace-member.dto';
 import { WorkspaceController } from './workspace.controller';
 import { WorkspaceService } from './workspace.service';
-import { AuthGuard } from '@nestjs/passport';
-import { UserEntity } from 'src/user/entities/user.entity';
-import { CreateWorkspaceDto } from './dto/create-workspace.dto';
-import { pull } from 'lodash';
-import { AddWorkspaceMemberDto } from './dto/add-workspace-member.dto';
-import { MemberGuard } from 'src/guard/members.guard';
 
 describe('워크스페이스 컨트롤러 유닛 테스트', () => {
   let workspaceController: WorkspaceController;

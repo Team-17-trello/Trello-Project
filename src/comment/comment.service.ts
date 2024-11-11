@@ -1,12 +1,12 @@
 import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
-import { UserEntity } from '../user/entities/user.entity';
-import { CommentDto } from './dto/comment.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CommentEntity } from './entities/comment.entity';
+import { ResponsibleEntity } from 'src/card/entities/responsible.entity';
+import { NotificationService } from 'src/notification/notification.service';
 import { Repository } from 'typeorm';
 import { CardEntity } from '../card/entities/card.entity';
-import { NotificationService } from 'src/notification/notification.service';
-import { ResponsibleEntity } from 'src/card/entities/responsible.entity';
+import { UserEntity } from '../user/entities/user.entity';
+import { CommentDto } from './dto/comment.dto';
+import { CommentEntity } from './entities/comment.entity';
 @Injectable()
 export class CommentService {
   constructor(

@@ -1,9 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { RemoveUserDto } from './dto/remove.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
+import { UserEntity } from './entities/user.entity';
 import { UserController } from './user.controller';
 import { UserService } from './user.service';
-import { UserEntity } from './entities/user.entity';
-import { UpdateUserDto } from './dto/update-user.dto';
-import { RemoveUserDto } from './dto/remove.dto';
 
 describe('UserController', () => {
   let userController: UserController;

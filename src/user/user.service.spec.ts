@@ -1,12 +1,11 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { UserService } from './user.service';
-import { getRepositoryToken } from '@nestjs/typeorm';
-import { Repository, UpdateResult } from 'typeorm';
-import { UserEntity } from './entities/user.entity';
-import { MemberEntity } from 'src/member/entity/member.entity';
-import { EntityManager } from 'typeorm';
-import * as bcrypt from 'bcrypt';
 import { ConflictException, UnauthorizedException } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
+import { getRepositoryToken } from '@nestjs/typeorm';
+import * as bcrypt from 'bcrypt';
+import { MemberEntity } from 'src/member/entity/member.entity';
+import { EntityManager, Repository, UpdateResult } from 'typeorm';
+import { UserEntity } from './entities/user.entity';
+import { UserService } from './user.service';
 import mock = jest.mock;
 
 jest.mock('bcrypt');

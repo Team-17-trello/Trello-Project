@@ -1,10 +1,10 @@
 import {
-  Entity,
   Column,
-  PrimaryGeneratedColumn,
   CreateDateColumn,
   DeleteDateColumn,
+  Entity,
   OneToMany,
+  PrimaryGeneratedColumn,
 } from 'typeorm';
 import { MemberEntity } from '../../member/entity/member.entity';
 

@@ -2,11 +2,11 @@ import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { UserEntity } from 'src/user/entities/user.entity';
+import { WorkspaceEntity } from 'src/workspace/entities/workspace.entity';
 import { Repository } from 'typeorm';
 import { BoardService } from './board.service';
-import { BoardEntity } from './entities/board.entity';
-import { WorkspaceEntity } from 'src/workspace/entities/workspace.entity';
 import { UpdateBoardDto } from './dto/update-board.dto';
+import { BoardEntity } from './entities/board.entity';
 
 const mockBoardRepository = {
   create: jest.fn(),

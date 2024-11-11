@@ -11,14 +11,13 @@ import {
   Put,
   UseGuards,
 } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { MemberGuard } from 'src/guard/members.guard';
 import { UserEntity } from 'src/user/entities/user.entity';
 import { UserInfo } from 'src/utils/userInfo-decolator';
 import { BoardService } from './board.service';
 import { CreateBoardDto } from './dto/create-board.dto';
 import { UpdateBoardDto } from './dto/update-board.dto';
-import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { MemberGuard } from 'src/guard/members.guard';
 
 @ApiBearerAuth()
 @ApiTags('보드')

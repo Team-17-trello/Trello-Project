@@ -1,7 +1,7 @@
 import { PartialType } from '@nestjs/mapped-types';
+import { ApiProperty } from '@nestjs/swagger';
 import { IsOptional, IsString } from 'class-validator';
 import { CreateBoardDto } from './create-board.dto';
-import { ApiProperty } from '@nestjs/swagger';
 
 export class UpdateBoardDto extends PartialType(CreateBoardDto) {
   @ApiProperty({ description: '보드 이름', example: '수정된 보드이름 입니다.' })

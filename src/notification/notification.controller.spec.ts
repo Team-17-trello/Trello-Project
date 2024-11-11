@@ -1,8 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { UserEntity } from 'src/user/entities/user.entity';
 import { NotificationController } from './notification.controller';
 import { NotificationService } from './notification.service';
-import { UserEntity } from 'src/user/entities/user.entity';
-import { MemberGuard } from 'src/guard/members.guard';
 
 describe('NotificationController', () => {
   let notificationController: NotificationController;

@@ -1,9 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { ItemController } from './item.controller';
-import { ItemService } from './item.service';
+import { MemberGuard } from 'src/guard/members.guard';
 import { CreateItemDto } from './dto/create-item.dto';
 import { UpdateItemDto } from './dto/update-item.dto';
-import { MemberGuard } from 'src/guard/members.guard';
+import { ItemController } from './item.controller';
+import { ItemService } from './item.service';
 
 describe('ItemController', () => {
   let itemController: ItemController;

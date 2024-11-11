@@ -1,22 +1,19 @@
 import {
-  Controller,
-  Get,
-  Post,
   Body,
-  Patch,
-  Param,
+  Controller,
   Delete,
-  Put,
-  UseGuards,
   HttpCode,
   HttpStatus,
+  Param,
+  Post,
+  Put,
+  UseGuards,
 } from '@nestjs/common';
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { MemberGuard } from '../guard/members.guard';
 import { ChecklistService } from './checklist.service';
 import { CreateChecklistDto } from './dto/create-checklist.dto';
 import { UpdateChecklistDto } from './dto/update-checklist.dto';
-import { AuthGuard } from '@nestjs/passport';
-import { MemberGuard } from '../guard/members.guard';
-import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 @ApiBearerAuth()
 @ApiTags('체크리스트')

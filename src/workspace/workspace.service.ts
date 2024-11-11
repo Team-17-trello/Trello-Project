@@ -3,17 +3,16 @@ import {
   ConflictException,
   ForbiddenException,
   Injectable,
-  InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { WorkspaceEntity } from './entities/workspace.entity';
-import { Repository } from 'typeorm';
-import { CreateWorkspaceDto } from './dto/create-workspace.dto';
 import _ from 'lodash';
 import { MemberEntity } from 'src/member/entity/member.entity';
 import { UserEntity } from 'src/user/entities/user.entity';
+import { Repository } from 'typeorm';
 import { MailService } from '../auth/email/email.service';
+import { CreateWorkspaceDto } from './dto/create-workspace.dto';
+import { WorkspaceEntity } from './entities/workspace.entity';
 
 @Injectable()
 export class WorkspaceService {

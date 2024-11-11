@@ -1,11 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { MemberGuard } from 'src/guard/members.guard';
 import { ChecklistController } from './checklist.controller';
 import { ChecklistService } from './checklist.service';
 import { CreateChecklistDto } from './dto/create-checklist.dto';
-import { ChecklistEntity } from './entities/checklist.entity';
 import { UpdateChecklistDto } from './dto/update-checklist.dto';
-import { DeleteResult } from 'typeorm';
-import { MemberGuard } from 'src/guard/members.guard';
+import { ChecklistEntity } from './entities/checklist.entity';
 
 describe('체크리스트 컨트롤러 테스트', () => {
   let checklistController: ChecklistController;

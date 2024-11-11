@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { ChecklistEntity } from 'src/checklist/entities/checklist.entity';
 import { Repository } from 'typeorm';
 import { CreateItemDto } from './dto/create-item.dto';
 import { UpdateItemDto } from './dto/update-item.dto';
 import { ItemEntity } from './entities/item.entity';
-import { ChecklistEntity } from 'src/checklist/entities/checklist.entity';
 
 @Injectable()
 export class ItemService {

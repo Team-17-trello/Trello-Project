@@ -1,14 +1,14 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { MemberGuard } from 'src/guard/members.guard';
+import { UserEntity } from '../user/entities/user.entity';
 import { CardController } from './card.controller';
 import { CardService } from './card.service';
 import { CreateCardDto } from './dto/create-card.dto';
-import { CardEntity } from './entities/card.entity';
-import { UserEntity } from '../user/entities/user.entity';
 import { DueDateDto } from './dto/duedate.dto';
-import { UpdateCardDto } from './dto/update-card.dto';
-import { ResponsibleDto } from './dto/responsible.dto';
 import { MoveCardDto } from './dto/move-card.dto';
-import { MemberGuard } from 'src/guard/members.guard';
+import { ResponsibleDto } from './dto/responsible.dto';
+import { UpdateCardDto } from './dto/update-card.dto';
+import { CardEntity } from './entities/card.entity';
 
 describe('CardController', () => {
   let cardController: CardController;

@@ -1,10 +1,9 @@
 import { Controller, Get, HttpCode, HttpStatus, UseGuards } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { MemberGuard } from 'src/guard/members.guard';
 import { UserEntity } from 'src/user/entities/user.entity';
 import { UserInfo } from 'src/utils/userInfo-decolator';
 import { NotificationService } from './notification.service';
-import { AuthGuard } from '@nestjs/passport';
 
 @ApiTags('알림')
 @UseGuards(AuthGuard('jwt'))

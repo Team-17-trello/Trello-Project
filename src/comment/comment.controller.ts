@@ -2,7 +2,6 @@ import {
   Body,
   Controller,
   Delete,
-  Get,
   HttpCode,
   HttpStatus,
   Param,
@@ -11,12 +10,11 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { MemberGuard } from '../guard/members.guard';
 import { UserEntity } from '../user/entities/user.entity';
 import { UserInfo } from '../utils/userInfo-decolator';
 import { CommentService } from './comment.service';
 import { CommentDto } from './dto/comment.dto';
-import { MemberGuard } from '../guard/members.guard';
-
 
 @ApiBearerAuth()
 @ApiTags('코멘트')

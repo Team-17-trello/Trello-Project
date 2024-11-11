@@ -6,7 +6,6 @@ import {
   NotFoundException,
   Param,
   Post,
-  Query,
   Res,
   UploadedFile,
   UseGuards,

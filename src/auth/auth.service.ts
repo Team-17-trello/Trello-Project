@@ -1,18 +1,18 @@
+import { RedisService } from '@liaoliaots/nestjs-redis';
 import {
   BadRequestException,
   ConflictException,
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
-import { SignupDto } from './dto/signup.dto';
-import { LoginDto } from './dto/login.dto';
-import { UserEntity } from '../user/entities/user.entity';
-import { Code, Repository } from 'typeorm';
+import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
 import { compare } from 'bcrypt';
-import { JwtService } from '@nestjs/jwt';
-import { RedisService } from '@liaoliaots/nestjs-redis';
+import { Repository } from 'typeorm';
+import { UserEntity } from '../user/entities/user.entity';
+import { LoginDto } from './dto/login.dto';
+import { SignupDto } from './dto/signup.dto';
 
 @Injectable()
 export class AuthService {

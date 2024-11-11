@@ -1,16 +1,16 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { CreateCardDto } from './dto/create-card.dto';
-import { UpdateCardDto } from './dto/update-card.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CardEntity } from './entities/card.entity';
-import { Repository } from 'typeorm';
-import { DueDateDto } from './dto/duedate.dto';
-import { ResponsibleDto } from './dto/responsible.dto';
-import { UserEntity } from '../user/entities/user.entity';
-import { ResponsibleEntity } from './entities/responsible.entity';
-import { ListEntity } from '../list/entities/list.entity';
-import { MoveCardDto } from './dto/move-card.dto';
 import { NotificationService } from 'src/notification/notification.service';
+import { Repository } from 'typeorm';
+import { ListEntity } from '../list/entities/list.entity';
+import { UserEntity } from '../user/entities/user.entity';
+import { CreateCardDto } from './dto/create-card.dto';
+import { DueDateDto } from './dto/duedate.dto';
+import { MoveCardDto } from './dto/move-card.dto';
+import { ResponsibleDto } from './dto/responsible.dto';
+import { UpdateCardDto } from './dto/update-card.dto';
+import { CardEntity } from './entities/card.entity';
+import { ResponsibleEntity } from './entities/responsible.entity';
 
 @Injectable()
 export class CardService {

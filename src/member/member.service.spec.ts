@@ -1,11 +1,11 @@
+import { ConflictException, UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { MemberService } from './member.service';
-import { MemberEntity } from './entity/member.entity';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { ConflictException, UnauthorizedException } from '@nestjs/common';
 import { UserEntity } from '../user/entities/user.entity';
 import { WorkspaceEntity } from '../workspace/entities/workspace.entity';
+import { MemberEntity } from './entity/member.entity';
+import { MemberService } from './member.service';
 
 describe('MemberService', () => {
   let memberService: MemberService;
@@ -13,7 +13,8 @@ describe('MemberService', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [MemberService,
+      providers: [
+        MemberService,
         {
           provide: getRepositoryToken(MemberEntity),
           useValue: {
@@ -30,7 +31,6 @@ describe('MemberService', () => {
   });
 
   describe('switch', () => {
-
     const user: UserEntity = {
       id: 1,
       email: 'test@test.com',
@@ -41,7 +41,7 @@ describe('MemberService', () => {
       members: null,
     };
 
-    const members2 : MemberEntity[] = [
+    const members2: MemberEntity[] = [
       {
         id: 1,
         createdAt: new Date(),
@@ -55,10 +55,10 @@ describe('MemberService', () => {
         isAdmin: true,
         workspace: null,
         user: user,
-      }
-    ]
+      },
+    ];
 
-    const members : MemberEntity[] = [
+    const members: MemberEntity[] = [
       {
         id: 1,
         createdAt: new Date(),
@@ -72,8 +72,8 @@ describe('MemberService', () => {
         isAdmin: true,
         workspace: null,
         user: user,
-      }
-    ]
+      },
+    ];
 
     const member: MemberEntity = {
       id: 1,
@@ -89,7 +89,7 @@ describe('MemberService', () => {
       isAdmin: true,
       workspace: null,
       user: user,
-    }
+    };
 
     const workspace: Partial<WorkspaceEntity> = {
       id: 1,
@@ -106,13 +106,10 @@ describe('MemberService', () => {
     // 유저가  유일한 admin 일경우
     // 유저가  유일한 admin 일 때 자신의 권한을 변경하려함
     it('유저가 유일한 admin일 경우 ConflictException 반환', () => {
-      jest.spyOn(memberRepository, 'findOne').mockResolvedValue(member2)
-      jest.spyOn(memberRepository, 'find').mockResolvedValue(members)
-      expect(memberService.switch(user, workspace.id, 1)).rejects.toThrow(ConflictException)
-
-      })
-
-
+      jest.spyOn(memberRepository, 'findOne').mockResolvedValue(member2);
+      jest.spyOn(memberRepository, 'find').mockResolvedValue(members);
+      expect(memberService.switch(user, workspace.id, 1)).rejects.toThrow(ConflictException);
+    });
 
     it('유저가 admin 이고 다른 유저의 isAdmin 을 바꿀 경우', async () => {
       jest.spyOn(memberRepository, 'findOne').mockResolvedValueOnce(member2);
@@ -122,9 +119,6 @@ describe('MemberService', () => {
       await memberService.switch(user, 1, 2);
 
       expect(memberRepository.update).toHaveBeenCalledWith({ id: member.id }, { isAdmin: true });
-
-
-
     });
 
     it('유저가 admin 이고 자기 자신의 isAdmin 을 바꿀 경우', async () => {
@@ -137,6 +131,4 @@ describe('MemberService', () => {
       expect(memberRepository.update).toHaveBeenCalledWith({ id: member2.id }, { isAdmin: false });
     });
   });
-
-
 });

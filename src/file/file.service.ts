@@ -1,13 +1,12 @@
+import { Injectable, NotFoundException, Res } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Response } from 'express';
+import * as fs from 'fs';
+import mime from 'mime';
+import * as path from 'path';
+import { CardEntity } from 'src/card/entities/card.entity';
 import { Repository } from 'typeorm';
 import { FileEntity } from './entities/file.entity';
-import { UserEntity } from 'src/user/entities/user.entity';
-import { Injectable, NotFoundException, Res, StreamableFile } from '@nestjs/common';
-import { CardEntity } from 'src/card/entities/card.entity';
-import * as path from 'path';
-import * as fs from 'fs';
-import { Response } from 'express';
-import mime from 'mime';
 
 @Injectable()
 export class FileService {
