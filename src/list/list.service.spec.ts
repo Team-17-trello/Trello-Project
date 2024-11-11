@@ -8,6 +8,7 @@ import { ListEntity } from './entities/list.entity';
 import { ListService } from './list.service';
 import { CreateListDto } from './dto/create-list.dto';
 import { UpdateListDto } from './dto/update-list.dto';
+import { UpdateOrderListDto } from './dto/update-order-list.dto';
 
 describe('ListService', () => {
   let listService: ListService;
@@ -212,7 +213,7 @@ describe('ListService', () => {
     it('리스트 순서를 첫 번째로 변경하는 경우', async () => {
       const boardId = 1;
       const listId = 1;
-      const updateListDto: UpdateListDto = { listId, order: 1 };
+      const updateOrderListDto: UpdateOrderListDto = { listId, order: 1 };
       const expectedOrder = mockAllOrderList[0].order / 2;
 
       mockListRepository.find.mockResolvedValue(mockAllOrderList);
@@ -222,10 +223,10 @@ describe('ListService', () => {
         order: expectedOrder,
       } as ListEntity);
 
-      const result = await listService.updateOrder(boardId, updateListDto);
+      const result = await listService.updateOrder(boardId, updateOrderListDto);
 
       expect(mockListRepository.update).toHaveBeenCalledWith(
-        { id: updateListDto.listId },
+        { id: updateOrderListDto.listId },
         { order: expectedOrder },
       );
       expect(result!.order).toBe(expectedOrder);
@@ -234,7 +235,7 @@ describe('ListService', () => {
     it('리스트 순서를 마지막으로 변경하는 경우', async () => {
       const boardId = 1;
       const listId = 2;
-      const updateListDto: UpdateListDto = { listId, order: 4 };
+      const updateOrderListDto: UpdateOrderListDto = { listId, order: 4 };
       const expectedOrder = mockAllOrderList[mockAllOrderList.length - 1].order + 1;
 
       mockListRepository.find.mockResolvedValue(mockAllOrderList);
@@ -244,10 +245,10 @@ describe('ListService', () => {
         order: expectedOrder,
       } as ListEntity);
 
-      const result = await listService.updateOrder(boardId, updateListDto);
+      const result = await listService.updateOrder(boardId, updateOrderListDto);
 
       expect(mockListRepository.update).toHaveBeenCalledWith(
-        { id: updateListDto.listId },
+        { id: updateOrderListDto.listId },
         { order: expectedOrder },
       );
       expect(result!.order).toBe(expectedOrder);
@@ -256,11 +257,11 @@ describe('ListService', () => {
     it('리스트 순서를 중간으로 변경하는 경우', async () => {
       const boardId = 1;
       const listId = 3;
-      const updateListDto: UpdateListDto = { listId, order: 2 };
+      const updateOrderListDto: UpdateOrderListDto = { listId, order: 2 };
 
       const list = { id: listId, order: 2 } as ListEntity;
-      const targetOrder = mockAllOrderList[updateListDto.order - 1].order;
-      const preTargetOrder = mockAllOrderList[updateListDto.order - 2].order;
+      const targetOrder = mockAllOrderList[updateOrderListDto.order - 1].order;
+      const preTargetOrder = mockAllOrderList[updateOrderListDto.order - 2].order;
       const expectedOrder = (targetOrder + preTargetOrder) / 2;
 
       mockListRepository.findOne.mockResolvedValue(list);
@@ -270,10 +271,10 @@ describe('ListService', () => {
         order: expectedOrder,
       });
 
-      const result = await listService.updateOrder(boardId, updateListDto);
+      const result = await listService.updateOrder(boardId, updateOrderListDto);
 
       expect(mockListRepository.update).toHaveBeenCalledWith(
-        { id: updateListDto.listId },
+        { id: updateOrderListDto.listId },
         { order: expectedOrder },
       );
 

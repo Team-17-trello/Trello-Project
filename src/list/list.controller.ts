@@ -18,7 +18,7 @@ import { UserInfo } from 'src/utils/userInfo-decolator';
 import { UserEntity } from 'src/user/entities/user.entity';
 import { MemberGuard } from '../guard/members.guard';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-
+import { UpdateOrderListDto } from './dto/update-order-list.dto';
 
 @ApiBearerAuth()
 @ApiTags('리스트')
@@ -72,14 +72,14 @@ export class ListController {
   @ApiResponse({
     status: 200,
     description: '리스트 순서가 성공적으로 수정되었습니다.',
-    type: UpdateListDto,
+    type: UpdateOrderListDto,
   })
   @HttpCode(HttpStatus.OK)
   updateOrder(
     @Param('boardId', ParseIntPipe) boardId: number,
-    @Body() updateListDto: UpdateListDto,
+    @Body() updateOrderListDto: UpdateOrderListDto,
   ) {
-    return this.listService.updateOrder(boardId, updateListDto);
+    return this.listService.updateOrder(boardId, updateOrderListDto);
   }
 
   @Delete(':listId')

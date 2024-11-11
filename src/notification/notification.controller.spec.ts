@@ -31,10 +31,7 @@ describe('NotificationController', () => {
           useValue: mockNotificationService,
         },
       ],
-    })
-      .overrideGuard(MemberGuard)
-      .useValue({})
-      .compile();
+    }).compile();
 
     notificationController = module.get<NotificationController>(NotificationController);
     notificationService = module.get<NotificationService>(NotificationService);

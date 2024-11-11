@@ -1,8 +1,7 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
 import { RedisService } from '@liaoliaots/nestjs-redis';
-import Redis from 'ioredis';
-import { UserEntity } from 'src/user/entities/user.entity';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { UserEntity } from 'src/user/entities/user.entity';
 import { Repository } from 'typeorm';
 
 @Injectable()

@@ -14,6 +14,7 @@ import { ItemEntity } from '../item/entities/item.entity';
 import { NotificationService } from 'src/notification/notification.service';
 import { NotificationModule } from 'src/notification/notification.module';
 import { UserEntity } from 'src/user/entities/user.entity';
+import { FileEntity } from 'src/file/entities/file.entity';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { UserEntity } from 'src/user/entities/user.entity';
       ChecklistEntity,
       ItemEntity,
       NotificationModule,
+      FileEntity,
     ]),
   ],
   controllers: [CardController],

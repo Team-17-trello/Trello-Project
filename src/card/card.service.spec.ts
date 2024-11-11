@@ -1,17 +1,17 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { CardService } from './card.service';
-import { getRepositoryToken } from '@nestjs/typeorm';
-import { CardEntity } from './entities/card.entity';
-import { ResponsibleEntity } from './entities/responsible.entity';
-import { Repository } from 'typeorm';
-import { UserEntity } from '../user/entities/user.entity';
+import { RedisService } from '@liaoliaots/nestjs-redis';
 import { NotFoundException } from '@nestjs/common';
-import { CreateCardDto } from './dto/create-card.dto';
-import { ListEntity } from '../list/entities/list.entity';
-import { WorkspaceEntity } from 'src/workspace/entities/workspace.entity';
+import { Test, TestingModule } from '@nestjs/testing';
+import { getRepositoryToken } from '@nestjs/typeorm';
 import { BoardEntity } from 'src/board/entities/board.entity';
 import { NotificationService } from 'src/notification/notification.service';
-import { RedisService } from '@liaoliaots/nestjs-redis';
+import { WorkspaceEntity } from 'src/workspace/entities/workspace.entity';
+import { Repository } from 'typeorm';
+import { ListEntity } from '../list/entities/list.entity';
+import { UserEntity } from '../user/entities/user.entity';
+import { CardService } from './card.service';
+import { CreateCardDto } from './dto/create-card.dto';
+import { CardEntity } from './entities/card.entity';
+import { ResponsibleEntity } from './entities/responsible.entity';
 
 describe('CardService', () => {
   let cardService: CardService;
@@ -230,7 +230,7 @@ describe('CardService', () => {
       await expect(cardService.findOne(1)).rejects.toThrow(NotFoundException);
       expect(cardRepository.findOne).toHaveBeenCalledWith({
         where: { id: 1 },
-        relations: { responsibles: true, comments: true, checklists: true },
+        relations: { responsibles: true, comments: true, checklists: { items: true } },
       });
       expect(cardRepository.findOne).toHaveBeenCalledTimes(1);
     });
@@ -249,7 +249,7 @@ describe('CardService', () => {
 
       expect(cardRepository.findOne).toHaveBeenCalledWith({
         where: { id: 1 },
-        relations: { responsibles: true, comments: true, checklists: true },
+        relations: { responsibles: true, comments: true, checklists: { items: true } },
       });
       expect(cardRepository.findOne).toHaveBeenCalledTimes(1);
     });
@@ -444,7 +444,7 @@ describe('CardService', () => {
       const result = await cardService.removeResponsible(1, 1);
 
       expect(responsibleRepository.delete).toHaveBeenCalledWith({
-        card: { id: mockCard.id },
+        id: mockResponsible.id,
       });
 
       expect(result).toEqual({

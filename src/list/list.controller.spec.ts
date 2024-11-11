@@ -7,6 +7,7 @@ import { ListEntity } from './entities/list.entity';
 import { ListController } from './list.controller';
 import { ListService } from './list.service';
 import { MemberGuard } from 'src/guard/members.guard';
+import { UpdateOrderListDto } from './dto/update-order-list.dto';
 
 describe('ListController', () => {
   let listController: ListController;
@@ -126,15 +127,15 @@ describe('ListController', () => {
 
   it('리스트 순서 업데이트 검증', async () => {
     const boardId = 1;
-    const updateListDto: UpdateListDto = {
-      name: '리스트 이름이 업데이트 되었습니다.',
+    const updateOrderListDto: UpdateOrderListDto = {
+      order: 1,
     };
 
     const expectedBoard = new BoardEntity();
 
     const expectedResult: ListEntity = {
       id: boardId,
-      name: updateListDto.name,
+      name: '이름',
       order: 1,
       userId: 1,
       board: expectedBoard,
@@ -145,9 +146,9 @@ describe('ListController', () => {
 
     (listService.updateOrder as jest.Mock).mockResolvedValue(expectedResult);
 
-    const result = await listController.updateOrder(boardId, updateListDto);
+    const result = await listController.updateOrder(boardId, updateOrderListDto);
 
     expect(result).toEqual(expectedResult);
-    expect(listService.updateOrder).toHaveBeenCalledWith(boardId, updateListDto);
+    expect(listService.updateOrder).toHaveBeenCalledWith(boardId, updateOrderListDto);
   });
 });

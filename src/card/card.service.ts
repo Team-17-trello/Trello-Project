@@ -104,7 +104,7 @@ export class CardService {
         relations: {
           responsibles: true,
           comments: true,
-          checklists: true,
+          checklists: { items: true },
           // file : true,
         },
       });
@@ -229,7 +229,7 @@ export class CardService {
       }
 
       await this.responsibleRepository.delete({
-        card: { id },
+        id: id,
       });
 
       return {

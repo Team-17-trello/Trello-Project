@@ -12,6 +12,7 @@ import { CommentEntity } from '../comment/entities/comment.entity';
 import { ChecklistEntity } from '../checklist/entities/checklist.entity';
 import { ItemEntity } from '../item/entities/item.entity';
 import { MailService } from 'src/auth/email/email.service';
+import { FileEntity } from 'src/file/entities/file.entity';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { MailService } from 'src/auth/email/email.service';
       CommentEntity,
       ChecklistEntity,
       ItemEntity,
+      FileEntity,
     ]),
   ],
   providers: [WorkspaceService, MailService],

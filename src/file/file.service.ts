@@ -2,11 +2,12 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { FileEntity } from './entities/file.entity';
 import { UserEntity } from 'src/user/entities/user.entity';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, Res, StreamableFile } from '@nestjs/common';
 import { CardEntity } from 'src/card/entities/card.entity';
 import * as path from 'path';
 import * as fs from 'fs';
 import { Response } from 'express';
+import mime from 'mime';
 
 @Injectable()
 export class FileService {
@@ -18,18 +19,20 @@ export class FileService {
   ) {}
 
   // 파일 첨부
-  async attachFile(file: Express.Multer.File, user: UserEntity) {
+  async attachFile(file: Express.Multer.File, cardId: string, filePath: string) {
     const card = await this.cardRepository.findOne({
-      where: { userId: user.id }, //userId로 카드 찾기 TODO:문제가 생길여지가 있음.
+      where: { id: +cardId },
     });
 
     if (!card) {
       throw new NotFoundException('카드를 찾을 수 없습니다.');
     }
 
+    console.log(file);
+
     const newFile = this.fileRepository.create({
       fileName: file.originalname,
-      filePath: file.path,
+      filePath: filePath,
       fileSize: file.size,
       card: card, // 카드에 파일을 연결
     });
@@ -40,30 +43,32 @@ export class FileService {
   }
 
   // 파일 다운로드
-  async downloadFile(fileId: number, res: Response) {
-    const file = await this.fileRepository.findOne({
-      where: { id: fileId },
-    });
+  async downloadFile(fileId: number, @Res() res: Response) {
+    const file = await this.fileRepository.findOne({ where: { id: fileId } });
 
     if (!file) {
       throw new NotFoundException('파일을 찾을 수 없습니다.');
     }
 
-    const filePath = path.join(__dirname, '..', file.filePath);
-    // 파일 스트리밍 처리 및 응답 헤더 설정
-    return new Promise((resolve, reject) => {
-      const fileStream = fs.createReadStream(filePath);
-      fileStream.on('error', (err) => {
-        reject(new NotFoundException('파일을 읽는 중 오류가 발생했습니다.'));
-      });
+    const filePath = path.join(process.cwd(), file.filePath);
+    if (!fs.existsSync(filePath)) {
+      throw new NotFoundException('파일을 찾을 수 없습니다.');
+    }
 
-      res.set({
-        'Content-Type': 'application/octet-stream',
-        'Content-Disposition': `attachment; filename="${file.fileName}"`,
-      });
+    const mimeType = mime.lookup(file.filePath) || 'application/octet-stream';
 
-      fileStream.pipe(res);
-      fileStream.on('end', () => resolve(null)); // 스트리밍 끝나면 resolve
+    res.set({
+      'Content-Type': mimeType,
+      'Content-Disposition': `attachment; filename="${encodeURIComponent(file.fileName)}"; filename*=UTF-8''${encodeURIComponent(file.fileName)}`,
+    });
+
+    const fileStream = fs.createReadStream(filePath);
+
+    fileStream.pipe(res);
+
+    fileStream.on('error', (err) => {
+      console.error('파일 읽기 중 오류 발생:', err);
+      res.status(500).json({ message: '파일을 읽는 중 오류가 발생했습니다.' });
     });
   }
 }
