@@ -47,6 +47,7 @@ describe('AuthService', () => {
           provide: RedisService,
           useValue: {
             get: jest.fn(),
+            getOrThrow: jest.fn(() => mockRedisClient),
           },
         },
       ],
