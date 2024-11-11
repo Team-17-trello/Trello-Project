@@ -1,12 +1,12 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { BoardEntity } from 'src/board/entities/board.entity';
+import { UserEntity } from 'src/user/entities/user.entity';
 import { Repository } from 'typeorm';
 import { CreateListDto } from './dto/create-list.dto';
 import { UpdateListDto } from './dto/update-list.dto';
-import { ListEntity } from './entities/list.entity';
-import { UserEntity } from 'src/user/entities/user.entity';
 import { UpdateOrderListDto } from './dto/update-order-list.dto';
+import { ListEntity } from './entities/list.entity';
 
 @Injectable()
 export class ListService {

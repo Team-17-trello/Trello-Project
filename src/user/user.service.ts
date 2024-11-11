@@ -1,13 +1,12 @@
 import { ConflictException, Injectable, UnauthorizedException } from '@nestjs/common';
-import { UpdateUserDto } from './dto/update-user.dto';
-import { UserEntity } from './entities/user.entity';
 import { InjectEntityManager, InjectRepository } from '@nestjs/typeorm';
-import { EntityManager, Repository } from 'typeorm';
-import { RemoveUserDto } from './dto/remove.dto';
 import * as bcrypt from 'bcrypt';
 import { compare } from 'bcrypt';
+import { EntityManager, Repository } from 'typeorm';
 import { MemberEntity } from '../member/entity/member.entity';
-import { WorkspaceEntity } from '../workspace/entities/workspace.entity';
+import { RemoveUserDto } from './dto/remove.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
+import { UserEntity } from './entities/user.entity';
 
 @Injectable()
 export class UserService {

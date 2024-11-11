@@ -1,11 +1,11 @@
 import { Body, Controller, Delete, HttpCode, HttpStatus, Put, UseGuards } from '@nestjs/common';
-import { UserService } from './user.service';
-import { UpdateUserDto } from './dto/update-user.dto';
-import { RemoveUserDto } from './dto/remove.dto';
 import { AuthGuard } from '@nestjs/passport';
-import { UserEntity } from './entities/user.entity';
-import { UserInfo } from '../utils/userInfo-decolator';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { UserInfo } from '../utils/userInfo-decolator';
+import { RemoveUserDto } from './dto/remove.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
+import { UserEntity } from './entities/user.entity';
+import { UserService } from './user.service';
 
 @ApiTags('유저')
 @ApiBearerAuth()

@@ -7,18 +7,16 @@ import {
   Param,
   Post,
   Put,
-  Query,
   UseGuards,
 } from '@nestjs/common';
-import { WorkspaceService } from './workspace.service';
-import { CreateWorkspaceDto } from './dto/create-workspace.dto';
 import { AuthGuard } from '@nestjs/passport';
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { UserEntity } from 'src/user/entities/user.entity';
 import { UserInfo } from 'src/utils/userInfo-decolator';
-import { AddWorkspaceMemberDto } from './dto/add-workspace-member.dto';
 import { MemberGuard } from '../guard/members.guard';
-import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-
+import { AddWorkspaceMemberDto } from './dto/add-workspace-member.dto';
+import { CreateWorkspaceDto } from './dto/create-workspace.dto';
+import { WorkspaceService } from './workspace.service';
 
 UseGuards(AuthGuard('jwt'));
 @ApiBearerAuth()
@@ -66,7 +64,6 @@ export class WorkspaceController {
     return await this.workspaceService.workspaceCreate(user, createWorkspaceDto);
   }
 
-
   @UseGuards(MemberGuard)
   @Put(':workspaceId/members')
   @ApiOperation({ summary: '멤버 초대' })
@@ -76,7 +73,6 @@ export class WorkspaceController {
     type: AddWorkspaceMemberDto,
   })
   @HttpCode(HttpStatus.OK)
-
   async addWorkspaceMember(
     @UserInfo() user: UserEntity,
     @Param('workspaceId') workspaceId: number,

@@ -1,9 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { getRepositoryToken } from '@nestjs/typeorm';
+import { CardEntity } from 'src/card/entities/card.entity';
+import { Repository } from 'typeorm';
 import { ChecklistService } from './checklist.service';
 import { ChecklistEntity } from './entities/checklist.entity';
-import { getRepositoryToken } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { CardEntity } from 'src/card/entities/card.entity';
 
 describe('ChecklistService', () => {
   let service: ChecklistService;

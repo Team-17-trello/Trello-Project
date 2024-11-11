@@ -8,12 +8,12 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
-import { ResponsibleEntity } from './responsible.entity';
-import { ListEntity } from '../../list/entities/list.entity';
-import { ChecklistEntity } from '../../checklist/entities/checklist.entity';
-import { WorkspaceEntity } from 'src/workspace/entities/workspace.entity';
 import { CommentEntity } from 'src/comment/entities/comment.entity';
+import { WorkspaceEntity } from 'src/workspace/entities/workspace.entity';
+import { ChecklistEntity } from '../../checklist/entities/checklist.entity';
 import { FileEntity } from '../../file/entities/file.entity';
+import { ListEntity } from '../../list/entities/list.entity';
+import { ResponsibleEntity } from './responsible.entity';
 
 @Entity({
   name: 'cards',
@@ -48,7 +48,6 @@ export class CardEntity {
 
   @OneToMany(() => ChecklistEntity, (checklist) => checklist.card)
   checklists: ChecklistEntity;
-  
 
   @ManyToOne(() => ListEntity, (list) => list.cards)
   list: ListEntity;

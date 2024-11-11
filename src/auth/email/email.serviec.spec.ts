@@ -1,8 +1,8 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { MailService } from './email.service';
-import { MailerService } from '@nestjs-modules/mailer';
 import { RedisService } from '@liaoliaots/nestjs-redis';
+import { MailerService } from '@nestjs-modules/mailer';
+import { Test, TestingModule } from '@nestjs/testing';
 import { SendEmailDto } from '../dto/sendEmail.dto';
+import { MailService } from './email.service';
 
 describe('MailService', () => {
   let mailService: MailService;
@@ -44,7 +44,7 @@ describe('MailService', () => {
   describe('sendEmail', () => {
     it('이메일 발송 후 Redis에 인증번호를 저장해야함', async () => {
       const sendEmailDto: SendEmailDto = { email: 'test@example.com' };
-      
+
       const result = await mailService.sendEmail(sendEmailDto);
 
       expect(mailerServiceMock.sendMail).toHaveBeenCalledWith({

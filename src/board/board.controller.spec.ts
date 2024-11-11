@@ -1,12 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { MemberGuard } from 'src/guard/members.guard';
+import { UserEntity } from 'src/user/entities/user.entity';
 import { BoardController } from './board.controller';
 import { BoardService } from './board.service';
 import { CreateBoardDto } from './dto/create-board.dto';
 import { UpdateBoardDto } from './dto/update-board.dto';
-import { BoardEntity } from 'src/board/entities/board.entity';
-import { UserEntity } from 'src/user/entities/user.entity';
-import { MemberGuard } from 'src/guard/members.guard';
-import { AuthGuard } from '@nestjs/passport';
 
 describe('BoardController', () => {
   let boardController: BoardController;

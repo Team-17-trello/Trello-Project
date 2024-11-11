@@ -10,17 +10,16 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { MemberGuard } from '../guard/members.guard';
+import { UserEntity } from '../user/entities/user.entity';
+import { UserInfo } from '../utils/userInfo-decolator';
 import { CardService } from './card.service';
 import { CreateCardDto } from './dto/create-card.dto';
-import { UpdateCardDto } from './dto/update-card.dto';
 import { DueDateDto } from './dto/duedate.dto';
-import { ResponsibleDto } from './dto/responsible.dto';
 import { MoveCardDto } from './dto/move-card.dto';
-import { UserInfo } from '../utils/userInfo-decolator';
-import { AuthGuard } from '@nestjs/passport';
-import { UserEntity } from '../user/entities/user.entity';
-import { MemberGuard } from '../guard/members.guard';
-import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ResponsibleDto } from './dto/responsible.dto';
+import { UpdateCardDto } from './dto/update-card.dto';
 
 @ApiBearerAuth()
 @ApiTags('카드')

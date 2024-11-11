@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CardEntity } from 'src/card/entities/card.entity';
 import { ResponsibleEntity } from 'src/card/entities/responsible.entity';
+import { FileEntity } from 'src/file/entities/file.entity';
 import { MemberEntity } from 'src/member/entity/member.entity';
 import { NotificationModule } from 'src/notification/notification.module';
 import { NotificationService } from 'src/notification/notification.service';
@@ -14,7 +15,6 @@ import { WorkspaceEntity } from '../workspace/entities/workspace.entity';
 import { CommentController } from './comment.controller';
 import { CommentService } from './comment.service';
 import { CommentEntity } from './entities/comment.entity';
-import { FileEntity } from 'src/file/entities/file.entity';
 
 @Module({
   imports: [

@@ -1,10 +1,9 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { NotificationService } from './notification.service';
 import { RedisService } from '@liaoliaots/nestjs-redis';
-import { UserEntity } from 'src/user/entities/user.entity';
-import { getRepositoryToken } from '@nestjs/typeorm';
-import { timestamp } from 'rxjs';
 import { NotFoundException } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
+import { getRepositoryToken } from '@nestjs/typeorm';
+import { UserEntity } from 'src/user/entities/user.entity';
+import { NotificationService } from './notification.service';
 
 describe('NotificationService', () => {
   let notificatinService: NotificationService;

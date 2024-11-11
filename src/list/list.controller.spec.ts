@@ -1,13 +1,13 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { MemberGuard } from 'src/guard/members.guard';
 import { UserEntity } from 'src/user/entities/user.entity';
 import { BoardEntity } from '../../src/board/entities/board.entity';
 import { CreateListDto } from './dto/create-list.dto';
 import { UpdateListDto } from './dto/update-list.dto';
+import { UpdateOrderListDto } from './dto/update-order-list.dto';
 import { ListEntity } from './entities/list.entity';
 import { ListController } from './list.controller';
 import { ListService } from './list.service';
-import { MemberGuard } from 'src/guard/members.guard';
-import { UpdateOrderListDto } from './dto/update-order-list.dto';
 
 describe('ListController', () => {
   let listController: ListController;

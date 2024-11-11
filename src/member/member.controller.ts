@@ -1,9 +1,9 @@
 import { Controller, HttpCode, HttpStatus, Param, Patch, UseGuards } from '@nestjs/common';
-import { MemberService } from './member.service';
 import { AuthGuard } from '@nestjs/passport';
-import { UserInfo } from '../utils/userInfo-decolator';
-import { UserEntity } from '../user/entities/user.entity';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { UserEntity } from '../user/entities/user.entity';
+import { UserInfo } from '../utils/userInfo-decolator';
+import { MemberService } from './member.service';
 
 @ApiBearerAuth()
 @ApiTags('멤버')

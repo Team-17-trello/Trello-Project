@@ -1,11 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { ItemService } from './item.service';
-import { ItemEntity } from './entities/item.entity';
-import { Repository } from 'typeorm';
 import { getRepositoryToken } from '@nestjs/typeorm';
+import { ChecklistEntity } from 'src/checklist/entities/checklist.entity';
+import { Repository } from 'typeorm';
 import { CreateItemDto } from './dto/create-item.dto';
 import { UpdateItemDto } from './dto/update-item.dto';
-import { ChecklistEntity } from 'src/checklist/entities/checklist.entity';
+import { ItemEntity } from './entities/item.entity';
+import { ItemService } from './item.service';
 
 describe('ItemService', () => {
   let service: ItemService;

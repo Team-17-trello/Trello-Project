@@ -1,9 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { MemberGuard } from 'src/guard/members.guard';
+import { UserEntity } from '../user/entities/user.entity';
 import { CommentController } from './comment.controller';
 import { CommentService } from './comment.service';
 import { CommentDto } from './dto/comment.dto';
-import { UserEntity } from '../user/entities/user.entity';
-import { MemberGuard } from 'src/guard/members.guard';
 
 describe('CommentController', () => {
   let commentController: CommentController;

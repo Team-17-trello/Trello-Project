@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsArray, IsNotEmpty, IsNumber } from 'class-validator';
+import { IsArray, IsNotEmpty } from 'class-validator';
 
 export class AddWorkspaceMemberDto {
   @ApiProperty({ description: '유저 아이디', example: [1, 2, 3, 4] })

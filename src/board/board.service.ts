@@ -2,11 +2,11 @@ import { BadRequestException, Injectable, NotFoundException } from '@nestjs/comm
 import { InjectRepository } from '@nestjs/typeorm';
 import _ from 'lodash';
 import { UserEntity } from 'src/user/entities/user.entity';
+import { WorkspaceEntity } from 'src/workspace/entities/workspace.entity';
 import { Repository } from 'typeorm';
 import { CreateBoardDto } from './dto/create-board.dto';
 import { UpdateBoardDto } from './dto/update-board.dto';
 import { BoardEntity } from './entities/board.entity';
-import { WorkspaceEntity } from 'src/workspace/entities/workspace.entity';
 
 @Injectable()
 export class BoardService {
