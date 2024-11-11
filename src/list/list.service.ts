@@ -6,6 +6,7 @@ import { CreateListDto } from './dto/create-list.dto';
 import { UpdateListDto } from './dto/update-list.dto';
 import { ListEntity } from './entities/list.entity';
 import { UserEntity } from 'src/user/entities/user.entity';
+import { UpdateOrderListDto } from './dto/update-order-list.dto';
 
 @Injectable()
 export class ListService {
@@ -94,10 +95,10 @@ export class ListService {
     }
   }
 
-  async updateOrder(boardId: number, updateListDto: UpdateListDto) {
+  async updateOrder(boardId: number, updateOrderListDto: UpdateOrderListDto) {
     try {
       const list = await this.listRepository.findOne({
-        where: { id: updateListDto.listId },
+        where: { id: updateOrderListDto.listId },
       });
 
       const allOrderList = await this.listRepository.find({
@@ -114,23 +115,23 @@ export class ListService {
 
       let getOrder: number = 0;
 
-      if (updateListDto.order === 1) {
+      if (updateOrderListDto.order === 1) {
         getOrder = allOrderList[0].order / 2;
-      } else if (updateListDto.order >= allOrderList.length) {
+      } else if (updateOrderListDto.order >= allOrderList.length) {
         getOrder = allOrderList[allOrderList.length - 1].order + 1;
-      } else if (updateListDto.order > list.order) {
-        const targetOrder = allOrderList[updateListDto.order].order;
-        const preTargetOrder = allOrderList[updateListDto.order - 1].order;
+      } else if (updateOrderListDto.order > list.order) {
+        const targetOrder = allOrderList[updateOrderListDto.order].order;
+        const preTargetOrder = allOrderList[updateOrderListDto.order - 1].order;
 
         getOrder = (targetOrder + preTargetOrder) / 2;
       } else {
-        const targetOrder = allOrderList[updateListDto.order - 1].order;
-        const preTargetOrder = allOrderList[updateListDto.order - 2].order;
+        const targetOrder = allOrderList[updateOrderListDto.order - 1].order;
+        const preTargetOrder = allOrderList[updateOrderListDto.order - 2].order;
 
         getOrder = (targetOrder + preTargetOrder) / 2;
       }
 
-      await this.listRepository.update({ id: updateListDto.listId }, { order: getOrder });
+      await this.listRepository.update({ id: updateOrderListDto.listId }, { order: getOrder });
 
       return { ...list, order: getOrder };
     } catch (err) {

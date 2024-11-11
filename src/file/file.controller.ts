@@ -1,24 +1,31 @@
 import {
   Controller,
-  Post,
-  UploadedFile,
-  UseInterceptors,
   Get,
-  Query,
-  Res,
-  UseGuards,
   HttpCode,
   HttpStatus,
+  NotFoundException,
+  Param,
+  Post,
+  Query,
+  Res,
+  UploadedFile,
+  UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { FileService } from './file.service';
-import { UserInfo } from '../utils/userInfo-decolator';
-import { UserEntity } from '../user/entities/user.entity';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiConsumes,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { Response } from 'express';
 import { MemberGuard } from '../guard/members.guard';
-import { CreateFileDto } from './dto/create-file.dto';
-import { UpdateFileDto } from './dto/update-file.dto';
-import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { FileUploadDto } from './dto/create-file.dto';
+import { FileService } from './file.service';
+import { multerOptions } from './multer-options';
 
 @ApiBearerAuth()
 @ApiTags('파일')
@@ -28,22 +35,26 @@ export class FileController {
   constructor(private readonly fileService: FileService) {}
 
   // 파일 업로드
-  @Post()
+  @Post(':cardId')
   @ApiOperation({ summary: '파일 업로드' })
   @ApiResponse({
     status: 201,
     description: '파일업로드가 성공적으로 완료되었습니다.',
   })
   @HttpCode(HttpStatus.CREATED)
-  @UseInterceptors(FileInterceptor('file')) // 'file' 필드로 업로드된 파일을 처리
-  async uploadFile(
-    @UploadedFile() file: Express.Multer.File,
-    @UserInfo() user: UserEntity, // 유저 정보 가져오기
-  ) {
-    return this.fileService.attachFile(file, user); // 파일 첨부 서비스 호출
+  @UseInterceptors(FileInterceptor('file', multerOptions)) // 'file' 필드로 업로드된 파일을 처리
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    description: '파일 업로드',
+    type: FileUploadDto,
+  })
+  async uploadFile(@Param('cardId') cardId: string, @UploadedFile() file: Express.Multer.File) {
+    const filePath = file.path;
+    const uploadResult = await this.fileService.attachFile(file, cardId, filePath);
+    return { message: '파일 업로드가 완료되었습니다.', file: uploadResult };
   }
 
-  @Get('download')
+  @Get('download/:fileId')
   @ApiOperation({ summary: '파일 다운로드' })
   @ApiResponse({
     status: 200,
@@ -52,13 +63,21 @@ export class FileController {
   @ApiResponse({
     status: 500,
     description: '파일 다운로드 중 오류가 발생했습니다.',
-    type: String,
   })
   @HttpCode(HttpStatus.OK)
   async downloadFile(
-    @Query('fileId') fileId: number, // 파일 ID 파라미터로 받기
+    @Param('fileId') fileId: number, // 파일 ID 파라미터로 받기
     @Res() res: Response,
   ) {
-    await this.fileService.downloadFile(fileId, res);
+    try {
+      await this.fileService.downloadFile(fileId, res);
+    } catch (error) {
+      console.error(error);
+      if (error instanceof NotFoundException) {
+        res.status(HttpStatus.NOT_FOUND).send('파일을 찾을 수 없습니다.');
+      } else {
+        res.status(HttpStatus.INTERNAL_SERVER_ERROR).send('파일 다운로드 중 오류가 발생했습니다.');
+      }
+    }
   }
 }

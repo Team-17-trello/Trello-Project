@@ -1,5 +1,4 @@
 import { diskStorage } from 'multer';
-import * as path from 'path';
 
 export const multerOptions = {
   storage: diskStorage({

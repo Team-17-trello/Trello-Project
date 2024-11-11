@@ -88,11 +88,8 @@ export class WorkspaceService {
   ): Promise<{ message: string }> {
     try {
       const foundWorkspace = await this.foundWorkspaceById(workspaceId);
-      // if (foundWorkspace === null) {
-      //   return null;
-      // }
       await this.verifyAdminPrivileges(user, workspaceId);
-      const inviteMember = await this.addMembersToWorspace(foundWorkspace, userIds);
+      const inviteMember = await this.addMembersToWorkspace(foundWorkspace, userIds);
 
       await this.sendInvetationEmail(userIds);
 
@@ -127,13 +124,13 @@ export class WorkspaceService {
     const foundAdminMember = await this.memberRepository.findOne({
       where: { workspace: { id: workspaceId }, user: { id: user.id }, isAdmin: true },
     });
-    
+
     if (!foundAdminMember) {
       throw new ForbiddenException(`해당 워크스페이스에 멤버를 추가할 권한이 없습니다.`);
     }
   }
 
-  private async addMembersToWorspace(workspace: WorkspaceEntity, userIds: number[]) {
+  private async addMembersToWorkspace(workspace: WorkspaceEntity, userIds: number[]) {
     for (const userId of userIds) {
       const foundUser = await this.foundUserById(userId);
       await this.checkDuplicateMember(workspace.id, userId);
@@ -144,8 +141,6 @@ export class WorkspaceService {
         workspace,
       });
       await this.memberRepository.save(newMember);
-
-      return newMember;
     }
   }
 

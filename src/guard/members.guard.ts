@@ -10,6 +10,7 @@ import { WorkspaceEntity } from '../workspace/entities/workspace.entity';
 import { CommentEntity } from '../comment/entities/comment.entity';
 import { ChecklistEntity } from '../checklist/entities/checklist.entity';
 import { ItemEntity } from '../item/entities/item.entity';
+import { FileEntity } from 'src/file/entities/file.entity';
 
 @Injectable()
 export class MemberGuard extends AuthGuard('jwt') implements CanActivate {
@@ -30,6 +31,8 @@ export class MemberGuard extends AuthGuard('jwt') implements CanActivate {
     private readonly checklistRepository: Repository<ChecklistEntity>,
     @InjectRepository(ItemEntity)
     private readonly itemRepository: Repository<ItemEntity>,
+    @InjectRepository(FileEntity)
+    private readonly fileRepository: Repository<FileEntity>,
   ) {
     super();
   }
@@ -50,7 +53,9 @@ export class MemberGuard extends AuthGuard('jwt') implements CanActivate {
     const commentId = request.params.commentId || request.body.commentId;
     const checklistId = request.params.checklistId || request.body.checklistId;
     const itemId = request.params.itemId || request.body.itemId;
+    const fileId = request.params.fileId || request.body.fileId;
 
+    console.log(cardId);
 
     if (!userId) {
       return false;
@@ -64,9 +69,9 @@ export class MemberGuard extends AuthGuard('jwt') implements CanActivate {
       });
       if (!workspace) throw new NotFoundException('workspace not found');
       workspaceId = workspace.id;
-    } else
-      // 1. boardId가 있는 경우
-    if (boardId) {
+    }
+    // 1. boardId가 있는 경우
+    else if (boardId) {
       const board = await this.boardRepository.findOne({
         where: { id: boardId },
         relations: {
@@ -123,7 +128,7 @@ export class MemberGuard extends AuthGuard('jwt') implements CanActivate {
       });
       if (!checklist) throw new NotFoundException('checklist not found');
       workspaceId = checklist.card.list.board.workspace.id;
-    }else if (itemId) {
+    } else if (itemId) {
       const item = await this.itemRepository.findOne({
         where: {
           id: itemId,
@@ -133,15 +138,24 @@ export class MemberGuard extends AuthGuard('jwt') implements CanActivate {
             card: {
               list: {
                 board: {
-                  workspace : true
+                  workspace: true,
                 },
               },
             },
           },
         },
       });
-      if (!item) throw new NotFoundException('Card not found');
+      if (!item) throw new NotFoundException('item not found');
       workspaceId = item.checklist.card.list.board.workspace.id;
+    } else if (fileId) {
+      const file = await this.fileRepository.findOne({
+        where: {
+          id: fileId,
+        },
+        relations: { card: { workspace: true } },
+      });
+      if (!file) throw new NotFoundException('file not found');
+      workspaceId = file.card.workspace.id;
     } else {
       return false;
     }

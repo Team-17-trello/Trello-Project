@@ -49,7 +49,7 @@ export class BoardService {
 
       const boards = await this.boardRepository.find({
         where: {
-          workspace: workspace,
+          workspace: { id: workspace.id },
         },
         select: ['id', 'name', 'backgroundColor', 'description', 'userId'],
       });

@@ -22,7 +22,6 @@ import { UserEntity } from '../user/entities/user.entity';
 import { MemberGuard } from '../guard/members.guard';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
-
 @ApiBearerAuth()
 @ApiTags('카드')
 @UseGuards(MemberGuard)
@@ -48,10 +47,10 @@ export class CardController {
 
   @ApiOperation({ summary: '카드 상세 조회' })
   @ApiResponse({ status: 200, description: '카드를 성공적으로 조회하였습니다.' })
-  @Get(':id')
+  @Get(':cardId')
   @HttpCode(HttpStatus.OK)
-  findOne(@Param('id') id: string) {
-    return this.cardService.findOne(+id);
+  findOne(@Param('cardId') cardId: string) {
+    return this.cardService.findOne(+cardId);
   }
 
   @ApiOperation({ summary: '카드 수정' })
@@ -60,18 +59,18 @@ export class CardController {
     description: '카드를 성공적으로 수정하였습니다.',
     type: UpdateCardDto,
   })
-  @Patch(':id')
+  @Patch(':cardId')
   @HttpCode(HttpStatus.OK)
-  update(@Param('id') id: string, @Body() updateCardDto: UpdateCardDto) {
-    return this.cardService.update(+id, updateCardDto);
+  update(@Param('cardId') cardId: string, @Body() updateCardDto: UpdateCardDto) {
+    return this.cardService.update(+cardId, updateCardDto);
   }
 
   @ApiOperation({ summary: '마감일 설정' })
   @ApiResponse({ status: 200, description: '카드 마감일을 성공적으로 설정함', type: DueDateDto })
-  @Patch('date/:id')
+  @Patch('date/:cardId')
   @HttpCode(HttpStatus.OK)
-  setDueDate(@Param('id') id: string, @Body() dueDateDto: DueDateDto) {
-    return this.cardService.setDueDate(+id, dueDateDto);
+  setDueDate(@Param('cardId') cardId: string, @Body() dueDateDto: DueDateDto) {
+    return this.cardService.setDueDate(+cardId, dueDateDto);
   }
 
   @ApiOperation({ summary: '카드 담당자 초대' })
@@ -96,17 +95,17 @@ export class CardController {
 
   @ApiOperation({ summary: '카드 삭제' })
   @ApiResponse({ status: 200, description: '카드가 성공적으로 삭제됨' })
-  @Delete(':id')
+  @Delete(':cardId')
   @HttpCode(HttpStatus.OK)
-  remove(@Param('id') id: string) {
-    return this.cardService.remove(+id);
+  remove(@Param('cardId') cardId: string) {
+    return this.cardService.remove(+cardId);
   }
 
   @ApiOperation({ summary: '카드 순서변경' })
   @ApiResponse({ status: 200, description: '카드순서가 성공적으로 변경됨', type: MoveCardDto })
-  @Patch(':id/move')
+  @Patch(':cardId/move')
   @HttpCode(HttpStatus.OK)
-  moveCard(@Param('id') id: string, @Body() moveCardDto: MoveCardDto) {
-    return this.cardService.moveCard(+id, moveCardDto);
+  moveCard(@Param('cardId') cardId: string, @Body() moveCardDto: MoveCardDto) {
+    return this.cardService.moveCard(+cardId, moveCardDto);
   }
 }

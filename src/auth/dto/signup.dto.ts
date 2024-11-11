@@ -23,6 +23,7 @@ export class SignupDto {
   @IsNotEmpty({ message: '닉네임을 입력해주세요.' })
   nickname: string;
 
+  @ApiProperty({ description: '이메일 인증 코드', example: '123456' })
   @IsString()
   @IsNotEmpty({ message: '인증 코드를 입력해주세요.' })
   code: string;

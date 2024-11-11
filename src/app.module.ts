@@ -4,33 +4,30 @@ import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import Joi from 'joi';
 import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
 import { AuthModule } from './auth/auth.module';
+import { MailModule } from './auth/email/email.module';
 import { BoardModule } from './board/board.module';
 import { BoardEntity } from './board/entities/board.entity';
 import { CardModule } from './card/card.module';
 import { CardEntity } from './card/entities/card.entity';
 import { ResponsibleEntity } from './card/entities/responsible.entity';
 import { ChecklistModule } from './checklist/checklist.module';
+import { ChecklistEntity } from './checklist/entities/checklist.entity';
 import { CommentModule } from './comment/comment.module';
 import { CommentEntity } from './comment/entities/comment.entity';
+import { FileEntity } from './file/entities/file.entity';
 import { FileModule } from './file/file.module';
+import { ItemEntity } from './item/entities/item.entity';
 import { ItemModule } from './item/item.module';
 import { ListEntity } from './list/entities/list.entity';
 import { ListModule } from './list/list.module';
 import { MemberEntity } from './member/entity/member.entity';
+import { MemberModule } from './member/member.module';
 import { UserEntity } from './user/entities/user.entity';
 import { UserModule } from './user/user.module';
 import { WorkspaceEntity } from './workspace/entities/workspace.entity';
 import { WorkspaceModule } from './workspace/workspace.module';
-import { MemberService } from './member/member.service';
-import { MemberModule } from './member/member.module';
-import { ChecklistEntity } from './checklist/entities/checklist.entity';
-import { MailModule } from './auth/email/email.module';
-import { ItemEntity } from './item/entities/item.entity';
-import { FileEntity } from './file/entities/file.entity';
 
 import { RedisModule } from '@liaoliaots/nestjs-redis';
-import { NotificationService } from './notification/notification.service';
-import { NotificationController } from './notification/notification.controller';
 import { NotificationModule } from './notification/notification.module';
 
 const typeOrmModuleOptions = {
@@ -106,7 +103,7 @@ const typeOrmModuleOptions = {
     RedisModule,
     NotificationModule,
   ],
-  controllers: [NotificationController],
+  controllers: [],
   providers: [],
 })
 export class AppModule {}

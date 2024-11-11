@@ -3,6 +3,7 @@ import { MailerService } from '@nestjs-modules/mailer';
 import { v4 as uuidv4 } from 'uuid';
 import { SendEmailDto } from '../dto/sendEmail.dto';
 import { RedisService } from '@liaoliaots/nestjs-redis';
+import { text } from 'stream/consumers';
 
 @Injectable()
 export class MailService {
@@ -24,7 +25,7 @@ export class MailService {
     });
 
     await this.set(sendEmail.email, code, 3600);
-    return { message: `${sendEmail.email}로 인증번호가 전송되었습니다.` };
+    return { message: `${sendEmail.email}로 인증번호: ${code} 가 전송되었습니다.` };
   }
 
   async sendMemberEmail(email: string) {

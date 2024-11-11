@@ -12,6 +12,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
 import { compare } from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
+import { RedisService } from '@liaoliaots/nestjs-redis';
 
 @Injectable()
 export class AuthService {
@@ -21,7 +22,10 @@ export class AuthService {
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
     private readonly jwtService: JwtService,
-  ) {}
+    private readonly redisService: RedisService,
+  ) {
+    this.redisClient = this.redisService.getOrThrow();
+  }
   async signup(signUpDto: SignupDto) {
     const email = signUpDto.email;
     const code = signUpDto.code;
