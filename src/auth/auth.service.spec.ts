@@ -203,17 +203,3 @@ describe('AuthService', () => {
     });
   });
 });
-
-//   it('이메일 인증 코드가 일치 하지 않아서 인증에 실패해야함', async () => {
-//   const signupDto = {
-//     email: 'didthfls2@naver.com',
-//     authNumber: 1234,
-//     password: 'sorin1234',
-//     confirmedPassword: 'sorin1234',
-//     nickname: 'sorin',
-//   };
-//
-//   await expect(service.signup(signupDto).rejects.toThrow(
-//     new BadRequestException('인증번호가 불일치 하여 인증에 실패했습니다.'),
-//   ))
-// });
