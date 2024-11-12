@@ -1,99 +1,148 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# 트렐로 프로젝트 - Trello
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+## 개요
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+이 프로젝트는 Nest.js 와 Node.js 를 사용하여 트렐로 서비스를 구현하는 과제입니다.
 
-## Description
+<br/>
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## ✨ 주요 기능
 
-## Project setup
+- **메일 전송 기능**
+- **알림 기능**
+- **파일 업로드,다운로드**
+- **리스트 & 카드 이동**
 
-```bash
-$ npm install
+<br/>
+
+## 📢 와이어 프레임
+
+- [Figma](https://www.figma.com/board/6Xl7GhIWEY2UvwiYbz7naz/FigJam-basics?node-id=0-1&t=X7BDa8J9uD10z7x2-1)
+
+<br/>
+
+## 📚 사용 스택
+
+<div align="left">
+<div>
+<img src="https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white">
+ <img src="https://img.shields.io/badge/Nestjs-D91313?style=flat-square&logo=nestjs&logoColor=white">
+</div>
+<div>
+  <img src="https://shields.io/badge/MySQL-lightgrey?logo=mysql&style=plastic&logoColor=white&labelColor=blue">
+  <img src="https://img.shields.io/badge/Redis-DC382D?style=flat-square&logo=Redis&logoColor=white">
+</div>
+<div>
+<img src="https://img.shields.io/badge/ESlint-4B32C3?style=flat-square&logo=eslint&logoColor=white">
+<img src="https://img.shields.io/badge/Prettier-F7B93E?style=flat-square&logo=prettier&logoColor=white">
+<img src="https://img.shields.io/badge/Slack-4A154B?style=flat-square&logo=slack&logoColor=white">
+</div>
+<div>
+<img src="https://img.shields.io/badge/NodeMailer-339933?style=flat-square&logo=nodemailer&logoColor=white">
+</div>
+</div>
+
+<br/><br/>
+
+## 🔍 개발 과정
+
+- [강현 : 카드 순서 변경 개발하기](https://devnter.tistory.com/entry/%ED%8A%B8%EB%A0%90%EB%A1%9C-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8-%EB%A6%AC%EC%8A%A4%ED%8A%B8-%EC%B9%B4%EB%93%9C-%EB%B3%80%EA%B2%BD-%EA%B8%B0%EB%8A%A5-%EA%B0%9C%EB%B0%9C)
+- [강현 : Member Guard를 통한 인가 처리하기](https://devnter.tistory.com/entry/%ED%8A%B8%EB%A0%90%EB%A1%9C-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8-%EB%A9%A4%EB%B2%84-%EA%B0%80%EB%93%9C%EB%A5%BC-%ED%86%B5%ED%95%B4-%EC%9D%B8%EA%B0%80-%EC%B2%98%EB%A6%AC%ED%95%98%EA%B8%B0)
+- [민재 , 성록 : 메일 전송 개발하기](https://blog.naver.com/dmb08075/223657057035)
+- [민재 , 성록 : 인증 코드 저장 처리](https://blog.naver.com/dmb08075/223657103077)
+- [강필 : 파일 업다운로드 개발](https://velog.io/@skp1504/트렐로-프로젝트-파일-업로드다운로드-개발)
+<br/>
+## 📝 ERD
+
+<img width="944" src="https://private-user-images.githubusercontent.com/174415370/385109533-74a88da9-1c35-4413-a49e-effc24c237e5.png?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3MzEzNzY3OTQsIm5iZiI6MTczMTM3NjQ5NCwicGF0aCI6Ii8xNzQ0MTUzNzAvMzg1MTA5NTMzLTc0YTg4ZGE5LTFjMzUtNDQxMy1hNDllLWVmZmMyNGMyMzdlNS5wbmc_WC1BbXotQWxnb3JpdGhtPUFXUzQtSE1BQy1TSEEyNTYmWC1BbXotQ3JlZGVudGlhbD1BS0lBVkNPRFlMU0E1M1BRSzRaQSUyRjIwMjQxMTEyJTJGdXMtZWFzdC0xJTJGczMlMkZhd3M0X3JlcXVlc3QmWC1BbXotRGF0ZT0yMDI0MTExMlQwMTU0NTRaJlgtQW16LUV4cGlyZXM9MzAwJlgtQW16LVNpZ25hdHVyZT1mYjg5MjY0ZTVkNjhmYmQ1NGM2ZTBmODg5MWE4OGU4YjYzY2NkYjE2MmU5MjllZjhiYzJlMmY2YjZlYzcyMjJkJlgtQW16LVNpZ25lZEhlYWRlcnM9aG9zdCJ9.7sMWjgVTCswaKireNc-94CQhbWf7LgQYJOVLR--lb4Y">
+
+## 📁 Project Structure
+
+```shell
+Trello-Project
+├── src
+│   ├── auth
+│   ├── board
+│   ├── card
+│   ├── checklist
+│   ├── comment
+│   ├── file
+│   ├── guard
+│   ├── item
+│   ├── list
+│   ├── member
+│   ├── notification
+│   ├── user
+│   ├── utils
+│   └── workspace
+│       ├── app.controller.spec.ts
+│       ├── app.controller.ts
+│       ├── app.module.ts
+│       ├── app.service.ts
+│       └── main.ts
+├── test
+├── .gitignore
+├── .prettierrc
+├── eslint.config.js
+├── nest-cli.json
+├── package-lock.json
+├── package.json
+├── README.md
+├── tsconfig.build.json
+└── tsconfig.json
 ```
 
-## Compile and run the project
+<br/>
 
-```bash
-# development
-$ npm run start
+## 💻 Developers
 
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
-```
-
-## Run tests
-
-```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
-```
-
-## Deployment
-
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
-
-```bash
-$ npm install -g mau
-$ mau deploy
-```
-
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
-
-## Resources
-
-Check out a few resources that may come in handy when working with NestJS:
-
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+<table>
+    <tr align="center">
+        <td><B>Leader / Backend<B></td>
+        <td><B>Backend<B></td>
+        <td><B>Backend<B></td>
+        <td><B>Backend<B></td>
+        <td><B>Backend<B></td>
+        <td><B>Backend<B></td>
+    </tr>
+    <tr align="center">
+        <td><B>문승호<B></td>
+        <td><B>김성록<B></td>
+        <td><B>최강현<B></td>
+        <td><B>송강필<B></td>
+        <td><B>양소린<B></td>
+        <td><B>신민재<B></td>
+    </tr>
+    <tr align="center">
+        <td>
+            <img width="150" src="https://avatars.githubusercontent.com/u/53264081?v=4">
+            <br>
+            <a href="https://github.com/Jacob-moon/"><I>desktop-tutorial</I></a>
+        </td>
+        <td>
+            <img width="150" src="https://avatars.githubusercontent.com/u/174415370?v=4">
+            <br>
+            <a href="https://github.com/SungRok1231"><I>SungRok1231</I></a>
+        </td>
+        <td>
+            <img width="150" src="https://avatars.githubusercontent.com/u/127270767?v=4">
+            <br>
+            <a href="https://github.com/NterChoi"><I>NterChoi</I></a>
+        </td>
+        <td>
+            <img width="150" src="https://avatars.githubusercontent.com/u/92740959?v=4">
+            <br>
+            <a href="https://github.com/strongfeel"><I>strongfeel</I></a>
+        </td>
+        <td>
+            <img width="150" src="https://avatars.githubusercontent.com/u/177493080?v=4">
+            <br>
+            <a href="https://github.com/surinnnnnn"><I>surinnnnnn</I></a>
+        </td>
+        <td>
+            <img width="150" src="https://avatars.githubusercontent.com/u/114797773?v=4">
+            <br>
+            <a href="https://github.com/New-mean"><I>New-mean</I></a>
+        </td>
+    </tr>
+</table>

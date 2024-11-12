@@ -1,34 +1,89 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  ParseIntPipe,
+  Post,
+  Put,
+  UseGuards,
+} from '@nestjs/common';
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { MemberGuard } from 'src/guard/members.guard';
+import { UserEntity } from 'src/user/entities/user.entity';
+import { UserInfo } from 'src/utils/userInfo-decolator';
 import { BoardService } from './board.service';
 import { CreateBoardDto } from './dto/create-board.dto';
 import { UpdateBoardDto } from './dto/update-board.dto';
 
-@Controller('board')
+@ApiBearerAuth()
+@ApiTags('보드')
+@Controller('boards')
+@UseGuards(MemberGuard)
 export class BoardController {
   constructor(private readonly boardService: BoardService) {}
 
   @Post()
-  create(@Body() createBoardDto: CreateBoardDto) {
-    return this.boardService.create(createBoardDto);
+  @ApiOperation({ summary: '보드 생성' })
+  @ApiResponse({
+    status: 201,
+    description: '보드가 성공적으로 생성되었습니다.',
+    type: CreateBoardDto,
+  })
+  @HttpCode(HttpStatus.CREATED)
+  async create(@Body() createBoardDto: CreateBoardDto, @UserInfo() user: UserEntity) {
+    return await this.boardService.create(createBoardDto, user);
   }
 
-  @Get()
-  findAll() {
-    return this.boardService.findAll();
+  @Get('/workspace/:workspaceId')
+  @ApiOperation({ summary: '보드 목록 조회' })
+  @ApiResponse({
+    status: 200,
+    description: '보드 목록이 성공적으로 조회되었습니다.',
+  })
+  @HttpCode(HttpStatus.OK)
+  async findAll(@Param('workspaceId', ParseIntPipe) workspaceId: number) {
+    return await this.boardService.findAll(workspaceId);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.boardService.findOne(+id);
+  @Get(':boardId')
+  @ApiOperation({ summary: '보드 목록 상세 조회' })
+  @ApiResponse({
+    status: 200,
+    description: '보드 목록상세 조회가 성공적으로 조회되었습니다.',
+  })
+  @HttpCode(HttpStatus.OK)
+  async findOne(@Param('boardId', ParseIntPipe) boardId: number) {
+    return await this.boardService.findOne(boardId);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateBoardDto: UpdateBoardDto) {
-    return this.boardService.update(+id, updateBoardDto);
+  @Put(':boardId')
+  @ApiOperation({ summary: '보드 수정' })
+  @ApiResponse({
+    status: 200,
+    description: '보드 수정이 성공적으로 완료되었습니다.',
+    type: UpdateBoardDto,
+  })
+  @HttpCode(HttpStatus.OK)
+  async update(
+    @Param('boardId', ParseIntPipe) boardId: number,
+    @Body() updateBoardDto: UpdateBoardDto,
+    @UserInfo() user: UserEntity,
+  ) {
+    return await this.boardService.update(boardId, updateBoardDto, user);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.boardService.remove(+id);
+  @Delete(':boardId')
+  @ApiOperation({ summary: '보드 삭제' })
+  @ApiResponse({
+    status: 200,
+    description: '보드 삭제가 성공적으로 완료되었습니다.',
+  })
+  @HttpCode(HttpStatus.OK)
+  async remove(@Param('boardId', ParseIntPipe) boardId: number, @UserInfo() user: UserEntity) {
+    return await this.boardService.remove(boardId, user);
   }
 }
